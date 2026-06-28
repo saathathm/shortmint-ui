@@ -35,7 +35,7 @@ export default function Settings() {
   }
 
   const handleConnectYoutube = () => {
-    // OAuth flow — redirect to Google with YouTube scope
+    // OAuth flow - redirect to Google with YouTube scope
     // To be configured after Workflow 2 is built
     alert('YouTube connection will be available once publishing is set up.')
   }

@@ -24,7 +24,7 @@ const HOW_IT_WORKS = [
   {
     step: '01',
     title: 'Paste a YouTube link',
-    description: 'Drop in any YouTube video — lectures, podcasts, interviews, talks. Any language, any length.',
+    description: 'Drop in any YouTube video - lectures, podcasts, interviews, talks. Any language, any length.',
     icon: '🔗',
   },
   {
@@ -36,13 +36,13 @@ const HOW_IT_WORKS = [
   {
     step: '03',
     title: 'Review, edit, and publish',
-    description: 'Watch each clip, tweak the title if you want, then publish directly to YouTube Shorts or Facebook Reels — or download.',
+    description: 'Watch each clip, tweak the title if you want, then publish directly to YouTube Shorts or Facebook Reels - or download.',
     icon: '🚀',
   },
 ]
 
 const FEATURES = [
-  { icon: Zap, title: 'Works in any language', description: 'Tamil, Arabic, English, Tanglish — our AI handles them all natively.' },
+  { icon: Zap, title: 'Works in any language', description: 'Tamil, Arabic, English, Tanglish - our AI handles them all natively.' },
   { icon: Globe, title: 'Publish everywhere', description: 'One click to post directly to YouTube Shorts and Facebook Reels.' },
   { icon: BarChart2, title: 'Made for creators', description: 'Built for Islamic lectures, podcasts, interviews, and any speech-heavy content.' },
   { icon: Scissors, title: '3 styles', description: 'Blur background, smart 9:16 crop, or upload your own custom background image.' },
@@ -51,11 +51,11 @@ const FEATURES = [
 const FAQS = [
   {
     q: 'How long does it take to process a video?',
-    a: 'Usually 5–10 minutes for a 30–60 minute video. Longer videos may take a bit more. The AI analyses the full audio to find the best moments.',
+    a: 'Usually 5-10 minutes for a 30-60 minute video. Longer videos may take a bit more. The AI analyses the full audio to find the best moments.',
   },
   {
     q: 'What languages does ShortMint support?',
-    a: 'ShortMint works with any spoken language. Tamil, Arabic, English, Tanglish (mixed Tamil-English), Urdu, and more — the AI transcribes and analyses whatever is spoken.',
+    a: 'ShortMint works with any spoken language. Tamil, Arabic, English, Tanglish (mixed Tamil-English), Urdu, and more - the AI transcribes and analyses whatever is spoken.',
   },
   {
     q: 'Do I need to connect my YouTube or Facebook account?',
@@ -67,7 +67,7 @@ const FAQS = [
   },
   {
     q: 'Can I process the same video more than once?',
-    a: 'Yes. Each time you process the same video, the AI may find different clips — it is non-deterministic. All clip batches are saved in your history.',
+    a: 'Yes. Each time you process the same video, the AI may find different clips - it is non-deterministic. All clip batches are saved in your history.',
   },
   {
     q: 'What if the AI picks clips I don\'t like?',
@@ -79,12 +79,12 @@ const TESTIMONIALS = [
   {
     name: 'Br. Ismail R.',
     role: 'Islamic content creator, London',
-    text: 'I was spending 3–4 hours manually clipping each lecture. ShortMint does it in 8 minutes. The clips it picks are genuinely good — it understands the emotional arc of a talk.',
+    text: 'I was spending 3-4 hours manually clipping each lecture. ShortMint does it in 8 minutes. The clips it picks are genuinely good - it understands the emotional arc of a talk.',
   },
   {
     name: 'Ustadh Faaris K.',
     role: 'Arabic & Tamil speaker, UK',
-    text: 'I was skeptical that any AI would handle Tamil and Arabic correctly. ShortMint surprised me — it transcribes Tanglish speech accurately and picks clips that make sense without context.',
+    text: 'I was skeptical that any AI would handle Tamil and Arabic correctly. ShortMint surprised me - it transcribes Tanglish speech accurately and picks clips that make sense without context.',
   },
   {
     name: 'Sister Anisa M.',
@@ -148,7 +148,7 @@ export default function Landing() {
         </div>
         <h1 className="text-4xl sm:text-5xl font-extrabold text-text-primary leading-tight tracking-tight mb-4">
           Turn long videos into<br />
-          <span className="text-primary">viral Shorts</span> — in minutes
+          <span className="text-primary">viral Shorts</span> – in minutes
         </h1>
         <p className="text-text-muted text-lg mb-8 max-w-xl mx-auto leading-relaxed">
           ShortMint uses AI to find the 3 best clips in any lecture, podcast, or interview. Ready to publish to YouTube Shorts and Facebook Reels.
@@ -267,7 +267,7 @@ export default function Landing() {
         <h2 className="text-3xl font-extrabold text-text-primary mb-3">Ready to grow your channel?</h2>
         <p className="text-text-muted mb-6">Join creators already using ShortMint to publish consistently without the editing grind.</p>
         <Link to="/signup" className="btn-primary text-base py-3.5 px-8 inline-flex items-center gap-2">
-          <CheckCircle size={18} /> Start for free — no credit card needed
+          <CheckCircle size={18} /> Start for free - no credit card needed
         </Link>
       </section>
 

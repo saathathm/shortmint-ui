@@ -61,7 +61,7 @@ export default function Processing() {
           {STAGES[stageIndex]?.label}…
         </h2>
         <p className="text-sm text-text-muted mb-6">
-          This usually takes 5–10 minutes depending on the video length.
+          This usually takes 5-10 minutes depending on the video length.
         </p>
 
         {/* Progress bar */}
@@ -74,7 +74,7 @@ export default function Processing() {
         <p className="text-sm font-semibold text-primary">{displayPct}%</p>
 
         <p className="text-xs text-text-dim mt-6">
-          You can leave this page — we'll keep working on it.<br />
+          You can leave this page - we'll keep working on it.<br />
           Check <a href="/history" className="text-primary hover:underline">History</a> to see when it's done.
         </p>
       </div>

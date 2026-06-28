@@ -203,7 +203,7 @@ export default function ClipCard({ clip, clipIndex }) {
           </div>
         )}
 
-        {/* Action buttons — download + publish */}
+        {/* Action buttons - download + publish */}
         <div className="flex flex-wrap gap-2 pt-1">
           {/* Download */}
           <button

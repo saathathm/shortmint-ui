@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { useDispatch } from 'react-redux'
-import { loadSession, setSession } from './store/authSlice.js'
+import { loadSession, setSession, setClient } from './store/authSlice.js'
 import { supabase } from './lib/supabase.js'
 import ProtectedRoute from './components/ProtectedRoute.jsx'
 import Layout from './components/Layout.jsx'
@@ -20,14 +20,50 @@ export default function App() {
   const dispatch = useDispatch()
 
   useEffect(() => {
+    // Load session on app start
     dispatch(loadSession())
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+    // Listen for auth state changes (handles Google OAuth redirect, token refresh etc.)
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       if (session) {
         dispatch(setSession({ user: session.user, session }))
         localStorage.setItem('sm_token', session.access_token)
+
+        // Fetch client row on sign in / token refresh
+        if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED' || event === 'USER_UPDATED') {
+          const { data: client } = await supabase
+            .from('clients')
+            .select('*')
+            .eq('id', session.user.id)
+            .single()
+
+          if (client) {
+            dispatch(setClient(client))
+          } else if (event === 'SIGNED_IN') {
+            // New Google OAuth user - create client row
+            const name = session.user.user_metadata?.full_name || session.user.email
+            await supabase.from('clients').upsert({
+              id: session.user.id,
+              name,
+              email: session.user.email,
+              password_hash: 'managed_by_supabase_auth',
+              plan: 'trial',
+              usage_hours_limit: 0,
+              usage_hours_used: 0,
+            }, { onConflict: 'id' })
+
+            const { data: newClient } = await supabase
+              .from('clients')
+              .select('*')
+              .eq('id', session.user.id)
+              .single()
+
+            if (newClient) dispatch(setClient(newClient))
+          }
+        }
       }
     })
+
     return () => subscription.unsubscribe()
   }, [dispatch])
 

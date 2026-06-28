@@ -1,13 +1,46 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import { supabase } from '../lib/supabase.js'
 
+// Fetch client row from Supabase clients table
+const fetchClientRow = async (userId) => {
+  const { data, error } = await supabase
+    .from('clients')
+    .select('*')
+    .eq('id', userId)
+    .single()
+  if (error) return null
+  return data
+}
+
+// Load current session on app start
+export const loadSession = createAsyncThunk('auth/loadSession', async (_, { rejectWithValue }) => {
+  try {
+    const { data, error } = await supabase.auth.getSession()
+    if (error) return rejectWithValue(error.message)
+    if (!data.session) return null
+
+    const { session } = data
+    localStorage.setItem('sm_token', session.access_token)
+
+    const client = await fetchClientRow(session.user.id)
+    return { user: session.user, client, session }
+  } catch (e) {
+    return rejectWithValue(e.message)
+  }
+})
+
 // Sign up with email + password
 export const signUp = createAsyncThunk('auth/signUp', async ({ name, email, password }, { rejectWithValue }) => {
-  const { data, error } = await supabase.auth.signUp({ email, password, options: { data: { name } } })
+  const { data, error } = await supabase.auth.signUp({
+    email,
+    password,
+    options: { data: { name } },
+  })
   if (error) return rejectWithValue(error.message)
+  if (!data.user) return rejectWithValue('Sign up failed. Please try again.')
 
-  // Insert into clients table
-  const { error: clientError } = await supabase.from('clients').insert({
+  // Insert clients row - ignore duplicate key errors (Google OAuth may have already created it)
+  const { error: clientError } = await supabase.from('clients').upsert({
     id: data.user.id,
     name,
     email,
@@ -15,8 +48,13 @@ export const signUp = createAsyncThunk('auth/signUp', async ({ name, email, pass
     plan: 'trial',
     usage_hours_limit: 0,
     usage_hours_used: 0,
-  })
-  if (clientError && clientError.code !== '23505') return rejectWithValue(clientError.message)
+  }, { onConflict: 'id' })
+
+  if (clientError) console.warn('Client upsert warning:', clientError.message)
+
+  if (data.session) {
+    localStorage.setItem('sm_token', data.session.access_token)
+  }
 
   return { user: data.user, session: data.session }
 })
@@ -25,7 +63,10 @@ export const signUp = createAsyncThunk('auth/signUp', async ({ name, email, pass
 export const signIn = createAsyncThunk('auth/signIn', async ({ email, password }, { rejectWithValue }) => {
   const { data, error } = await supabase.auth.signInWithPassword({ email, password })
   if (error) return rejectWithValue(error.message)
-  return { user: data.user, session: data.session }
+
+  localStorage.setItem('sm_token', data.session.access_token)
+  const client = await fetchClientRow(data.user.id)
+  return { user: data.user, client, session: data.session }
 })
 
 // Sign in with Google
@@ -43,32 +84,11 @@ export const signOut = createAsyncThunk('auth/signOut', async () => {
   localStorage.removeItem('sm_token')
 })
 
-// Load current session
-export const loadSession = createAsyncThunk('auth/loadSession', async (_, { rejectWithValue }) => {
-  const { data, error } = await supabase.auth.getSession()
-  if (error) return rejectWithValue(error.message)
-  if (!data.session) return null
-
-  // Fetch client row
-  const { data: client, error: clientError } = await supabase
-    .from('clients')
-    .select('*')
-    .eq('id', data.session.user.id)
-    .single()
-
-  if (clientError) return rejectWithValue(clientError.message)
-
-  // Store token for n8n calls
-  localStorage.setItem('sm_token', data.session.access_token)
-
-  return { user: data.session.user, client, session: data.session }
-})
-
-// Refresh client data (after plan purchase etc.)
+// Refresh client row (after plan purchase etc.)
 export const refreshClient = createAsyncThunk('auth/refreshClient', async (userId, { rejectWithValue }) => {
-  const { data, error } = await supabase.from('clients').select('*').eq('id', userId).single()
-  if (error) return rejectWithValue(error.message)
-  return data
+  const client = await fetchClientRow(userId)
+  if (!client) return rejectWithValue('Could not refresh client data.')
+  return client
 })
 
 const authSlice = createSlice({
@@ -83,12 +103,16 @@ const authSlice = createSlice({
   },
   reducers: {
     clearError: (state) => { state.error = null },
+    // Called by onAuthStateChange listener in App.jsx
     setSession: (state, action) => {
       state.user = action.payload.user
       state.session = action.payload.session
       if (action.payload.session?.access_token) {
         localStorage.setItem('sm_token', action.payload.session.access_token)
       }
+    },
+    setClient: (state, action) => {
+      state.client = action.payload
     },
   },
   extraReducers: (builder) => {
@@ -106,6 +130,7 @@ const authSlice = createSlice({
     builder.addCase(loadSession.rejected, (state) => {
       state.loading = false
       state.initialized = true
+      // Don't clear user here - network error shouldn't log user out
     })
 
     // signUp
@@ -125,8 +150,8 @@ const authSlice = createSlice({
     builder.addCase(signIn.fulfilled, (state, action) => {
       state.loading = false
       state.user = action.payload.user
+      state.client = action.payload.client
       state.session = action.payload.session
-      localStorage.setItem('sm_token', action.payload.session.access_token)
     })
     builder.addCase(signIn.rejected, (state, action) => {
       state.loading = false
@@ -138,6 +163,7 @@ const authSlice = createSlice({
       state.user = null
       state.client = null
       state.session = null
+      state.initialized = true
     })
 
     // refreshClient
@@ -147,5 +173,5 @@ const authSlice = createSlice({
   },
 })
 
-export const { clearError, setSession } = authSlice.actions
+export const { clearError, setSession, setClient } = authSlice.actions
 export default authSlice.reducer
