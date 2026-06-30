@@ -16,7 +16,7 @@ const STYLES = [
   {
     id: 'custom',
     label: 'Custom Background',
-    description: 'Upload your own background image after clipping',
+    description: 'Add your own after clipping or keep it as is',
     icon: '🖼️',
   },
 ]

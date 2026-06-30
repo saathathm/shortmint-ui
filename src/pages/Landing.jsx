@@ -4,19 +4,19 @@ import { useState } from 'react'
 
 const DEMO_CLIPS = [
   {
-    url: 'https://shortmint.addmora.com/files/52f38dae-3613-40ea-98f9-cc44ff3543f7/2cdd3f71-e2f2-4b50-8df6-85435156247f/302/clip_1.mp4',
+    url: 'https://shortmint.addmora.com/files/clip_blur.mp4',
     label: 'Tamil Islamic lecture',
     style: 'Blur BG',
   },
   {
-    url: 'https://shortmint.addmora.com/files/52f38dae-3613-40ea-98f9-cc44ff3543f7/2cdd3f71-e2f2-4b50-8df6-85435156247f/305/clip_2.mp4',
-    label: 'Same video, custom clip',
-    style: 'Custom',
-  },
-  {
-    url: 'https://shortmint.addmora.com/files/52f38dae-3613-40ea-98f9-cc44ff3543f7/d575c728-d2a5-4130-9e27-a05c3328044b/290/clip_1.mp4',
+    url: 'https://shortmint.addmora.com/files/clip_crop.mp4',
     label: 'Religious talk',
     style: '9:16 Crop',
+  },
+  {
+    url: 'https://shortmint.addmora.com/files/clip_custombg.mp4',
+    label: 'Same video, custom clip',
+    style: 'Custom',
   },
 ]
 
@@ -44,7 +44,7 @@ const HOW_IT_WORKS = [
 const FEATURES = [
   { icon: Zap, title: 'Works in any language', description: 'Tamil, Arabic, English, Tanglish - our AI handles them all natively.' },
   { icon: Globe, title: 'Publish everywhere', description: 'One click to post directly to YouTube Shorts and Facebook Reels.' },
-  { icon: BarChart2, title: 'Made for creators', description: 'Built for Islamic lectures, podcasts, interviews, and any speech-heavy content.' },
+  { icon: BarChart2, title: 'Made for creators', description: 'Built for lectures, podcasts, interviews, and any speech-heavy content.' },
   { icon: Scissors, title: '3 styles', description: 'Blur background, smart 9:16 crop, or upload your own custom background image.' },
 ]
 
@@ -110,29 +110,18 @@ function FAQ({ q, a }) {
 }
 
 function DemoClip({ clip }) {
-  const [playing, setPlaying] = useState(false)
   return (
     <div className="relative bg-gray-100 rounded-2xl overflow-hidden" style={{ aspectRatio: '9/16' }}>
       <video
         src={clip.url}
         className="w-full h-full object-cover"
+        autoPlay
         loop
         muted
         playsInline
-        ref={(el) => { if (el) { playing ? el.play() : el.pause() } }}
       />
-      <button
-        onClick={() => setPlaying(!playing)}
-        className="absolute inset-0 flex items-center justify-center"
-      >
-        {!playing && (
-          <div className="w-14 h-14 rounded-full bg-white/90 flex items-center justify-center shadow-lg">
-            <Play size={22} className="text-text-primary ml-0.5" />
-          </div>
-        )}
-      </button>
       <div className="absolute bottom-3 left-3 right-3">
-        <span className="bg-black/60 text-white text-xs font-semibold px-2 py-1 rounded-lg">{clip.style}</span>
+        <span className="bg-black/90 text-white text-xs font-semibold px-2 py-1 rounded-lg">{clip.style}</span>
       </div>
     </div>
   )
@@ -168,7 +157,7 @@ export default function Landing() {
       <section className="py-12 bg-bg-surface border-y border-border">
         <div className="max-w-5xl mx-auto px-4">
           <h2 className="text-center text-2xl font-bold text-text-primary mb-2">Real outputs from ShortMint</h2>
-          <p className="text-center text-text-muted text-sm mb-8">These clips were generated automatically from Tamil Islamic lectures</p>
+          <p className="text-center text-text-muted text-sm mb-8">These clips were generated automatically from podcasts</p>
           <div className="grid grid-cols-3 gap-4 max-w-lg mx-auto">
             {DEMO_CLIPS.map((clip, i) => <DemoClip key={i} clip={clip} />)}
           </div>
