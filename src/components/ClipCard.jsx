@@ -24,6 +24,7 @@ export default function ClipCard({ clip, clipIndex }) {
   const [applyingBg, setApplyingBg] = useState(false)
   const [bgApplied, setBgApplied] = useState(false)
   const [showLandscapeWarning, setShowLandscapeWarning] = useState(false)
+  const [successMsg, setSuccessMsg] = useState(false)
   const fileInputRef = useRef(null)
 
   const togglePlay = () => {
@@ -56,23 +57,80 @@ export default function ClipCard({ clip, clipIndex }) {
     }
   }
 
+  const compressImage = (file) => {
+    return new Promise((resolve) => {
+      const img = new Image()
+      const url = URL.createObjectURL(file)
+      img.onload = () => {
+        const canvas = document.createElement('canvas')
+        canvas.width = 1080
+        canvas.height = 1920
+        const ctx = canvas.getContext('2d')
+        const scale = Math.max(1080 / img.width, 1920 / img.height)
+        const x = (1080 - img.width * scale) / 2
+        const y = (1920 - img.height * scale) / 2
+        ctx.drawImage(img, x, y, img.width * scale, img.height * scale)
+        canvas.toBlob((blob) => resolve(blob), 'image/jpeg', 0.85)
+        URL.revokeObjectURL(url)
+      }
+      img.src = url
+    })
+  }
+
   const handleBgUpload = async (e) => {
     const file = e.target.files[0]
     if (!file || !client) return
     setApplyingBg(true)
-    const reader = new FileReader()
-    reader.onload = async (ev) => {
-      const base64 = ev.target.result.split(',')[1]
-      try {
-        await applyCustomBg(clip.id, client.id, base64)
-        setBgApplied(true)
-      } catch {
-        alert('Could not apply background. Please try again.')
-      } finally {
-        setApplyingBg(false)
+
+    try {
+      const compressed = await compressImage(file)
+
+      const reader = new FileReader()
+      reader.onload = async (ev) => {
+        const base64 = ev.target.result.split(',')[1]
+        try {
+          await applyCustomBg(clip.id, client.id, base64)
+
+          // Poll Supabase every 5 seconds for custom_bg_url to be set
+          const { supabase } = await import('../lib/supabase.js')
+
+          const pollInterval = setInterval(async () => {
+            const { data } = await supabase
+              .from('clips')
+              .select('preview_url, custom_bg_url')
+              .eq('id', clip.id)
+              .single()
+
+            if (data?.custom_bg_url) {
+              clearInterval(pollInterval)
+              setApplyingBg(false)
+              setBgApplied(true)
+              setSuccessMsg(true)
+              setTimeout(() => setSuccessMsg(false), 5000)
+              if (videoRef.current) {
+                videoRef.current.src = data.preview_url
+                videoRef.current.load()
+              }
+            }
+          }, 5000)
+
+          // Safety stop after 5 minutes
+          setTimeout(() => {
+            clearInterval(pollInterval)
+            setApplyingBg(false)
+          }, 300000)
+
+        } catch {
+          alert('Could not apply background. Please try again.')
+          setApplyingBg(false)
+        }
       }
+      reader.readAsDataURL(compressed)
+
+    } catch {
+      alert('Could not process image. Please try again.')
+      setApplyingBg(false)
     }
-    reader.readAsDataURL(file)
   }
 
   const isCustomStyle = clip.style === 'custom'
@@ -158,6 +216,12 @@ export default function ClipCard({ clip, clipIndex }) {
               </div>
             </div>
             <div className="flex flex-wrap gap-2 mt-3">
+              {successMsg && (
+                <div className="bg-green-50 border border-green-200 rounded-xl p-3 flex items-center gap-2 text-success text-sm font-semibold">
+                  <CheckCircle size={16} />
+                  Background applied successfully! Your clip is ready to publish.
+                </div>
+              )}
               <button
                 onClick={() => fileInputRef.current?.click()}
                 disabled={applyingBg}
@@ -220,13 +284,12 @@ export default function ClipCard({ clip, clipIndex }) {
               onClick={() => handlePublish('youtube')}
               disabled={publishingYT || publishedYT || !isConnectedYT}
               title={!isConnectedYT ? 'Connect YouTube in Settings first' : ''}
-              className={`flex items-center gap-1.5 text-sm py-2 px-3 rounded-xl font-semibold transition-all ${
-                publishedYT
-                  ? 'bg-green-50 text-success border border-green-200'
-                  : !isConnectedYT
+              className={`flex items-center gap-1.5 text-sm py-2 px-3 rounded-xl font-semibold transition-all ${publishedYT
+                ? 'bg-green-50 text-success border border-green-200'
+                : !isConnectedYT
                   ? 'bg-bg-surface text-text-dim border border-border cursor-not-allowed'
                   : 'bg-red-50 text-red-600 border border-red-200 hover:bg-red-100'
-              }`}
+                }`}
             >
               {publishingYT ? <Loader size={15} className="animate-spin" /> : <Youtube size={15} />}
               {publishedYT ? 'Published' : !isConnectedYT ? 'Connect YouTube' : 'YouTube'}
@@ -239,13 +302,12 @@ export default function ClipCard({ clip, clipIndex }) {
               onClick={() => handlePublish('facebook')}
               disabled={publishingFB || publishedFB || !isConnectedFB}
               title={!isConnectedFB ? 'Connect Facebook in Settings first' : ''}
-              className={`flex items-center gap-1.5 text-sm py-2 px-3 rounded-xl font-semibold transition-all ${
-                publishedFB
-                  ? 'bg-green-50 text-success border border-green-200'
-                  : !isConnectedFB
+              className={`flex items-center gap-1.5 text-sm py-2 px-3 rounded-xl font-semibold transition-all ${publishedFB
+                ? 'bg-green-50 text-success border border-green-200'
+                : !isConnectedFB
                   ? 'bg-bg-surface text-text-dim border border-border cursor-not-allowed'
                   : 'bg-blue-50 text-blue-600 border border-blue-200 hover:bg-blue-100'
-              }`}
+                }`}
             >
               {publishingFB ? <Loader size={15} className="animate-spin" /> : <Facebook size={15} />}
               {publishedFB ? 'Published' : !isConnectedFB ? 'Connect Facebook' : 'Facebook'}
