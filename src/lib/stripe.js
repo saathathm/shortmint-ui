@@ -8,7 +8,7 @@ export const PLANS = [
     name: 'Starter',
     price: 29,
     hours: 10,
-    priceId: 'price_starter', // Replace with real Stripe price ID
+    priceId: 'price_1ToKspHTjUJCdbgvSu1udGJC',
     description: 'Perfect for getting started',
     features: [
       '10 hours of video per month',
@@ -22,7 +22,7 @@ export const PLANS = [
     name: 'Growth',
     price: 59,
     hours: 25,
-    priceId: 'price_growth', // Replace with real Stripe price ID
+    priceId: 'price_1ToKu7HTjUJCdbgvcLG0Qni0',
     description: 'For consistent content creators',
     popular: true,
     features: [
@@ -38,7 +38,7 @@ export const PLANS = [
     name: 'Pro',
     price: 99,
     hours: 60,
-    priceId: 'price_pro', // Replace with real Stripe price ID
+    priceId: 'price_1ToKuUHTjUJCdbgv7XRLSwIk',
     description: 'For high-volume creators',
     features: [
       '60 hours of video per month',

@@ -68,7 +68,7 @@ export default function App() {
   }, [dispatch])
 
   return (
-    <BrowserRouter>
+    <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
       <Routes>
         <Route path="/" element={<Layout><Landing /></Layout>} />
         <Route path="/login" element={<Layout><Login /></Layout>} />

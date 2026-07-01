@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../hooks/useAuth.js'
-import { stripePromise, PLANS } from '../lib/stripe.js'
+import { PLANS } from '../lib/stripe.js'
 import { Check, Loader, Zap } from 'lucide-react'
 
 export default function Pricing() {
@@ -12,20 +12,25 @@ export default function Pricing() {
   const handleSelectPlan = async (plan) => {
     if (!isAuthenticated) { navigate('/signup'); return }
     setLoadingPlan(plan.id)
-
     try {
-      const stripe = await stripePromise
-      // Create checkout session via your backend/n8n
-      // For now, redirect to Stripe checkout with the price ID
-      await stripe.redirectToCheckout({
-        lineItems: [{ price: plan.priceId, quantity: 1 }],
-        mode: 'subscription',
-        successUrl: `${window.location.origin}/dashboard?upgraded=true`,
-        cancelUrl: `${window.location.origin}/pricing`,
-        clientReferenceId: client?.id,
+      const res = await fetch(`${import.meta.env.VITE_N8N_BASE_URL}/webhook/create-checkout-session`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          price_id: plan.priceId,
+          client_id: client.id,
+          email: client.email,
+        })
       })
+      console.log(res);
+      const data = await res.json()
+      if (data.checkout_url) {
+        window.location.href = data.checkout_url
+      } else {
+        alert('Could not start checkout. Please try again.')
+      }
     } catch (e) {
-      alert('Could not start checkout. Please try again.')
+      alert(`${e.message} + Could not start checkout. Please try again.`)
     } finally {
       setLoadingPlan(null)
     }
@@ -79,13 +84,12 @@ export default function Pricing() {
               <button
                 onClick={() => handleSelectPlan(plan)}
                 disabled={!!loadingPlan || isCurrent}
-                className={`w-full py-2.5 rounded-xl font-semibold text-sm flex items-center justify-center gap-2 transition-all ${
-                  isCurrent
-                    ? 'bg-bg-surface text-text-muted cursor-default border border-border'
-                    : isPopular
+                className={`w-full py-2.5 rounded-xl font-semibold text-sm flex items-center justify-center gap-2 transition-all ${isCurrent
+                  ? 'bg-bg-surface text-text-muted cursor-default border border-border'
+                  : isPopular
                     ? 'btn-primary'
                     : 'btn-secondary'
-                }`}
+                  }`}
               >
                 {loadingPlan === plan.id && <Loader size={15} className="animate-spin" />}
                 {isCurrent ? 'Current plan' : `Get ${plan.name}`}

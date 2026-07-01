@@ -1,11 +1,12 @@
-import { useState } from 'react'
-import { useNavigate, Link } from 'react-router-dom'
+import { useEffect, useState } from 'react'
+import { useNavigate, Link, useSearchParams } from 'react-router-dom'
 import { useDispatch } from 'react-redux'
 import { useAuth } from '../hooks/useAuth.js'
 import { startProcessing } from '../store/videoSlice.js'
 import StylePicker from '../components/StylePicker.jsx'
 import UsageBar from '../components/UsageBar.jsx'
 import { Loader, AlertCircle, Sparkles } from 'lucide-react'
+import { refreshClient } from '../store/authSlice.js'
 
 function isValidYouTubeUrl(url) {
   return /(?:youtube\.com\/(?:watch\?v=|shorts\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/.test(url)
@@ -22,6 +23,19 @@ export default function Dashboard() {
 
   const hasActivePlan = client && client.usage_hours_limit > 0
   const isOverLimit = client && client.usage_hours_used >= client.usage_hours_limit
+
+  // Inside the Dashboard component:
+  const [searchParams, setSearchParams] = useSearchParams()
+
+  useEffect(() => {
+    if (searchParams.get('upgraded') === 'true' && client?.id) {
+      // Wait 2 seconds for Stripe webhook to process, then refresh
+      setTimeout(() => {
+        dispatch(refreshClient(client.id))
+        setSearchParams({}) // remove the query param
+      }, 2000)
+    }
+  }, [searchParams, client])
 
   const handleSubmit = async (e) => {
     e.preventDefault()
