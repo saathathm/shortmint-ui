@@ -24,7 +24,6 @@ export default function ClipCard({ clip, clipIndex }) {
   const [applyingBg, setApplyingBg] = useState(false)
   const [bgApplied, setBgApplied] = useState(false)
   const [showLandscapeWarning, setShowLandscapeWarning] = useState(false)
-  const [successMsg, setSuccessMsg] = useState(false)
   const fileInputRef = useRef(null)
 
   const togglePlay = () => {
@@ -105,8 +104,6 @@ export default function ClipCard({ clip, clipIndex }) {
               clearInterval(pollInterval)
               setApplyingBg(false)
               setBgApplied(true)
-              setSuccessMsg(true)
-              setTimeout(() => setSuccessMsg(false), 5000)
               if (videoRef.current) {
                 videoRef.current.src = data.preview_url
                 videoRef.current.load()
@@ -216,12 +213,6 @@ export default function ClipCard({ clip, clipIndex }) {
               </div>
             </div>
             <div className="flex flex-wrap gap-2 mt-3">
-              {successMsg && (
-                <div className="bg-green-50 border border-green-200 rounded-xl p-3 flex items-center gap-2 text-success text-sm font-semibold">
-                  <CheckCircle size={16} />
-                  Background applied successfully! Your clip is ready to publish.
-                </div>
-              )}
               <button
                 onClick={() => fileInputRef.current?.click()}
                 disabled={applyingBg}
