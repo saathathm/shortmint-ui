@@ -48,8 +48,6 @@ export default function App() {
               email: session.user.email,
               password_hash: 'managed_by_supabase_auth',
               plan: 'trial',
-              usage_hours_limit: 0.5,
-              usage_hours_used: 0,
             }, { onConflict: 'id' })
 
             const { data: newClient } = await supabase

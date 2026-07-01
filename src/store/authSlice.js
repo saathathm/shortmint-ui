@@ -46,8 +46,6 @@ export const signUp = createAsyncThunk('auth/signUp', async ({ name, email, pass
     email,
     password_hash: 'managed_by_supabase_auth',
     plan: 'trial',
-    usage_hours_limit: 0.5,
-    usage_hours_used: 0,
   }, { onConflict: 'id' })
 
   if (clientError) console.warn('Client upsert warning:', clientError.message)
