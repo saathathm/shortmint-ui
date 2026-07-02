@@ -1,5 +1,5 @@
-import { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { useEffect, useState } from 'react'
+import { Link, useSearchParams } from 'react-router-dom'
 import { useDispatch } from 'react-redux'
 import { useAuth } from '../hooks/useAuth.js'
 import { refreshClient } from '../store/authSlice.js'
@@ -14,6 +14,8 @@ export default function Settings() {
   const [profileSaved, setProfileSaved] = useState(false)
   const [changingPassword, setChangingPassword] = useState(false)
   const [pwSent, setPwSent] = useState(false)
+  const [searchParams, setSearchParams] = useSearchParams()
+  const youtubeStatus = searchParams.get('youtube')
 
   const handleSaveProfile = async (e) => {
     e.preventDefault()
@@ -35,9 +37,7 @@ export default function Settings() {
   }
 
   const handleConnectYoutube = () => {
-    // OAuth flow - redirect to Google with YouTube scope
-    // To be configured after Workflow 2 is built
-    alert('YouTube connection will be available once publishing is set up.')
+    window.location.href = `https://n8n.addmora.com/webhook/connect-youtube?client_id=${client.id}`
   }
 
   const handleConnectFacebook = () => {
@@ -45,6 +45,15 @@ export default function Settings() {
   }
 
   const planLabels = { trial: 'Free Trial', starter: 'Starter', growth: 'Growth', pro: 'Pro' }
+
+  useEffect(() => {
+    if (youtubeStatus) {
+      if (youtubeStatus === 'connected') {
+        dispatch(refreshClient(user.id))
+      }
+      setSearchParams({})
+    }
+  }, [youtubeStatus])
 
   return (
     <div className="max-w-lg mx-auto space-y-6">
@@ -118,6 +127,16 @@ export default function Settings() {
               </button>
             )}
           </div>
+          {youtubeStatus === 'connected' && (
+            <div className="bg-green-50 border border-green-200 text-success text-sm rounded-xl p-3 flex items-center gap-2">
+              <CheckCircle size={16} /> YouTube connected successfully!
+            </div>
+          )}
+          {youtubeStatus === 'error' && (
+            <div className="bg-red-50 border border-red-100 text-error text-sm rounded-xl p-3">
+              Could not connect YouTube. Please try again.
+            </div>
+          )}
 
           {/* Facebook */}
           <div className="flex items-center justify-between p-3 bg-bg-surface rounded-xl">
