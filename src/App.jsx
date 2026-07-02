@@ -15,6 +15,7 @@ import Results from './pages/Results.jsx'
 import History from './pages/History.jsx'
 import Settings from './pages/Settings.jsx'
 import Pricing from './pages/Pricing.jsx'
+import Privacy from './pages/Privacy.jsx'
 
 export default function App() {
   const dispatch = useDispatch()
@@ -76,6 +77,7 @@ export default function App() {
         <Route path="/processing/:videoId" element={<ProtectedRoute><Layout><Processing /></Layout></ProtectedRoute>} />
         <Route path="/results/:videoId" element={<ProtectedRoute><Layout><Results /></Layout></ProtectedRoute>} />
         <Route path="/history" element={<ProtectedRoute><Layout><History /></Layout></ProtectedRoute>} />
+        <Route path="/privacy" element={<Layout><Privacy /></Layout>} />
         <Route path="/settings" element={<ProtectedRoute><Layout><Settings /></Layout></ProtectedRoute>} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>

@@ -272,6 +272,7 @@ export default function Landing() {
           </div>
           <div className="flex items-center gap-5 text-sm text-text-muted">
             <Link to="/pricing" className="hover:text-text-primary transition-colors">Pricing</Link>
+            <Link to="/privacy" className="hover:text-text-primary transition-colors">Privacy Policy</Link>
             <a href="mailto:hello@addmora.com" className="hover:text-text-primary transition-colors">Support</a>
             <span className="text-text-dim">© 2026 Addmora</span>
           </div>
