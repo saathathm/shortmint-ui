@@ -37,7 +37,24 @@ export default function Settings() {
   }
 
   const handleConnectYoutube = () => {
-    window.location.href = `https://n8n.addmora.com/webhook/connect-youtube?client_id=${client.id}`
+    const clientId = '730774379704-ksghti4dc4in6alsq6cnsuhp7r79lfos.apps.googleusercontent.com'
+    const redirectUri = 'https://n8n.addmora.com/webhook/youtube-callback'
+    const scope = [
+      'https://www.googleapis.com/auth/youtube.upload',
+      'https://www.googleapis.com/auth/youtube'
+    ].join(' ')
+
+    const params = new URLSearchParams({
+      client_id: clientId,
+      redirect_uri: redirectUri,
+      response_type: 'code',
+      scope: scope,
+      access_type: 'offline',
+      prompt: 'consent',
+      state: client.id  // passes client_id through OAuth flow
+    })
+
+    window.location.href = `https://accounts.google.com/o/oauth2/v2/auth?${params.toString()}`
   }
 
   const handleConnectFacebook = () => {
