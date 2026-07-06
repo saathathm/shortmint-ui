@@ -158,8 +158,22 @@ export default function Landing() {
         <div className="max-w-5xl mx-auto px-4">
           <h2 className="text-center text-2xl font-bold text-text-primary mb-2">Real outputs from ShortMint</h2>
           <p className="text-center text-text-muted text-sm mb-8">These clips were generated automatically from podcasts</p>
-          <div className="grid grid-cols-3 gap-4 max-w-lg mx-auto">
-            {DEMO_CLIPS.map((clip, i) => <DemoClip key={i} clip={clip} />)}
+          <div className="flex flex-col sm:flex-row items-center justify-center sm:gap-0 gap-6 max-w-2xl mx-auto">
+            {DEMO_CLIPS.map((clip, i) => (
+              <div key={i} className="flex flex-col sm:flex-row items-center w-full sm:w-auto">
+                <div className="w-44 sm:w-52">
+                  <DemoClip clip={clip} />
+                </div>
+                {i < DEMO_CLIPS.length - 1 && (
+                  <>
+                    {/* Vertical divider — desktop only */}
+                    <div className="hidden sm:block w-px h-64 bg-border mx-4 self-center opacity-60" />
+                    {/* Horizontal divider — mobile only */}
+                    <div className="block sm:hidden w-24 h-px bg-border my-2 opacity-60" />
+                  </>
+                )}
+              </div>
+            ))}
           </div>
         </div>
       </section>

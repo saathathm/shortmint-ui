@@ -7,28 +7,59 @@ export default function UsageBar() {
 
   const pct = Math.min((client.usage_hours_used / client.usage_hours_limit) * 100, 100)
   const isNearLimit = pct >= 80
+  const isExhausted = pct >= 100
+  const remaining = Math.max(client.usage_hours_limit - client.usage_hours_used, 0)
+
+  const getStatusMessage = () => {
+    if (isExhausted) return "You've used all your hours this month. Upgrade to keep creating Shorts."
+    if (isNearLimit) return `Only ${remaining.toFixed(1)} hrs left — consider upgrading before you run out.`
+    return `Each YouTube video you process uses time from your monthly allowance based on its length.`
+  }
 
   return (
-    <div className={`rounded-xl p-4 flex items-center justify-between gap-4 ${isNearLimit ? 'bg-red-50 border border-red-100' : 'bg-bg-surface border border-border'}`}>
-      <div className="flex-1">
-        <div className="flex justify-between items-center mb-1.5">
-          <span className="text-sm font-medium text-text-primary">Monthly usage</span>
-          <span className={`text-xs font-medium ${isNearLimit ? 'text-error' : 'text-text-muted'}`}>
-            {parseFloat(client.usage_hours_used).toFixed(1)} / {client.usage_hours_limit} hrs
+    <div className={`rounded-xl p-4 space-y-3 ${isExhausted ? 'bg-red-50 border border-red-200' : isNearLimit ? 'bg-amber-50 border border-amber-200' : 'bg-bg-surface border border-border'}`}>
+      {/* Top row */}
+      <div className="flex items-center justify-between gap-4">
+        <div className="flex items-center gap-2">
+          <span className="text-sm font-semibold text-text-primary">Monthly usage</span>
+          <span className={`text-xs font-semibold px-2 py-0.5 rounded-full capitalize ${
+            isExhausted ? 'bg-red-100 text-error' :
+            isNearLimit ? 'bg-amber-100 text-amber-700' :
+            'bg-bg-secondary text-primary'
+          }`}>
+            {client.plan}
           </span>
         </div>
-        <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
-          <div
-            className={`h-full rounded-full transition-all duration-500 ${isNearLimit ? 'bg-error' : 'bg-primary'}`}
-            style={{ width: `${pct}%` }}
-          />
-        </div>
+        <span className={`text-xs font-semibold tabular-nums ${
+          isExhausted ? 'text-error' : isNearLimit ? 'text-amber-700' : 'text-text-muted'
+        }`}>
+          {parseFloat(client.usage_hours_used).toFixed(2)} / {client.usage_hours_limit} hrs
+        </span>
       </div>
-      {isNearLimit && (
-        <Link to="/pricing" className="btn-primary text-xs py-1.5 px-3 whitespace-nowrap">
-          Upgrade
-        </Link>
-      )}
+
+      {/* Progress bar */}
+      <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
+        <div
+          className={`h-full rounded-full transition-all duration-500 ${
+            isExhausted ? 'bg-error' : isNearLimit ? 'bg-amber-400' : 'bg-primary'
+          }`}
+          style={{ width: `${pct}%` }}
+        />
+      </div>
+
+      {/* Info row */}
+      <div className="flex items-start justify-between gap-3">
+        <p className={`text-xs leading-relaxed ${
+          isExhausted ? 'text-error' : isNearLimit ? 'text-amber-700' : 'text-text-muted'
+        }`}>
+          {getStatusMessage()}
+        </p>
+        {(isNearLimit || isExhausted) && (
+          <Link to="/pricing" className="btn-primary text-xs py-1.5 px-3 whitespace-nowrap shrink-0">
+            Upgrade
+          </Link>
+        )}
+      </div>
     </div>
   )
 }
