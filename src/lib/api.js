@@ -23,10 +23,10 @@ n8n.interceptors.response.use(
   }
 )
 
-// Process a YouTube video
-export const processVideo = (youtubeUrl, clientId, style) =>
+// Process a video
+export const processVideo = (videoUrl, clientId, style) =>
   n8n.post('/webhook/process-video', {
-    youtube_url: youtubeUrl,
+    video_url: videoUrl,
     client_id: clientId,
     style,
   })

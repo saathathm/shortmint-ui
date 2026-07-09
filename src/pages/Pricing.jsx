@@ -80,6 +80,16 @@ export default function Pricing() {
                   </li>
                 ))}
               </ul>
+              <div className="mb-4">
+                <p className="text-xs font-semibold text-text-muted uppercase tracking-wide mb-2">Platforms</p>
+                <div className="flex flex-wrap gap-1">
+                  {plan.platforms.map(p => (
+                    <span key={p} className="text-xs bg-bg-surface border border-border text-text-muted px-2 py-0.5 rounded-full">
+                      {p}
+                    </span>
+                  ))}
+                </div>
+              </div>
 
               <button
                 onClick={() => handleSelectPlan(plan)}

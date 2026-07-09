@@ -5,8 +5,8 @@ import { supabase } from '../lib/supabase.js'
 // Start processing a video
 export const startProcessing = createAsyncThunk(
   'video/startProcessing',
-  async ({ youtubeUrl, clientId, style }, { rejectWithValue }) => {
-    const { data } = await apiProcessVideo(youtubeUrl, clientId, style).catch((e) =>
+  async ({ videoUrl, clientId, style }, { rejectWithValue }) => {
+    const { data } = await apiProcessVideo(videoUrl, clientId, style).catch((e) =>
       rejectWithValue(e.response?.data?.message || 'Failed to start processing.')
     )
     return data

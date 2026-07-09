@@ -19,7 +19,7 @@ export default function Privacy() {
                         <li><strong>Account data:</strong> Your name, email address, and encrypted password when you sign up.</li>
                         <li><strong>YouTube data:</strong> If you connect your YouTube account, we store your YouTube access token, refresh token, and channel ID to enable publishing on your behalf.</li>
                         <li><strong>Facebook data:</strong> If you connect your Facebook account, we store your Facebook access token and page ID to enable publishing on your behalf.</li>
-                        <li><strong>Video data:</strong> YouTube URLs you submit for processing, video titles, and processing status.</li>
+                        <li><strong>Video data:</strong> Video URLs you submit for processing, video titles, and processing status.</li>
                         <li><strong>Usage data:</strong> How many hours of video you have processed, for billing purposes.</li>
                         <li><strong>Payment data:</strong> Billing is handled by Stripe. We do not store your card details — Stripe handles all payment data securely.</li>
                     </ul>

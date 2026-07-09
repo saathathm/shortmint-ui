@@ -23,8 +23,8 @@ const DEMO_CLIPS = [
 const HOW_IT_WORKS = [
   {
     step: '01',
-    title: 'Paste a YouTube link',
-    description: 'Drop in any YouTube video - lectures, podcasts, interviews, talks. Any language, any length.',
+    title: 'Paste a Video link',
+    description: 'Drop in any video - lectures, podcasts, interviews, talks. Any language, any length.',
     icon: '🔗',
   },
   {
@@ -63,7 +63,7 @@ const FAQS = [
   },
   {
     q: 'What counts as "hours"?',
-    a: 'Hours refers to the total duration of YouTube videos you process per month. A 30-minute lecture uses 0.5 hours of your monthly allowance.',
+    a: 'Hours refers to the total duration of videos you process per month. A 30-minute lecture uses 0.5 hours of your monthly allowance.',
   },
   {
     q: 'Can I process the same video more than once?',
