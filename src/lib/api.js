@@ -1,18 +1,18 @@
 import axios from 'axios'
 
-const n8n = axios.create({
-  baseURL: import.meta.env.VITE_N8N_BASE_URL,
+const api = axios.create({
+  baseURL: import.meta.env.VITE_API_BASE_URL || 'https://shortmint.addmora.com',
 })
 
-// Attach JWT token to every request
-n8n.interceptors.request.use((config) => {
+// Attach JWT to every request
+api.interceptors.request.use((config) => {
   const token = localStorage.getItem('sm_token')
   if (token) config.headers.Authorization = `Bearer ${token}`
   return config
 })
 
 // Auto-logout on 401
-n8n.interceptors.response.use(
+api.interceptors.response.use(
   (res) => res,
   (err) => {
     if (err.response?.status === 401) {
@@ -23,32 +23,47 @@ n8n.interceptors.response.use(
   }
 )
 
-// Process a video
+// Video
 export const processVideo = (videoUrl, clientId, style) =>
-  n8n.post('/webhook/process-video', {
-    video_url: videoUrl,
-    client_id: clientId,
-    style,
-  })
+  api.post('/api/video/process', { video_url: videoUrl, client_id: clientId, style })
 
-// Check processing status
 export const checkStatus = (videoId) =>
-  n8n.get(`/webhook/check-status?video_id=${videoId}`)
+  api.get(`/api/video/status/${videoId}`)
 
-// Publish a clip to YouTube/Facebook
+export const getHistory = () =>
+  api.get('/api/video/history')
+
+export const getResults = (videoId) =>
+  api.get(`/api/video/results/${videoId}`)
+
+// Upload
+export const uploadVideo = (formData) =>
+  api.post('/api/upload/video', formData, {
+    headers: { 'Content-Type': 'multipart/form-data' }
+  })
+
+// Clips
 export const publishClip = (clipId, clientId, platform) =>
-  n8n.post('/webhook/publish-clip', {
-    clip_id: clipId,
-    client_id: clientId,
-    platform,
-  })
+  api.post('/api/clips/publish', { clip_id: clipId, client_id: clientId, platform })
 
-// Apply custom background to a clip
 export const applyCustomBg = (clipId, clientId, bgImageBase64) =>
-  n8n.post('/webhook/apply-custom-bg', {
-    clip_id: clipId,
-    client_id: clientId,
-    bg_image: bgImageBase64,
-  })
+  api.post('/api/clips/custom-bg', { clip_id: clipId, client_id: clientId, bg_image: bgImageBase64 })
 
-export default n8n
+export const updateClip = (clipId, fields) =>
+  api.patch(`/api/clips/${clipId}`, fields)
+
+export const getBgStatus = (clipId) =>
+  api.get(`/api/clips/${clipId}/bg-status`)
+
+// Stripe
+export const createCheckoutSession = (priceId) =>
+  api.post('/api/stripe/checkout', { price_id: priceId })
+
+// Settings
+export const getYouTubeConnectUrl = () =>
+  api.get('/api/settings/youtube-connect-url')
+
+export const disconnectYouTube = () =>
+  api.post('/api/settings/youtube-disconnect')
+
+export default api

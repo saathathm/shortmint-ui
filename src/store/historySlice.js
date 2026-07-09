@@ -1,17 +1,18 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
-import { supabase } from '../lib/supabase.js'
+import { getHistory } from '../lib/api.js'
 
 export const loadHistory = createAsyncThunk(
   'history/loadHistory',
-  async (clientId, { rejectWithValue }) => {
-    const { data, error } = await supabase
-      .from('videos')
-      .select('*, clips(id, publish_status)')
-      .eq('client_id', clientId)
-      .order('created_at', { ascending: false })
-      .limit(50)
-    if (error) return rejectWithValue('Could not load history.')
-    return data
+  async (_, { rejectWithValue }) => {
+    try {
+      const { data } = await getHistory()
+
+      return data.videos
+    } catch (e) {
+      return rejectWithValue(
+        e.response?.data?.message || 'Could not load history.'
+      )
+    }
   }
 )
 

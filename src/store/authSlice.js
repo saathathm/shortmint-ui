@@ -15,56 +15,77 @@ const fetchClientRow = async (userId) => {
 // Load current session on app start
 export const loadSession = createAsyncThunk('auth/loadSession', async (_, { rejectWithValue }) => {
   try {
-    const { data, error } = await supabase.auth.getSession()
-    if (error) return rejectWithValue(error.message)
-    if (!data.session) return null
+    // First try Supabase session (Google OAuth)
+    const { data } = await supabase.auth.getSession()
+    if (data.session) {
+      localStorage.setItem('sm_token', data.session.access_token)
+      const client = await fetchClientRow(data.session.user.id)
+      return { user: data.session.user, client, session: data.session }
+    }
 
-    const { session } = data
-    localStorage.setItem('sm_token', session.access_token)
+    // Fall back to backend JWT (email/password)
+    const token = localStorage.getItem('sm_token')
+    if (!token) return null
 
-    const client = await fetchClientRow(session.user.id)
-    return { user: session.user, client, session }
+    const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/auth/me`, {
+      headers: { Authorization: `Bearer ${token}` }
+    })
+    console.log(res)
+
+    if (!res.ok) {
+      // localStorage.removeItem('sm_token')
+      return null
+    }
+
+    const data2 = await res.json()
+    return {
+      user: data2.user,
+      client: data2.client,
+      session: { access_token: token }
+    }
   } catch (e) {
     return rejectWithValue(e.message)
   }
 })
 
-// Sign up with email + password
-export const signUp = createAsyncThunk('auth/signUp', async ({ name, email, password }, { rejectWithValue }) => {
-  const { data, error } = await supabase.auth.signUp({
-    email,
-    password,
-    options: { data: { name } },
-  })
-  if (error) return rejectWithValue(error.message)
-  if (!data.user) return rejectWithValue('Sign up failed. Please try again.')
-
-  // Insert clients row - ignore duplicate key errors (Google OAuth may have already created it)
-  const { error: clientError } = await supabase.from('clients').upsert({
-    id: data.user.id,
-    name,
-    email,
-    password_hash: 'managed_by_supabase_auth',
-    plan: 'trial',
-  }, { onConflict: 'id' })
-
-  if (clientError) console.warn('Client upsert warning:', clientError.message)
-
-  if (data.session) {
-    localStorage.setItem('sm_token', data.session.access_token)
+// Sign up with email + password (Backend API)
+export const signUp = createAsyncThunk(
+  'auth/signUp',
+  async ({ name, email, password }, { rejectWithValue }) => {
+    try {
+      const res = await fetch(
+        `${import.meta.env.VITE_API_BASE_URL}/api/auth/signup`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, email, password }),
+        }
+      )
+      const data = await res.json()
+      if (!res.ok) return rejectWithValue(data.error || 'Signup failed')
+      localStorage.setItem('sm_token', data.access_token)
+      return { user: data.user, session: { access_token: data.access_token }, client: data.client }
+    } catch (error) {
+      return rejectWithValue(error.message || 'Something went wrong')
+    }
   }
-
-  return { user: data.user, session: data.session }
-})
+)
 
 // Sign in with email + password
 export const signIn = createAsyncThunk('auth/signIn', async ({ email, password }, { rejectWithValue }) => {
-  const { data, error } = await supabase.auth.signInWithPassword({ email, password })
-  if (error) return rejectWithValue(error.message)
-
-  localStorage.setItem('sm_token', data.session.access_token)
-  const client = await fetchClientRow(data.user.id)
-  return { user: data.user, client, session: data.session }
+  try {
+    const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/auth/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password })
+    })
+    const data = await res.json()
+    if (!res.ok) return rejectWithValue(data.error)
+    localStorage.setItem('sm_token', data.access_token)
+    return { user: data.user, session: { access_token: data.access_token }, client: data.client }
+  } catch (error) {
+    return rejectWithValue(error.message || 'Something went wrong')
+  }
 })
 
 // Sign in with Google
@@ -84,9 +105,16 @@ export const signOut = createAsyncThunk('auth/signOut', async () => {
 
 // Refresh client row (after plan purchase etc.)
 export const refreshClient = createAsyncThunk('auth/refreshClient', async (userId, { rejectWithValue }) => {
-  const client = await fetchClientRow(userId)
-  if (!client) return rejectWithValue('Could not refresh client data.')
-  return client
+  try {
+    const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/auth/refresh-client`, {
+      headers: { Authorization: `Bearer ${localStorage.getItem('sm_token')}` }
+    })
+    const data = await res.json()
+    if (!res.ok) return rejectWithValue(data.error)
+    return data.client
+  } catch (error) {
+    return rejectWithValue(error.message || 'Something went wrong')
+  }
 })
 
 const authSlice = createSlice({

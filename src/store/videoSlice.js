@@ -1,6 +1,5 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
-import { processVideo as apiProcessVideo, checkStatus as apiCheckStatus } from '../lib/api.js'
-import { supabase } from '../lib/supabase.js'
+import { processVideo as apiProcessVideo, checkStatus as apiCheckStatus, getResults } from '../lib/api.js'
 
 // Start processing a video
 export const startProcessing = createAsyncThunk(
@@ -24,26 +23,17 @@ export const pollStatus = createAsyncThunk(
   }
 )
 
-// Load results from Supabase
+// Load results from backend API
 export const loadResults = createAsyncThunk(
   'video/loadResults',
   async (videoId, { rejectWithValue }) => {
-    const { data: video, error: vError } = await supabase
-      .from('videos')
-      .select('*')
-      .eq('id', videoId)
-      .single()
-    if (vError) return rejectWithValue('Video not found.')
+    try {
+      const { data } = await getResults(videoId)
 
-    const { data: clips, error: cError } = await supabase
-      .from('clips')
-      .select('*')
-      .eq('video_id', videoId)
-      .order('batch_id', { ascending: false })
-      .order('clip_number', { ascending: true })
-    if (cError) return rejectWithValue('Could not load clips.')
-
-    return { video, clips }
+      return { video: data.video, clips: data.clips }
+    } catch (e) {
+      return rejectWithValue(e.response?.data?.message || 'Could not load results.')
+    }
   }
 )
 

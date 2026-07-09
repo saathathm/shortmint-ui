@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../hooks/useAuth.js'
 import { PLANS } from '../lib/stripe.js'
+import { createCheckoutSession } from '../lib/api.js'
 import { Check, Loader, Zap } from 'lucide-react'
 
 export default function Pricing() {
@@ -13,24 +14,10 @@ export default function Pricing() {
     if (!isAuthenticated) { navigate('/signup'); return }
     setLoadingPlan(plan.id)
     try {
-      const res = await fetch(`${import.meta.env.VITE_N8N_BASE_URL}/webhook/create-checkout-session`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          price_id: plan.priceId,
-          client_id: client.id,
-          email: client.email,
-        })
-      })
-      console.log(res);
-      const data = await res.json()
-      if (data.checkout_url) {
-        window.location.href = data.checkout_url
-      } else {
-        alert('Could not start checkout. Please try again.')
-      }
+      const { data } = await createCheckoutSession(plan.priceId)
+      window.location.href = data.checkout_url
     } catch (e) {
-      alert(`${e.message} + Could not start checkout. Please try again.`)
+      alert('Could not start checkout. Please try again.')
     } finally {
       setLoadingPlan(null)
     }

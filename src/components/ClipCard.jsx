@@ -2,7 +2,7 @@ import { useState, useRef } from 'react'
 import { useDispatch } from 'react-redux'
 import { Download, Play, Pause, Youtube, Facebook, Upload, AlertTriangle, CheckCircle, Loader } from 'lucide-react'
 import { updateClipField } from '../store/videoSlice.js'
-import { publishClip, applyCustomBg } from '../lib/api.js'
+import { publishClip, applyCustomBg, getBgStatus } from '../lib/api.js'
 import { useAuth } from '../hooks/useAuth.js'
 
 function formatDuration(seconds) {
@@ -94,16 +94,13 @@ export default function ClipCard({ clip, clipIndex }) {
           const { supabase } = await import('../lib/supabase.js')
 
           const pollInterval = setInterval(async () => {
-            const { data } = await supabase
-              .from('clips')
-              .select('preview_url, custom_bg_url')
-              .eq('id', clip.id)
-              .single()
-
+            const { data } = await getBgStatus(clip.id)
             if (data?.custom_bg_url) {
               clearInterval(pollInterval)
               setApplyingBg(false)
               setBgApplied(true)
+              setSuccessMsg(true)
+              setTimeout(() => setSuccessMsg(false), 5000)
               if (videoRef.current) {
                 videoRef.current.src = data.preview_url
                 videoRef.current.load()

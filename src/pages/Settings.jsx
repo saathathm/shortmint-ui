@@ -4,6 +4,7 @@ import { useDispatch } from 'react-redux'
 import { useAuth } from '../hooks/useAuth.js'
 import { refreshClient } from '../store/authSlice.js'
 import { supabase } from '../lib/supabase.js'
+import { getYouTubeConnectUrl, disconnectYouTube } from '../lib/api.js'
 import { Youtube, Facebook, CheckCircle, ExternalLink, User, Lock, Loader } from 'lucide-react'
 
 export default function Settings() {
@@ -36,25 +37,13 @@ export default function Settings() {
     setPwSent(true)
   }
 
-  const handleConnectYoutube = () => {
-    const clientId = '730774379704-ksghti4dc4in6alsq6cnsuhp7r79lfos.apps.googleusercontent.com'
-    const redirectUri = 'https://n8n.addmora.com/webhook/youtube-callback'
-    const scope = [
-      'https://www.googleapis.com/auth/youtube.upload',
-      'https://www.googleapis.com/auth/youtube'
-    ].join(' ')
-
-    const params = new URLSearchParams({
-      client_id: clientId,
-      redirect_uri: redirectUri,
-      response_type: 'code',
-      scope: scope,
-      access_type: 'offline',
-      prompt: 'consent',
-      state: client.id  // passes client_id through OAuth flow
-    })
-
-    window.location.href = `https://accounts.google.com/o/oauth2/v2/auth?${params.toString()}`
+  const handleConnectYoutube = async () => {
+    try {
+      const { data } = await getYouTubeConnectUrl()
+      window.location.href = data.auth_url
+    } catch {
+      alert('Could not connect YouTube. Please try again.')
+    }
   }
 
   const handleConnectFacebook = () => {
