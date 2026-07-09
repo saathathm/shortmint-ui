@@ -33,7 +33,7 @@ export const loadSession = createAsyncThunk('auth/loadSession', async (_, { reje
     console.log(res)
 
     if (!res.ok) {
-      // localStorage.removeItem('sm_token')
+      localStorage.removeItem('sm_token')
       return null
     }
 
