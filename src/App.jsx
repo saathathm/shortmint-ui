@@ -26,39 +26,43 @@ export default function App() {
 
     // Listen for auth state changes (handles Google OAuth redirect, token refresh etc.)
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      if (session) {
-        dispatch(setSession({ user: session.user, session }))
-        localStorage.setItem('sm_token', session.access_token)
+      if (!session) return
 
-        // Fetch client row on sign in / token refresh
-        if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED' || event === 'USER_UPDATED') {
-          const { data: client } = await supabase
+      const isGoogleUser = session.user.app_metadata?.provider === 'google' ||
+        session.user.app_metadata?.providers?.includes('google')
+
+      // Only handle Google OAuth — email/password is handled by backend directly
+      if (!isGoogleUser) return
+
+      dispatch(setSession({ user: session.user, session }))
+      localStorage.setItem('sm_token', session.access_token)
+
+      if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED' || event === 'USER_UPDATED') {
+        const { data: client } = await supabase
+          .from('clients')
+          .select('*')
+          .eq('id', session.user.id)
+          .single()
+
+        if (client) {
+          dispatch(setClient(client))
+        } else if (event === 'SIGNED_IN') {
+          const name = session.user.user_metadata?.full_name || session.user.email
+          await supabase.from('clients').upsert({
+            id: session.user.id,
+            name,
+            email: session.user.email,
+            password_hash: 'managed_by_supabase_auth',
+            plan: 'trial',
+          }, { onConflict: 'id' })
+
+          const { data: newClient } = await supabase
             .from('clients')
             .select('*')
             .eq('id', session.user.id)
             .single()
 
-          if (client) {
-            dispatch(setClient(client))
-          } else if (event === 'SIGNED_IN') {
-            // New Google OAuth user - create client row
-            const name = session.user.user_metadata?.full_name || session.user.email
-            await supabase.from('clients').upsert({
-              id: session.user.id,
-              name,
-              email: session.user.email,
-              password_hash: 'managed_by_supabase_auth',
-              plan: 'trial',
-            }, { onConflict: 'id' })
-
-            const { data: newClient } = await supabase
-              .from('clients')
-              .select('*')
-              .eq('id', session.user.id)
-              .single()
-
-            if (newClient) dispatch(setClient(newClient))
-          }
+          if (newClient) dispatch(setClient(newClient))
         }
       }
     })

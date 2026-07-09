@@ -30,7 +30,6 @@ export const loadSession = createAsyncThunk('auth/loadSession', async (_, { reje
     const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/auth/me`, {
       headers: { Authorization: `Bearer ${token}` }
     })
-    console.log(res)
 
     if (!res.ok) {
       localStorage.removeItem('sm_token')
