@@ -44,6 +44,8 @@ function RangeSlider({ duration, start, end, onChange }) {
   const trackRef = useRef(null)
   const dragging = useRef(null)
 
+  const MIN_GAP = Math.min(120, duration)
+
   const getPercent = (val) => (val / duration) * 100
 
   const handleMouseDown = (handle) => (e) => {
@@ -59,11 +61,11 @@ function RangeSlider({ duration, start, end, onChange }) {
     const pct = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width))
     const val = Math.round(pct * duration)
     if (dragging.current === 'start') {
-      onChange(Math.min(val, end - 120), end)
+      onChange(Math.min(val, end - MIN_GAP), end)
     } else {
-      onChange(start, Math.max(val, start + 120))
+      onChange(start, Math.max(val, start + MIN_GAP))
     }
-  }, [start, end, duration, onChange])
+  }, [start, end, duration, onChange, MIN_GAP])
 
   const handleMouseUp = useCallback(() => {
     dragging.current = null
@@ -78,8 +80,8 @@ function RangeSlider({ duration, start, end, onChange }) {
     const rect = trackRef.current.getBoundingClientRect()
     const pct = Math.max(0, Math.min(1, (touch.clientX - rect.left) / rect.width))
     const val = Math.round(pct * duration)
-    if (handle === 'start') onChange(Math.min(val, end - 120), end)
-    else onChange(start, Math.max(val, start + 120))
+    if (handle === 'start') onChange(Math.min(val, end - MIN_GAP), end)
+    else onChange(start, Math.max(val, start + MIN_GAP))
   }
 
   return (
