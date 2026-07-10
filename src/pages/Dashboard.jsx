@@ -207,7 +207,8 @@ export default function Dashboard() {
       clientId: client.id,
       style,
       startSeconds: rangeStart,
-      endSeconds: rangeEnd
+      endSeconds: rangeEnd,
+      videoInfo: videoInfo
     }))
 
     setSubmitting(false)
@@ -316,8 +317,8 @@ export default function Dashboard() {
 
             {/* Usage estimate */}
             <div className={`rounded-xl p-3 text-sm ${!hasEnoughHours ? 'bg-red-50 border border-red-100' :
-                rangeStatus === 'warning' ? 'bg-amber-50 border border-amber-100' :
-                  'bg-green-50 border border-green-100'
+              rangeStatus === 'warning' ? 'bg-amber-50 border border-amber-100' :
+                'bg-green-50 border border-green-100'
               }`}>
               {!hasEnoughHours ? (
                 <div>

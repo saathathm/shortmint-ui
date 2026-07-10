@@ -4,9 +4,9 @@ import { processVideo as apiProcessVideo, checkStatus as apiCheckStatus, getResu
 // Start processing a video
 export const startProcessing = createAsyncThunk(
   'video/startProcessing',
-  async ({ videoUrl, clientId, style, startSeconds, endSeconds }, { rejectWithValue }) => {
+  async ({ videoUrl, clientId, style, startSeconds, endSeconds, videoInfo }, { rejectWithValue }) => {
     try {
-      const { data } = await apiProcessVideo(videoUrl, clientId, style, startSeconds, endSeconds)
+      const { data } = await apiProcessVideo(videoUrl, clientId, style, startSeconds, endSeconds, videoInfo)
       return data
     } catch (e) {
       return rejectWithValue(e.response?.data?.error || 'Failed to start processing.')
