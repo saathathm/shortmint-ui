@@ -24,8 +24,17 @@ api.interceptors.response.use(
 )
 
 // Video
-export const processVideo = (videoUrl, clientId, style) =>
-  api.post('/api/video/process', { video_url: videoUrl, client_id: clientId, style })
+export const getVideoInfo = (url) =>
+  api.get(`/api/video/info?url=${encodeURIComponent(url)}`)
+
+export const processVideo = (videoUrl, clientId, style, startSeconds, endSeconds) =>
+  api.post('/api/video/process', {
+    video_url: videoUrl,
+    client_id: clientId,
+    style,
+    start_seconds: startSeconds,
+    end_seconds: endSeconds
+  })
 
 export const checkStatus = (videoId) =>
   api.get(`/api/video/status/${videoId}`)
