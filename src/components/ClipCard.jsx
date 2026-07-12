@@ -24,6 +24,7 @@ export default function ClipCard({ clip, clipIndex }) {
   const [applyingBg, setApplyingBg] = useState(false)
   const [bgApplied, setBgApplied] = useState(false)
   const [showLandscapeWarning, setShowLandscapeWarning] = useState(false)
+  const [successMsg, setSuccessMsg] = useState(false)
   const fileInputRef = useRef(null)
 
   const togglePlay = () => {
@@ -91,8 +92,6 @@ export default function ClipCard({ clip, clipIndex }) {
           await applyCustomBg(clip.id, client.id, base64)
 
           // Poll Supabase every 5 seconds for custom_bg_url to be set
-          const { supabase } = await import('../lib/supabase.js')
-
           const pollInterval = setInterval(async () => {
             const { data } = await getBgStatus(clip.id)
             if (data?.custom_bg_url) {
@@ -232,6 +231,12 @@ export default function ClipCard({ clip, clipIndex }) {
                 Download as-is
               </button>
             </div>
+          </div>
+        )}
+        {successMsg && (
+          <div className="bg-green-50 border border-green-200 rounded-xl p-3 flex items-center gap-2 text-success text-sm font-semibold">
+            <CheckCircle size={16} />
+            Background applied successfully! Your clip is ready to publish.
           </div>
         )}
 
