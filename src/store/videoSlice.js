@@ -18,10 +18,12 @@ export const startProcessing = createAsyncThunk(
 export const pollStatus = createAsyncThunk(
   'video/pollStatus',
   async (videoId, { rejectWithValue }) => {
-    const { data } = await apiCheckStatus(videoId).catch((e) =>
-      rejectWithValue(e.response?.data?.message || 'Failed to check status.')
-    )
-    return data
+    try {
+      const { data } = await apiCheckStatus(videoId)
+      return data
+    } catch (e) {
+      return rejectWithValue(e.response?.data?.message || 'Failed to check status.')
+    }
   }
 )
 
