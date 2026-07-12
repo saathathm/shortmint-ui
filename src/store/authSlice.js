@@ -27,34 +27,20 @@ export const loadSession = createAsyncThunk('auth/loadSession', async (_, { reje
     const token = localStorage.getItem('sm_token')
     if (!token) return null
 
-    // Fetch with 8 second timeout
-    const controller = new AbortController()
-    const timeoutId = setTimeout(() => controller.abort(), 8000)
+    const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/auth/me`, {
+      headers: { Authorization: `Bearer ${token}` }
+    })
 
-    try {
-      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/auth/me`, {
-        headers: { Authorization: `Bearer ${token}` },
-        signal: controller.signal
-      })
-      clearTimeout(timeoutId)
-
-      if (!res.ok) {
-        localStorage.removeItem('sm_token')
-        return null
-      }
-
-      const data2 = await res.json()
-      return {
-        user: data2.user,
-        client: data2.client,
-        session: { access_token: token }
-      }
-    } catch (e) {
-      clearTimeout(timeoutId)
-      // AbortError means timeout — don't remove token, just return null
-      if (e.name === 'AbortError') return null
+    if (!res.ok) {
       localStorage.removeItem('sm_token')
       return null
+    }
+
+    const data2 = await res.json()
+    return {
+      user: data2.user,
+      client: data2.client,
+      session: { access_token: token }
     }
   } catch (e) {
     return rejectWithValue(e.message)
@@ -117,7 +103,7 @@ export const signOut = createAsyncThunk('auth/signOut', async () => {
 })
 
 // Refresh client row (after plan purchase etc.)
-export const refreshClient = createAsyncThunk('auth/refreshClient', async (_, { rejectWithValue }) => {
+export const refreshClient = createAsyncThunk('auth/refreshClient', async (userId, { rejectWithValue }) => {
   try {
     const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/auth/refresh-client`, {
       headers: { Authorization: `Bearer ${localStorage.getItem('sm_token')}` }
@@ -142,6 +128,7 @@ const authSlice = createSlice({
   },
   reducers: {
     clearError: (state) => { state.error = null },
+    // Called by onAuthStateChange listener in App.jsx
     setSession: (state, action) => {
       state.user = action.payload.user
       state.session = action.payload.session
@@ -155,9 +142,7 @@ const authSlice = createSlice({
   },
   extraReducers: (builder) => {
     // loadSession
-    builder.addCase(loadSession.pending, (state) => {
-      state.loading = true
-    })
+    builder.addCase(loadSession.pending, (state) => { state.loading = true })
     builder.addCase(loadSession.fulfilled, (state, action) => {
       state.loading = false
       state.initialized = true
@@ -170,19 +155,15 @@ const authSlice = createSlice({
     builder.addCase(loadSession.rejected, (state) => {
       state.loading = false
       state.initialized = true
+      // Don't clear user here - network error shouldn't log user out
     })
 
     // signUp
-    builder.addCase(signUp.pending, (state) => {
-      state.loading = true
-      state.error = null
-    })
+    builder.addCase(signUp.pending, (state) => { state.loading = true; state.error = null })
     builder.addCase(signUp.fulfilled, (state, action) => {
       state.loading = false
-      state.initialized = true
       state.user = action.payload.user
       state.session = action.payload.session
-      state.client = action.payload.client
     })
     builder.addCase(signUp.rejected, (state, action) => {
       state.loading = false
@@ -190,13 +171,9 @@ const authSlice = createSlice({
     })
 
     // signIn
-    builder.addCase(signIn.pending, (state) => {
-      state.loading = true
-      state.error = null
-    })
+    builder.addCase(signIn.pending, (state) => { state.loading = true; state.error = null })
     builder.addCase(signIn.fulfilled, (state, action) => {
       state.loading = false
-      state.initialized = true
       state.user = action.payload.user
       state.client = action.payload.client
       state.session = action.payload.session
