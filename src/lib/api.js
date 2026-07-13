@@ -58,6 +58,9 @@ export const uploadVideo = (formData) =>
     headers: { 'Content-Type': 'multipart/form-data' }
   })
 
+export const deleteUpload = (uploadId) =>
+  api.delete(`/api/upload/${uploadId}`)
+
 // Clips
 export const publishClip = (clipId, clientId, platform) =>
   api.post('/api/clips/publish', { clip_id: clipId, client_id: clientId, platform })
