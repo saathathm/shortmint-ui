@@ -9,7 +9,7 @@ import {
   Scissors,
   Sparkles,
   User,
-  Info,
+  Zap,
 } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
 
@@ -30,11 +30,16 @@ export default function Layout({ children }) {
   const isActive = (path) => location.pathname === path;
 
   const navLinks = [
-    { to: "/dashboard", label: "Create Shorts", icon: Sparkles, primary: true },
+    { to: "/dashboard", label: "Create", icon: Sparkles, primary: true },
     { to: "/history", label: "History", icon: Clock },
   ];
 
-  // Close dropdown on outside click
+  const hoursUsed = parseFloat(client?.usage_hours_used || 0);
+  const hoursLimit = parseFloat(client?.usage_hours_limit || 1);
+  const usagePct = Math.min((hoursUsed / hoursLimit) * 100, 100);
+  const usageColor =
+    usagePct > 80 ? "bg-error" : usagePct > 60 ? "bg-amber-400" : "bg-primary";
+
   useEffect(() => {
     function handleClickOutside(e) {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
@@ -58,7 +63,6 @@ export default function Layout({ children }) {
             <div className="w-9 h-9 bg-primary rounded-xl flex items-center justify-center shadow-sm">
               <Scissors size={16} className="text-white" />
             </div>
-
             <div className="leading-tight">
               <div className="font-bold text-text-primary text-base tracking-tight">
                 ShortMint
@@ -92,16 +96,43 @@ export default function Layout({ children }) {
                     <span>{label}</span>
                   </Link>
                 ))}
+
+                {/* Upgrade button — desktop, non-pro only */}
+                {client?.plan !== "pro" && (
+                  <Link
+                    to="/pricing"
+                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
+                      isActive("/pricing")
+                        ? "bg-amber-50 text-amber-600"
+                        : "text-amber-600 hover:bg-amber-50"
+                    }`}
+                  >
+                    <Zap size={14} />
+                    <span>Upgrade</span>
+                  </Link>
+                )}
               </div>
 
               {/* MOBILE CREATE BUTTON */}
-              <Link
-                to="/dashboard"
-                className=" sm:hidden flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-primary text-white text-sm font-semibold shadow-sm transition-all hover:bg-primary/90 active:scale-95"
-              >
-                <Sparkles size={15} />
-                Create
-              </Link>
+              {/* MOBILE NAV */}
+              <div className="sm:hidden flex items-center gap-2">
+                {/* Create */}
+                <Link
+                  to="/dashboard"
+                  className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-primary text-white text-sm font-semibold shadow-sm transition-all active:scale-95"
+                >
+                  <Sparkles size={15} />
+                  Create
+                </Link>
+
+                {/* History */}
+                <Link
+                  to="/history"
+                  className="w-9 h-9 rounded-xl flex items-center justify-center text-text-muted hover:bg-bg-surface hover:text-text-primary transition"
+                >
+                  <Clock size={17} />
+                </Link>
+              </div>
 
               {/* USER DROPDOWN */}
               <div className="relative" ref={dropdownRef}>
@@ -109,7 +140,7 @@ export default function Layout({ children }) {
                 <button
                   onClick={() => setOpen(!open)}
                   aria-label="Open account menu"
-                  className="w-9 h-9 rounded-full bg-bg-secondary flex items-center justify-center text-text-primary hover:bg-bg-surface hover:ring-2 hover:ring-primary/20 transition-all"
+                  className="w-9 h-9 rounded-full bg-primary/10 text-primary flex items-center justify-center font-semibold hover:ring-2 hover:ring-primary/20 transition-all"
                 >
                   {client?.name ? (
                     <span className="text-sm font-semibold">
@@ -122,7 +153,7 @@ export default function Layout({ children }) {
 
                 {/* DROPDOWN */}
                 {open && (
-                  <div className="absolute right-0 mt-2 w-52 bg-white border border-border rounded-xl shadow-xl py-2 animate-in fade-in zoom-in-95">
+                  <div className="absolute right-0 mt-2 w-56 bg-white border border-border rounded-xl shadow-xl py-2 animate-in fade-in zoom-in-95">
                     {/* USER INFO */}
                     <div className="px-3 py-3 border-b border-border">
                       <p className="text-sm font-semibold text-text-primary">
@@ -131,17 +162,33 @@ export default function Layout({ children }) {
                       <p className="text-xs text-text-muted truncate">
                         {client?.email}
                       </p>
+                      <div className="mt-2 flex items-center gap-2">
+                        <div className="flex-1 h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                          <div
+                            className={`h-full rounded-full transition-all ${usageColor}`}
+                            style={{ width: `${usagePct}%` }}
+                          />
+                        </div>
+                        <span className="text-xs text-text-dim whitespace-nowrap">
+                          {hoursUsed.toFixed(1)}/{hoursLimit}h
+                        </span>
+                      </div>
                     </div>
 
-                    {/* MOBILE ONLY: HISTORY */}
-                    <Link
-                      to="/history"
-                      onClick={() => setOpen(false)}
-                      className="sm:hidden flex items-center gap-2 px-3 py-2 text-sm text-text-muted hover:bg-bg-surface hover:text-text-primary transition"
-                    >
-                      <Clock size={14} />
-                      History
-                    </Link>
+                    {/* UPGRADE — non-pro only */}
+                    {client?.plan !== "pro" && (
+                      <Link
+                        to="/pricing"
+                        onClick={() => setOpen(false)}
+                        className="flex items-center gap-2 px-3 py-2 text-sm text-amber-600 hover:bg-amber-50 transition font-medium"
+                      >
+                        <Zap size={14} />
+                        Upgrade plan
+                        <span className="ml-auto text-xs bg-amber-100 text-amber-600 px-1.5 py-0.5 rounded-md capitalize">
+                          {client?.plan || "trial"}
+                        </span>
+                      </Link>
+                    )}
 
                     {/* SETTINGS */}
                     <button
@@ -182,51 +229,6 @@ export default function Layout({ children }) {
           )}
         </div>
       </header>
-
-      {/* USAGE BAR */}
-      {isAuthenticated &&
-        client &&
-        client.usage_hours_limit > 0 &&
-        location.pathname !== "/dashboard" && (
-          <div className="bg-bg-surface border-b border-border">
-            <div className="max-w-5xl mx-auto px-4 py-2 flex items-center justify-between">
-              <div className="flex items-center gap-1.5">
-                <span className="text-xs text-text-muted">
-                  {parseFloat(client.usage_hours_used).toFixed(1)} /{" "}
-                  {client.usage_hours_limit} hrs created
-                </span>
-
-                <div className="relative group">
-                  <Info size={13} className="text-text-dim cursor-help" />
-
-                  {/* Tooltip */}
-                  <div className=" absolute left-1/2 -translate-x-1/2 top-full mt-2 w-64 hidden group-hover:block bg-gray-900 text-white text-xs leading-relaxed rounded-lg px-3 py-2 shadow-lg z-[100]">
-                    Your monthly allowance is based on video length. Longer
-                    videos use more processing time.
-                  </div>
-                </div>
-              </div>
-
-              <div className="flex items-center gap-2">
-                <div className="w-32 h-1.5 bg-gray-200 rounded-full overflow-hidden">
-                  <div
-                    className="h-full bg-primary rounded-full transition-all"
-                    style={{
-                      width: `${Math.min(
-                        (client.usage_hours_used / client.usage_hours_limit) *
-                          100,
-                        100,
-                      )}%`,
-                    }}
-                  />
-                </div>
-                <span className="text-xs font-medium text-text-dim capitalize">
-                  {client.plan}
-                </span>
-              </div>
-            </div>
-          </div>
-        )}
 
       {/* MAIN CONTENT */}
       <main className="max-w-5xl mx-auto px-4 py-8">{children}</main>
