@@ -13,7 +13,7 @@ export default function UsageBar() {
   const getStatusMessage = () => {
     if (isExhausted) return "You've used all your hours this month. Upgrade to keep creating Shorts."
     if (isNearLimit) return `Only ${remaining.toFixed(1)} hrs left — consider upgrading before you run out.`
-    return `Each video you process uses time from your monthly allowance based on its length.`
+    return `Your monthly allowance is based on video length. Longer videos use more processing time.`
   }
 
   return (
