@@ -161,6 +161,20 @@ export const refreshClient = createAsyncThunk(
   },
 );
 
+export const refreshEmailToken = createAsyncThunk(
+  "auth/refreshEmailToken",
+  async (_, { rejectWithValue }) => {
+    try {
+      const { data, error } = await supabase.auth.refreshSession();
+      if (error || !data.session) return rejectWithValue("Could not refresh");
+      localStorage.setItem("sm_token", data.session.access_token);
+      return { session: data.session };
+    } catch (e) {
+      return rejectWithValue(e.message);
+    }
+  },
+);
+
 const authSlice = createSlice({
   name: "auth",
   initialState: {
@@ -252,6 +266,10 @@ const authSlice = createSlice({
     // refreshClient
     builder.addCase(refreshClient.fulfilled, (state, action) => {
       state.client = action.payload;
+    });
+
+    builder.addCase(refreshEmailToken.fulfilled, (state, action) => {
+      state.session = action.payload.session;
     });
   },
 });
