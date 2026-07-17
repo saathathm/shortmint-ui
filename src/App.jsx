@@ -1,208 +1,90 @@
-import { useEffect } from "react";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import { useDispatch } from "react-redux";
-import { loadSession, setSession, setClient, refreshEmailToken } from "./store/authSlice.js";
-import { supabase } from "./lib/supabase.js";
-import ProtectedRoute from "./components/ProtectedRoute.jsx";
-import Layout from "./components/Layout.jsx";
+import { useEffect } from 'react'
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+import { useDispatch } from 'react-redux'
+import { loadSession, setSession, setClient } from './store/authSlice.js'
+import { supabase } from './lib/supabase.js'
+import ProtectedRoute from './components/ProtectedRoute.jsx'
+import Layout from './components/Layout.jsx'
 
-import Landing from "./pages/Landing.jsx";
-import Login from "./pages/Login.jsx";
-import Signup from "./pages/Signup.jsx";
-import Dashboard from "./pages/Dashboard.jsx";
-import Processing from "./pages/Processing.jsx";
-import Results from "./pages/Results.jsx";
-import History from "./pages/History.jsx";
-import Settings from "./pages/Settings.jsx";
-import Pricing from "./pages/Pricing.jsx";
-import Privacy from "./pages/Privacy.jsx";
+import Landing from './pages/Landing.jsx'
+import Login from './pages/Login.jsx'
+import Signup from './pages/Signup.jsx'
+import Dashboard from './pages/Dashboard.jsx'
+import Processing from './pages/Processing.jsx'
+import Results from './pages/Results.jsx'
+import History from './pages/History.jsx'
+import Settings from './pages/Settings.jsx'
+import Pricing from './pages/Pricing.jsx'
+import Privacy from './pages/Privacy.jsx'
 
 export default function App() {
-  const dispatch = useDispatch();
+  const dispatch = useDispatch()
 
   useEffect(() => {
     // Load session on app start
-    dispatch(loadSession());
+    dispatch(loadSession())
 
     // Listen for auth state changes (handles Google OAuth redirect, token refresh etc.)
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange(async (event, session) => {
-      if (!session) return;
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      if (!session) return
 
-      const isGoogleUser =
-        session.user.app_metadata?.provider === "google" ||
-        session.user.app_metadata?.providers?.includes("google");
+      const isGoogleUser = session.user.app_metadata?.provider === 'google' ||
+        session.user.app_metadata?.providers?.includes('google')
 
       // Only handle Google OAuth — email/password is handled by backend directly
-      if (!isGoogleUser) return;
+      if (!isGoogleUser) return
 
-      dispatch(setSession({ user: session.user, session }));
-      localStorage.setItem("sm_token", session.access_token);
+      dispatch(setSession({ user: session.user, session }))
+      localStorage.setItem('sm_token', session.access_token)
 
-      if (
-        event === "SIGNED_IN" ||
-        event === "TOKEN_REFRESHED" ||
-        event === "USER_UPDATED"
-      ) {
+      if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED' || event === 'USER_UPDATED') {
         const { data: client } = await supabase
-          .from("clients")
-          .select("*")
-          .eq("id", session.user.id)
-          .single();
+          .from('clients')
+          .select('*')
+          .eq('id', session.user.id)
+          .single()
 
         if (client) {
-          dispatch(setClient(client));
-        } else if (event === "SIGNED_IN") {
-          const name =
-            session.user.user_metadata?.full_name || session.user.email;
-          await supabase.from("clients").upsert(
-            {
-              id: session.user.id,
-              name,
-              email: session.user.email,
-              password_hash: "managed_by_supabase_auth",
-              plan: "trial",
-            },
-            { onConflict: "id" },
-          );
+          dispatch(setClient(client))
+        } else if (event === 'SIGNED_IN') {
+          const name = session.user.user_metadata?.full_name || session.user.email
+          await supabase.from('clients').upsert({
+            id: session.user.id,
+            name,
+            email: session.user.email,
+            password_hash: 'managed_by_supabase_auth',
+            plan: 'trial',
+          }, { onConflict: 'id' })
 
           const { data: newClient } = await supabase
-            .from("clients")
-            .select("*")
-            .eq("id", session.user.id)
-            .single();
+            .from('clients')
+            .select('*')
+            .eq('id', session.user.id)
+            .single()
 
-          if (newClient) dispatch(setClient(newClient));
+          if (newClient) dispatch(setClient(newClient))
         }
       }
-    });
+    })
 
-    return () => subscription.unsubscribe();
-  }, [dispatch]);
-
-  useEffect(() => {
-    const interval = setInterval(
-      async () => {
-        const token = localStorage.getItem("sm_token");
-        if (!token) return;
-
-        try {
-          const payload = JSON.parse(atob(token.split(".")[1]));
-          const expiresAt = payload.exp * 1000;
-          const timeLeft = expiresAt - Date.now();
-
-          // Refresh if less than 15 minutes remaining
-          if (timeLeft < 15 * 60 * 1000) {
-            dispatch(refreshEmailToken());
-          }
-        } catch (e) {
-          // Malformed token — ignore
-        }
-      },
-      5 * 60 * 1000,
-    ); // Check every 5 minutes
-
-    return () => clearInterval(interval);
-  }, [dispatch]);
+    return () => subscription.unsubscribe()
+  }, [dispatch])
 
   return (
-    <BrowserRouter
-      future={{ v7_startTransition: true, v7_relativeSplatPath: true }}
-    >
+    <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
       <Routes>
-        <Route
-          path="/"
-          element={
-            <Layout>
-              <Landing />
-            </Layout>
-          }
-        />
-        <Route
-          path="/login"
-          element={
-            <Layout>
-              <Login />
-            </Layout>
-          }
-        />
-        <Route
-          path="/signup"
-          element={
-            <Layout>
-              <Signup />
-            </Layout>
-          }
-        />
-        <Route
-          path="/pricing"
-          element={
-            <Layout>
-              <Pricing />
-            </Layout>
-          }
-        />
-        <Route
-          path="/dashboard"
-          element={
-            <ProtectedRoute>
-              <Layout>
-                <Dashboard />
-              </Layout>
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/processing/:videoId"
-          element={
-            <ProtectedRoute>
-              <Layout>
-                <Processing />
-              </Layout>
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/results/:videoId"
-          element={
-            <ProtectedRoute>
-              <Layout>
-                <Results />
-              </Layout>
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/history"
-          element={
-            <ProtectedRoute>
-              <Layout>
-                <History />
-              </Layout>
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/privacy"
-          element={
-            <Layout>
-              <Privacy />
-            </Layout>
-          }
-        />
-        <Route
-          path="/settings"
-          element={
-            <ProtectedRoute>
-              <Layout>
-                <Settings />
-              </Layout>
-            </ProtectedRoute>
-          }
-        />
+        <Route path="/" element={<Layout><Landing /></Layout>} />
+        <Route path="/login" element={<Layout><Login /></Layout>} />
+        <Route path="/signup" element={<Layout><Signup /></Layout>} />
+        <Route path="/pricing" element={<Layout><Pricing /></Layout>} />
+        <Route path="/dashboard" element={<ProtectedRoute><Layout><Dashboard /></Layout></ProtectedRoute>} />
+        <Route path="/processing/:videoId" element={<ProtectedRoute><Layout><Processing /></Layout></ProtectedRoute>} />
+        <Route path="/results/:videoId" element={<ProtectedRoute><Layout><Results /></Layout></ProtectedRoute>} />
+        <Route path="/history" element={<ProtectedRoute><Layout><History /></Layout></ProtectedRoute>} />
+        <Route path="/privacy" element={<Layout><Privacy /></Layout>} />
+        <Route path="/settings" element={<ProtectedRoute><Layout><Settings /></Layout></ProtectedRoute>} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </BrowserRouter>
-  );
+  )
 }

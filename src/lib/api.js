@@ -13,20 +13,37 @@ api.interceptors.request.use((config) => {
 });
 
 // Auto-logout on 401
+import { supabase } from "./supabase.js";
+
+// ...existing code...
+
 api.interceptors.response.use(
   (res) => res,
   async (err) => {
     if (err.response?.status === 401 && !err.config._retry) {
       err.config._retry = true;
       try {
-        const { data } = await supabase.auth.refreshSession();
-        if (data?.session) {
-          localStorage.setItem("sm_token", data.session.access_token);
-          err.config.headers.Authorization = `Bearer ${data.session.access_token}`;
-          return api.request(err.config);
+        const token = localStorage.getItem("sm_token");
+        const refreshToken = localStorage.getItem("sm_refresh_token");
+
+        if (token && refreshToken) {
+          const { data, error } = await supabase.auth.setSession({
+            access_token: token,
+            refresh_token: refreshToken,
+          });
+          if (!error && data?.session) {
+            localStorage.setItem("sm_token", data.session.access_token);
+            localStorage.setItem(
+              "sm_refresh_token",
+              data.session.refresh_token,
+            );
+            err.config.headers.Authorization = `Bearer ${data.session.access_token}`;
+            return api.request(err.config);
+          }
         }
       } catch (e) {}
       localStorage.removeItem("sm_token");
+      localStorage.removeItem("sm_refresh_token");
       window.location.href = "/login";
     }
     return Promise.reject(err);

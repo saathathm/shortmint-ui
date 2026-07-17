@@ -1,7 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { supabase } from "../lib/supabase.js";
 
-// Fetch client row from Supabase clients table
 const fetchClientRow = async (userId) => {
   const { data, error } = await supabase
     .from("clients")
@@ -12,7 +11,6 @@ const fetchClientRow = async (userId) => {
   return data;
 };
 
-// Load current session on app start
 export const loadSession = createAsyncThunk(
   "auth/loadSession",
   async (_, { rejectWithValue }) => {
@@ -25,11 +23,36 @@ export const loadSession = createAsyncThunk(
         return { user: data.session.user, client, session: data.session };
       }
 
-      // Fall back to backend JWT (email/password)
+      // Fall back to email/password — try to restore session using refresh token
       const token = localStorage.getItem("sm_token");
+      const refreshToken = localStorage.getItem("sm_refresh_token");
+
       if (!token) return null;
 
-      // Fetch with 8 second timeout
+      // Try to restore Supabase session using stored tokens
+      if (refreshToken) {
+        try {
+          const { data: refreshData, error } = await supabase.auth.setSession({
+            access_token: token,
+            refresh_token: refreshToken
+          })
+          if (!error && refreshData?.session) {
+            // Session restored — update tokens
+            localStorage.setItem("sm_token", refreshData.session.access_token)
+            localStorage.setItem("sm_refresh_token", refreshData.session.refresh_token)
+            const client = await fetchClientRow(refreshData.session.user.id)
+            return {
+              user: refreshData.session.user,
+              client,
+              session: refreshData.session
+            }
+          }
+        } catch (e) {
+          // setSession failed — fall through to /api/auth/me
+        }
+      }
+
+      // Final fallback — validate token against backend
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 8000);
 
@@ -45,6 +68,7 @@ export const loadSession = createAsyncThunk(
 
         if (!res.ok) {
           localStorage.removeItem("sm_token");
+          localStorage.removeItem("sm_refresh_token");
           return null;
         }
 
@@ -56,9 +80,9 @@ export const loadSession = createAsyncThunk(
         };
       } catch (e) {
         clearTimeout(timeoutId);
-        // AbortError means timeout — don't remove token, just return null
         if (e.name === "AbortError") return null;
         localStorage.removeItem("sm_token");
+        localStorage.removeItem("sm_refresh_token");
         return null;
       }
     } catch (e) {
@@ -67,7 +91,6 @@ export const loadSession = createAsyncThunk(
   },
 );
 
-// Sign up with email + password (Backend API)
 export const signUp = createAsyncThunk(
   "auth/signUp",
   async ({ name, email, password }, { rejectWithValue }) => {
@@ -83,9 +106,10 @@ export const signUp = createAsyncThunk(
       const data = await res.json();
       if (!res.ok) return rejectWithValue(data.error || "Signup failed");
       localStorage.setItem("sm_token", data.access_token);
+      localStorage.setItem("sm_refresh_token", data.refresh_token);
       return {
         user: data.user,
-        session: { access_token: data.access_token },
+        session: { access_token: data.access_token, refresh_token: data.refresh_token },
         client: data.client,
       };
     } catch (error) {
@@ -94,7 +118,6 @@ export const signUp = createAsyncThunk(
   },
 );
 
-// Sign in with email + password
 export const signIn = createAsyncThunk(
   "auth/signIn",
   async ({ email, password }, { rejectWithValue }) => {
@@ -110,9 +133,10 @@ export const signIn = createAsyncThunk(
       const data = await res.json();
       if (!res.ok) return rejectWithValue(data.error);
       localStorage.setItem("sm_token", data.access_token);
+      localStorage.setItem("sm_refresh_token", data.refresh_token);
       return {
         user: data.user,
-        session: { access_token: data.access_token },
+        session: { access_token: data.access_token, refresh_token: data.refresh_token },
         client: data.client,
       };
     } catch (error) {
@@ -121,7 +145,6 @@ export const signIn = createAsyncThunk(
   },
 );
 
-// Sign in with Google
 export const signInWithGoogle = createAsyncThunk(
   "auth/signInWithGoogle",
   async (_, { rejectWithValue }) => {
@@ -133,13 +156,12 @@ export const signInWithGoogle = createAsyncThunk(
   },
 );
 
-// Sign out
 export const signOut = createAsyncThunk("auth/signOut", async () => {
   await supabase.auth.signOut();
   localStorage.removeItem("sm_token");
+  localStorage.removeItem("sm_refresh_token");
 });
 
-// Refresh client row (after plan purchase etc.)
 export const refreshClient = createAsyncThunk(
   "auth/refreshClient",
   async (_, { rejectWithValue }) => {
@@ -161,20 +183,6 @@ export const refreshClient = createAsyncThunk(
   },
 );
 
-export const refreshEmailToken = createAsyncThunk(
-  "auth/refreshEmailToken",
-  async (_, { rejectWithValue }) => {
-    try {
-      const { data, error } = await supabase.auth.refreshSession();
-      if (error || !data.session) return rejectWithValue("Could not refresh");
-      localStorage.setItem("sm_token", data.session.access_token);
-      return { session: data.session };
-    } catch (e) {
-      return rejectWithValue(e.message);
-    }
-  },
-);
-
 const authSlice = createSlice({
   name: "auth",
   initialState: {
@@ -186,15 +194,16 @@ const authSlice = createSlice({
     initialized: false,
   },
   reducers: {
-    clearError: (state) => {
-      state.error = null;
-    },
+    clearError: (state) => { state.error = null; },
     setSession: (state, action) => {
       state.user = action.payload.user;
       state.session = action.payload.session;
       state.initialized = true;
       if (action.payload.session?.access_token) {
         localStorage.setItem("sm_token", action.payload.session.access_token);
+      }
+      if (action.payload.session?.refresh_token) {
+        localStorage.setItem("sm_refresh_token", action.payload.session.refresh_token);
       }
     },
     setClient: (state, action) => {
@@ -203,10 +212,7 @@ const authSlice = createSlice({
     },
   },
   extraReducers: (builder) => {
-    // loadSession
-    builder.addCase(loadSession.pending, (state) => {
-      state.loading = true;
-    });
+    builder.addCase(loadSession.pending, (state) => { state.loading = true; });
     builder.addCase(loadSession.fulfilled, (state, action) => {
       state.loading = false;
       state.initialized = true;
@@ -221,11 +227,7 @@ const authSlice = createSlice({
       state.initialized = true;
     });
 
-    // signUp
-    builder.addCase(signUp.pending, (state) => {
-      state.loading = true;
-      state.error = null;
-    });
+    builder.addCase(signUp.pending, (state) => { state.loading = true; state.error = null; });
     builder.addCase(signUp.fulfilled, (state, action) => {
       state.loading = false;
       state.initialized = true;
@@ -238,11 +240,7 @@ const authSlice = createSlice({
       state.error = action.payload;
     });
 
-    // signIn
-    builder.addCase(signIn.pending, (state) => {
-      state.loading = true;
-      state.error = null;
-    });
+    builder.addCase(signIn.pending, (state) => { state.loading = true; state.error = null; });
     builder.addCase(signIn.fulfilled, (state, action) => {
       state.loading = false;
       state.initialized = true;
@@ -255,7 +253,6 @@ const authSlice = createSlice({
       state.error = action.payload;
     });
 
-    // signOut
     builder.addCase(signOut.fulfilled, (state) => {
       state.user = null;
       state.client = null;
@@ -263,13 +260,8 @@ const authSlice = createSlice({
       state.initialized = true;
     });
 
-    // refreshClient
     builder.addCase(refreshClient.fulfilled, (state, action) => {
       state.client = action.payload;
-    });
-
-    builder.addCase(refreshEmailToken.fulfilled, (state, action) => {
-      state.session = action.payload.session;
     });
   },
 });
