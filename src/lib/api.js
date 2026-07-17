@@ -13,10 +13,6 @@ api.interceptors.request.use((config) => {
 });
 
 // Auto-logout on 401
-import { supabase } from "./supabase.js";
-
-// ...existing code...
-
 api.interceptors.response.use(
   (res) => res,
   async (err) => {
