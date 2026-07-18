@@ -34,18 +34,21 @@ export const loadSession = createAsyncThunk(
         try {
           const { data: refreshData, error } = await supabase.auth.setSession({
             access_token: token,
-            refresh_token: refreshToken
-          })
+            refresh_token: refreshToken,
+          });
           if (!error && refreshData?.session) {
             // Session restored — update tokens
-            localStorage.setItem("sm_token", refreshData.session.access_token)
-            localStorage.setItem("sm_refresh_token", refreshData.session.refresh_token)
-            const client = await fetchClientRow(refreshData.session.user.id)
+            localStorage.setItem("sm_token", refreshData.session.access_token);
+            localStorage.setItem(
+              "sm_refresh_token",
+              refreshData.session.refresh_token,
+            );
+            const client = await fetchClientRow(refreshData.session.user.id);
             return {
               user: refreshData.session.user,
               client,
-              session: refreshData.session
-            }
+              session: refreshData.session,
+            };
           }
         } catch (e) {
           // setSession failed — fall through to /api/auth/me
@@ -109,7 +112,10 @@ export const signUp = createAsyncThunk(
       localStorage.setItem("sm_refresh_token", data.refresh_token);
       return {
         user: data.user,
-        session: { access_token: data.access_token, refresh_token: data.refresh_token },
+        session: {
+          access_token: data.access_token,
+          refresh_token: data.refresh_token,
+        },
         client: data.client,
       };
     } catch (error) {
@@ -136,7 +142,10 @@ export const signIn = createAsyncThunk(
       localStorage.setItem("sm_refresh_token", data.refresh_token);
       return {
         user: data.user,
-        session: { access_token: data.access_token, refresh_token: data.refresh_token },
+        session: {
+          access_token: data.access_token,
+          refresh_token: data.refresh_token,
+        },
         client: data.client,
       };
     } catch (error) {
@@ -194,7 +203,9 @@ const authSlice = createSlice({
     initialized: false,
   },
   reducers: {
-    clearError: (state) => { state.error = null; },
+    clearError: (state) => {
+      state.error = null;
+    },
     setSession: (state, action) => {
       state.user = action.payload.user;
       state.session = action.payload.session;
@@ -203,7 +214,10 @@ const authSlice = createSlice({
         localStorage.setItem("sm_token", action.payload.session.access_token);
       }
       if (action.payload.session?.refresh_token) {
-        localStorage.setItem("sm_refresh_token", action.payload.session.refresh_token);
+        localStorage.setItem(
+          "sm_refresh_token",
+          action.payload.session.refresh_token,
+        );
       }
     },
     setClient: (state, action) => {
@@ -212,7 +226,9 @@ const authSlice = createSlice({
     },
   },
   extraReducers: (builder) => {
-    builder.addCase(loadSession.pending, (state) => { state.loading = true; });
+    builder.addCase(loadSession.pending, (state) => {
+      state.loading = true;
+    });
     builder.addCase(loadSession.fulfilled, (state, action) => {
       state.loading = false;
       state.initialized = true;
@@ -227,7 +243,10 @@ const authSlice = createSlice({
       state.initialized = true;
     });
 
-    builder.addCase(signUp.pending, (state) => { state.loading = true; state.error = null; });
+    builder.addCase(signUp.pending, (state) => {
+      state.loading = true;
+      state.error = null;
+    });
     builder.addCase(signUp.fulfilled, (state, action) => {
       state.loading = false;
       state.initialized = true;
@@ -240,7 +259,10 @@ const authSlice = createSlice({
       state.error = action.payload;
     });
 
-    builder.addCase(signIn.pending, (state) => { state.loading = true; state.error = null; });
+    builder.addCase(signIn.pending, (state) => {
+      state.loading = true;
+      state.error = null;
+    });
     builder.addCase(signIn.fulfilled, (state, action) => {
       state.loading = false;
       state.initialized = true;
@@ -262,6 +284,10 @@ const authSlice = createSlice({
 
     builder.addCase(refreshClient.fulfilled, (state, action) => {
       state.client = action.payload;
+    });
+
+    builder.addCase(refreshClient.rejected, (state, action) => {
+      console.error("Failed to refresh client:", action.payload);
     });
   },
 });

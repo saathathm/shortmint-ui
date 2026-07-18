@@ -21,31 +21,34 @@ export default function App() {
   const dispatch = useDispatch()
 
   useEffect(() => {
-    // Load session on app start
     dispatch(loadSession())
 
-    // Listen for auth state changes (handles Google OAuth redirect, token refresh etc.)
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       if (!session) return
 
       const isGoogleUser = session.user.app_metadata?.provider === 'google' ||
         session.user.app_metadata?.providers?.includes('google')
 
-      // Only handle Google OAuth — email/password is handled by backend directly
       if (!isGoogleUser) return
 
-      dispatch(setSession({ user: session.user, session }))
+      // Store tokens
       localStorage.setItem('sm_token', session.access_token)
+      if (session.refresh_token) {
+        localStorage.setItem('sm_refresh_token', session.refresh_token)
+      }
 
       if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED' || event === 'USER_UPDATED') {
-        const { data: client } = await supabase
+        // Fetch client FIRST before dispatching anything
+        let client = null
+
+        const { data } = await supabase
           .from('clients')
           .select('*')
           .eq('id', session.user.id)
           .single()
 
-        if (client) {
-          dispatch(setClient(client))
+        if (data) {
+          client = data
         } else if (event === 'SIGNED_IN') {
           const name = session.user.user_metadata?.full_name || session.user.email
           await supabase.from('clients').upsert({
@@ -62,8 +65,12 @@ export default function App() {
             .eq('id', session.user.id)
             .single()
 
-          if (newClient) dispatch(setClient(newClient))
+          client = newClient
         }
+
+        // Dispatch session AND client together — eliminates the null client window
+        dispatch(setSession({ user: session.user, session }))
+        if (client) dispatch(setClient(client))
       }
     })
 

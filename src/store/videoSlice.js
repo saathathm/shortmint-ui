@@ -1,5 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import { processVideo as apiProcessVideo, checkStatus as apiCheckStatus, getResults } from '../lib/api.js'
+import { refreshClient } from './authSlice.js'
+
 
 // Start processing a video
 export const startProcessing = createAsyncThunk(
@@ -17,9 +19,12 @@ export const startProcessing = createAsyncThunk(
 // Poll check-status
 export const pollStatus = createAsyncThunk(
   'video/pollStatus',
-  async (videoId, { rejectWithValue }) => {
+  async (videoId, { rejectWithValue, dispatch }) => {
     try {
       const { data } = await apiCheckStatus(videoId)
+      if (data.status === 'completed') {
+        dispatch(refreshClient())
+      }
       return data
     } catch (e) {
       return rejectWithValue(e.response?.data?.message || 'Failed to check status.')

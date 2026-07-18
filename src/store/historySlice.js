@@ -1,36 +1,39 @@
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
-import { getHistory } from '../lib/api.js'
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import { getHistory } from "../lib/api.js";
 
 export const loadHistory = createAsyncThunk(
-  'history/loadHistory',
+  "history/loadHistory",
   async (_, { rejectWithValue }) => {
     try {
-      const { data } = await getHistory()
+      const { data } = await getHistory();
 
-      return data.videos
+      return data.videos;
     } catch (e) {
       return rejectWithValue(
-        e.response?.data?.message || 'Could not load history.'
-      )
+        e.response?.data?.message || "Could not load history.",
+      );
     }
-  }
-)
+  },
+);
 
 const historySlice = createSlice({
-  name: 'history',
+  name: "history",
   initialState: { videos: [], loading: false, error: null },
   reducers: {},
   extraReducers: (builder) => {
-    builder.addCase(loadHistory.pending, (state) => { state.loading = true })
+    builder.addCase(loadHistory.pending, (state) => {
+      state.loading = true;
+      state.error = null;
+    });
     builder.addCase(loadHistory.fulfilled, (state, action) => {
-      state.loading = false
-      state.videos = action.payload
-    })
+      state.loading = false;
+      state.videos = action.payload;
+    });
     builder.addCase(loadHistory.rejected, (state, action) => {
-      state.loading = false
-      state.error = action.payload
-    })
+      state.loading = false;
+      state.error = action.payload;
+    });
   },
-})
+});
 
-export default historySlice.reducer
+export default historySlice.reducer;
