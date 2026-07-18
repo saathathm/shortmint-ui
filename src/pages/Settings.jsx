@@ -87,6 +87,8 @@ export default function Settings() {
     pro: "Pro",
   };
   const isSubscription = client?.plan_type === "subscription";
+  const isCancelling =
+    isSubscription && client?.subscription_cancel_at_period_end;
   const hasActivePlan = client?.plan && client.plan !== "trial";
 
   useEffect(() => {
@@ -304,13 +306,25 @@ export default function Settings() {
         )}
 
         {/* Cancel subscription */}
-        {isSubscription && !cancelSuccess && (
+        {isSubscription && !isCancelling && !cancelSuccess && (
           <button
             onClick={() => setShowCancelModal(true)}
             className="text-xs text-text-dim hover:text-error transition-colors mt-1"
           >
             Cancel subscription
           </button>
+        )}
+
+        {isCancelling && (
+          <p className="text-xs text-amber-600 mt-1 flex items-center gap-1">
+            ⚠️ Subscription cancels on{" "}
+            {new Date(client.plan_expires_at).toLocaleDateString("en-US", {
+              month: "long",
+              day: "numeric",
+              year: "numeric",
+            })}
+            . You still have full access until then.
+          </p>
         )}
 
         {cancelSuccess && (
