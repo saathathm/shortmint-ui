@@ -111,8 +111,13 @@ export const getBgStatus = (clipId) =>
   api.get(`/api/clips/${clipId}/bg-status`);
 
 // Stripe
-export const createCheckoutSession = (priceId) =>
-  api.post("/api/stripe/checkout", { price_id: priceId });
+export const createCheckoutSession = (priceId, paymentType = "subscription") =>
+  api.post("/api/stripe/checkout", {
+    price_id: priceId,
+    payment_type: paymentType,
+  });
+
+export const cancelSubscription = () => api.post("/api/stripe/cancel");
 
 // Settings
 export const getYouTubeConnectUrl = () =>
