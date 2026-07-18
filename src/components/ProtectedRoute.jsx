@@ -1,3 +1,7 @@
+import { useEffect, useState } from "react";
+import { Navigate } from "react-router-dom";
+import { useAuth } from "../hooks/useAuth.js";
+
 export default function ProtectedRoute({ children }) {
   const { isAuthenticated, initialized, client } = useAuth();
   const [timedOut, setTimedOut] = useState(false);
