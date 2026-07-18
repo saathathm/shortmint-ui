@@ -35,7 +35,7 @@ export default function Settings() {
     e.preventDefault();
     setSavingProfile(true);
     await supabase.from("clients").update({ name }).eq("id", user.id);
-    await dispatch(refreshClient(user.id));
+    await dispatch(refreshClient());
     setSavingProfile(false);
     setProfileSaved(true);
     setTimeout(() => setProfileSaved(false), 2000);
@@ -272,7 +272,7 @@ export default function Settings() {
               {client?.usage_hours_limit || 0} hours used
               {isSubscription ? " this month" : ""}
             </p>
-            {client?.plan_expires_at && isSubscription && (
+            {client?.plan_expires_at && isSubscription && !isCancelling && (
               <p className="text-xs text-text-dim mt-0.5">
                 Renews{" "}
                 {new Date(client.plan_expires_at).toLocaleDateString("en-US", {
