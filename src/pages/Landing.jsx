@@ -172,7 +172,7 @@ function DemoClip({ clip }) {
 }
 
 export default function Landing() {
-  const { isAuthenticated, client } = useAuth();
+  const { isAuthenticated, client, initialized } = useAuth();
   const hasActivePlan =
     isAuthenticated && client?.plan && client.plan !== "trial";
   return (
@@ -192,7 +192,7 @@ export default function Landing() {
           interview. Ready to publish to YouTube Shorts and Facebook Reels.
         </p>
         <div className="flex items-center justify-center gap-3 flex-wrap">
-          {hasActivePlan ? (
+          {!initialized ? null : hasActivePlan ? (
             <Link to="/dashboard" className="btn-primary text-base py-3.5 px-8">
               Go to Dashboard →
             </Link>
@@ -210,7 +210,7 @@ export default function Landing() {
             </>
           )}
         </div>
-        {!hasActivePlan && (
+        {initialized && !hasActivePlan && (
           <p className="text-xs text-text-dim mt-4">
             No credit card required to sign up
           </p>
@@ -404,7 +404,7 @@ export default function Landing() {
           Join creators already using ShortMint to publish consistently without
           the editing grind.
         </p>
-        {hasActivePlan ? (
+        {!initialized ? null : hasActivePlan ? (
           <Link
             to="/dashboard"
             className="btn-primary text-base py-3.5 px-8 inline-flex items-center gap-2"
