@@ -23,56 +23,42 @@ export default function App() {
   useEffect(() => {
     dispatch(loadSession())
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      if (!session) return
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange(async (event, session) => {
+      if (!session) return;
 
-      const isGoogleUser = session.user.app_metadata?.provider === 'google' ||
-        session.user.app_metadata?.providers?.includes('google')
+      const isGoogleUser =
+        session.user.app_metadata?.provider === "google" ||
+        session.user.app_metadata?.providers?.includes("google");
 
-      if (!isGoogleUser) return
+      if (!isGoogleUser) return;
 
       // Store tokens
-      localStorage.setItem('sm_token', session.access_token)
+      localStorage.setItem("sm_token", session.access_token);
       if (session.refresh_token) {
-        localStorage.setItem('sm_refresh_token', session.refresh_token)
+        localStorage.setItem("sm_refresh_token", session.refresh_token);
       }
 
-      if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED' || event === 'USER_UPDATED') {
-        // Fetch client FIRST before dispatching anything
-        let client = null
-
-        const { data } = await supabase
-          .from('clients')
-          .select('*')
-          .eq('id', session.user.id)
-          .single()
-
-        if (data) {
-          client = data
-        } else if (event === 'SIGNED_IN') {
-          const name = session.user.user_metadata?.full_name || session.user.email
-          await supabase.from('clients').upsert({
-            id: session.user.id,
-            name,
-            email: session.user.email,
-            password_hash: 'managed_by_supabase_auth',
-            plan: 'trial',
-          }, { onConflict: 'id' })
-
-          const { data: newClient } = await supabase
-            .from('clients')
-            .select('*')
-            .eq('id', session.user.id)
-            .single()
-
-          client = newClient
-        }
-
-        // Dispatch session AND client together — eliminates the null client window
-        dispatch(setSession({ user: session.user, session }))
-        if (client) dispatch(setClient(client))
+      if (
+        event === "SIGNED_IN" ||
+        event === "TOKEN_REFRESHED" ||
+        event === "USER_UPDATED"
+      ) {
+        // Use backend — consistent with loadSession, handles client creation too
+        try {
+          const res = await fetch(
+            `${import.meta.env.VITE_API_BASE_URL}/api/auth/me`,
+            { headers: { Authorization: `Bearer ${session.access_token}` } },
+          );
+          if (res.ok) {
+            const meData = await res.json();
+            dispatch(setSession({ user: session.user, session }));
+            dispatch(setClient(meData.client));
+          }
+        } catch (e) {}
       }
-    })
+    });    
 
     return () => subscription.unsubscribe()
   }, [dispatch])

@@ -14,7 +14,7 @@ import {
 import { useState, useRef, useEffect } from "react";
 
 export default function Layout({ children }) {
-  const { isAuthenticated, client } = useAuth();
+  const { isAuthenticated, client, initialized } = useAuth();
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const location = useLocation();
@@ -74,7 +74,9 @@ export default function Layout({ children }) {
           </Link>
 
           {/* NAV AREA */}
-          {isAuthenticated ? (
+          {!initialized ? (
+            <div className="w-24 h-9" />
+          ) : isAuthenticated ? (
             <div className="flex items-center gap-2">
               {/* DESKTOP NAV */}
               <div className="hidden sm:flex items-center gap-2">

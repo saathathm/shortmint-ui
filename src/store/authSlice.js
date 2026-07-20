@@ -1,61 +1,39 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { supabase } from "../lib/supabase.js";
 
-const fetchClientRow = async (userId) => {
-  const { data, error } = await supabase
-    .from("clients")
-    .select("*")
-    .eq("id", userId)
-    .single();
-  if (error) return null;
-  return data;
-};
-
 export const loadSession = createAsyncThunk(
   "auth/loadSession",
   async (_, { rejectWithValue }) => {
     try {
-      // First try Supabase session (Google OAuth)
-      const { data } = await supabase.auth.getSession();
-      if (data.session) {
-        localStorage.setItem("sm_token", data.session.access_token);
-        const client = await fetchClientRow(data.session.user.id);
-        return { user: data.session.user, client, session: data.session };
-      }
-
-      // Fall back to email/password — try to restore session using refresh token
-      const token = localStorage.getItem("sm_token");
+      let token = localStorage.getItem("sm_token");
       const refreshToken = localStorage.getItem("sm_refresh_token");
 
-      if (!token) return null;
-
-      // Try to restore Supabase session using stored tokens
-      if (refreshToken) {
+      // Try Supabase session first (Google OAuth)
+      const { data } = await supabase.auth.getSession();
+      if (data.session) {
+        token = data.session.access_token;
+        localStorage.setItem("sm_token", token);
+        if (data.session.refresh_token) {
+          localStorage.setItem("sm_refresh_token", data.session.refresh_token);
+        }
+      } else if (refreshToken && token) {
+        // Try restoring session via refresh token
         try {
           const { data: refreshData, error } = await supabase.auth.setSession({
             access_token: token,
             refresh_token: refreshToken,
           });
           if (!error && refreshData?.session) {
-            // Session restored — update tokens
-            localStorage.setItem("sm_token", refreshData.session.access_token);
-            localStorage.setItem(
-              "sm_refresh_token",
-              refreshData.session.refresh_token,
-            );
-            const client = await fetchClientRow(refreshData.session.user.id);
-            return {
-              user: refreshData.session.user,
-              client,
-              session: refreshData.session,
-            };
+            token = refreshData.session.access_token;
+            localStorage.setItem("sm_token", token);
+            localStorage.setItem("sm_refresh_token", refreshData.session.refresh_token);
           }
-        } catch (e) {
-          // setSession failed — fall through to /api/auth/me
-        }
+        } catch (e) {}
       }
 
-      // Final fallback — validate token against backend
+      if (!token) return null;
+
+      // Single source of truth — always validate via backend
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 8000);
 
@@ -65,7 +43,7 @@ export const loadSession = createAsyncThunk(
           {
             headers: { Authorization: `Bearer ${token}` },
             signal: controller.signal,
-          },
+          }
         );
         clearTimeout(timeoutId);
 
@@ -75,11 +53,11 @@ export const loadSession = createAsyncThunk(
           return null;
         }
 
-        const data2 = await res.json();
+        const meData = await res.json();
         return {
-          user: data2.user,
-          client: data2.client,
-          session: { access_token: token },
+          user: meData.user,
+          client: meData.client,
+          session: { access_token: token, refresh_token: refreshToken },
         };
       } catch (e) {
         clearTimeout(timeoutId);
@@ -91,7 +69,7 @@ export const loadSession = createAsyncThunk(
     } catch (e) {
       return rejectWithValue(e.message);
     }
-  },
+  }
 );
 
 export const signUp = createAsyncThunk(
