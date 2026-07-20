@@ -10,10 +10,10 @@ import api from '../lib/api.js'
 import { AlertCircle, Sparkles, Clock, Loader, X, CheckCircle } from 'lucide-react'
 
 const PLATFORM_TIERS = {
-  trial: ['youtube', 'upload'],
-  starter: ['youtube', 'upload'],
-  growth: ['youtube', 'facebook', 'instagram', 'upload'],
-  pro: ['youtube', 'facebook', 'instagram', 'vimeo', 'tiktok', 'rumble', 'loom', 'dropbox', 'upload'],
+  trial:    ['youtube', 'upload'],
+  starter:  ['youtube', 'facebook', 'instagram', 'vimeo', 'tiktok', 'rumble', 'loom', 'dropbox', 'upload'],
+  growth:   ['youtube', 'facebook', 'instagram', 'vimeo', 'tiktok', 'rumble', 'loom', 'dropbox', 'upload'],
+  pro:      ['youtube', 'facebook', 'instagram', 'vimeo', 'tiktok', 'rumble', 'loom', 'dropbox', 'upload'],
 }
 
 const PLATFORM_PATTERNS = [
