@@ -21,47 +21,42 @@ export default function App() {
   const dispatch = useDispatch()
 
   useEffect(() => {
-    dispatch(loadSession())
+  // Set up listener FIRST before loadSession
+  const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+    if (!session) return
 
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange(async (event, session) => {
-      if (!session) return;
+    const isGoogleUser =
+      session.user.app_metadata?.provider === 'google' ||
+      session.user.app_metadata?.providers?.includes('google')
 
-      const isGoogleUser =
-        session.user.app_metadata?.provider === "google" ||
-        session.user.app_metadata?.providers?.includes("google");
+    if (!isGoogleUser) return
 
-      if (!isGoogleUser) return;
+    // Store tokens immediately and synchronously
+    localStorage.setItem('sm_token', session.access_token)
+    if (session.refresh_token) {
+      localStorage.setItem('sm_refresh_token', session.refresh_token)
+    }
 
-      // Store tokens
-      localStorage.setItem("sm_token", session.access_token);
-      if (session.refresh_token) {
-        localStorage.setItem("sm_refresh_token", session.refresh_token);
-      }
+    if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED' || event === 'USER_UPDATED') {
+      try {
+        const res = await fetch(
+          `${import.meta.env.VITE_API_BASE_URL}/api/auth/me`,
+          { headers: { Authorization: `Bearer ${session.access_token}` } }
+        )
+        if (res.ok) {
+          const meData = await res.json()
+          dispatch(setSession({ user: session.user, session }))
+          dispatch(setClient(meData.client))
+        }
+      } catch (e) {}
+    }
+  })
 
-      if (
-        event === "SIGNED_IN" ||
-        event === "TOKEN_REFRESHED" ||
-        event === "USER_UPDATED"
-      ) {
-        // Use backend — consistent with loadSession, handles client creation too
-        try {
-          const res = await fetch(
-            `${import.meta.env.VITE_API_BASE_URL}/api/auth/me`,
-            { headers: { Authorization: `Bearer ${session.access_token}` } },
-          );
-          if (res.ok) {
-            const meData = await res.json();
-            dispatch(setSession({ user: session.user, session }));
-            dispatch(setClient(meData.client));
-          }
-        } catch (e) {}
-      }
-    });    
+  // Load session AFTER listener is registered
+  dispatch(loadSession())
 
-    return () => subscription.unsubscribe()
-  }, [dispatch])
+  return () => subscription.unsubscribe()
+}, [dispatch])
 
   return (
     <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
