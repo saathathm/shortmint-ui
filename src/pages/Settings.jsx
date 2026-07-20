@@ -86,7 +86,12 @@ export default function Settings() {
     growth: "Growth",
     pro: "Pro",
   };
-  const isSubscription = client?.plan_type === "subscription";
+
+  const isSubscription =
+    client?.plan_type === "subscription" &&
+    !!client?.stripe_subscription_id &&
+    client?.plan !== "trial";
+
   const isCancelling =
     isSubscription && client?.subscription_cancel_at_period_end;
   const hasActivePlan = client?.plan && client.plan !== "trial";
