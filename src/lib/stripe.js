@@ -1,9 +1,7 @@
 import { loadStripe } from "@stripe/stripe-js";
-
 export const stripePromise = loadStripe(
   import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY,
 );
-
 export const PLANS = [
   {
     id: "starter",
@@ -26,12 +24,11 @@ export const PLANS = [
       "Upload",
     ],
     features: [
-      "10 hours of video",
-      "All platforms supported",
-      "File upload",
-      "Crop, blur & custom styles",
-      "Publish to YouTube & Facebook",
-      "Download clips",
+      "10 hours of processing",
+      "AI picks your 3 best clips",
+      "Every major platform supported",
+      "Blur, crop, or custom background",
+      "Download ready to post",
     ],
   },
   {
@@ -56,13 +53,12 @@ export const PLANS = [
       "Upload",
     ],
     features: [
-      "25 hours of video",
-      "All platforms supported",
-      "File upload",
-      "Crop, blur & custom styles",
-      "Publish to YouTube & Facebook",
-      "Download clips",
-      "Priority processing",
+      "25 hours of processing",
+      "AI picks your 3 best clips",
+      "Every major platform supported",
+      "Blur, crop, or custom background",
+      "Download ready to post",
+      "Faster processing queue",
     ],
   },
   {
@@ -86,14 +82,13 @@ export const PLANS = [
       "Upload",
     ],
     features: [
-      "60 hours of video",
-      "All platforms supported",
-      "File upload",
-      "Crop, blur & custom styles",
-      "Publish to YouTube & Facebook",
-      "Download clips",
-      "Priority processing",
-      "Dedicated support",
+      "60 hours of processing",
+      "AI picks your 3 best clips",
+      "Every major platform supported",
+      "Blur, crop, or custom background",
+      "Download ready to post",
+      "Fastest processing queue",
+      "Direct support from the team",
     ],
   },
 ];
