@@ -1,15 +1,24 @@
-import { useEffect, useState } from "react";
-import { Link, useSearchParams } from "react-router-dom";
+import {
+  // useEffect,
+  useState,
+} from "react";
+import {
+  Link,
+  // useSearchParams
+} from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { useAuth } from "../hooks/useAuth.js";
 import { refreshClient } from "../store/authSlice.js";
 import { supabase } from "../lib/supabase.js";
-import { getYouTubeConnectUrl, cancelSubscription } from "../lib/api.js";
 import {
-  Youtube,
-  Facebook,
+  // getYouTubeConnectUrl,
+  cancelSubscription,
+} from "../lib/api.js";
+import {
+  // Youtube,
+  // Facebook,
   CheckCircle,
-  ExternalLink,
+  // ExternalLink,
   User,
   Lock,
   Loader,
@@ -24,8 +33,8 @@ export default function Settings() {
   const [profileSaved, setProfileSaved] = useState(false);
   const [changingPassword, setChangingPassword] = useState(false);
   const [pwSent, setPwSent] = useState(false);
-  const [searchParams, setSearchParams] = useSearchParams();
-  const youtubeStatus = searchParams.get("youtube");
+  // const [searchParams, setSearchParams] = useSearchParams();
+  // const youtubeStatus = searchParams.get("youtube");
   const [showCancelModal, setShowCancelModal] = useState(false);
   const [cancelling, setCancelling] = useState(false);
   const [cancelSuccess, setCancelSuccess] = useState(false);
@@ -50,18 +59,18 @@ export default function Settings() {
     setPwSent(true);
   };
 
-  const handleConnectYoutube = async () => {
-    try {
-      const { data } = await getYouTubeConnectUrl();
-      window.location.href = data.auth_url;
-    } catch {
-      alert("Could not connect YouTube. Please try again.");
-    }
-  };
+  // const handleConnectYoutube = async () => {
+  //   try {
+  //     const { data } = await getYouTubeConnectUrl();
+  //     window.location.href = data.auth_url;
+  //   } catch {
+  //     alert("Could not connect YouTube. Please try again.");
+  //   }
+  // };
 
-  const handleConnectFacebook = () => {
-    alert("Facebook connection will be available once publishing is set up.");
-  };
+  // const handleConnectFacebook = () => {
+  //   alert("Facebook connection will be available once publishing is set up.");
+  // };
 
   const handleCancelSubscription = async () => {
     setCancelling(true);
@@ -96,14 +105,14 @@ export default function Settings() {
     isSubscription && client?.subscription_cancel_at_period_end;
   const hasActivePlan = client?.plan && client.plan !== "trial";
 
-  useEffect(() => {
-    if (youtubeStatus) {
-      if (youtubeStatus === "connected") {
-        dispatch(refreshClient());
-      }
-      setSearchParams({});
-    }
-  }, [youtubeStatus]);
+  // useEffect(() => {
+  //   if (youtubeStatus) {
+  //     if (youtubeStatus === "connected") {
+  //       dispatch(refreshClient());
+  //     }
+  //     setSearchParams({});
+  //   }
+  // }, [youtubeStatus]);
 
   return (
     <div className="max-w-lg mx-auto space-y-6">
@@ -177,13 +186,13 @@ export default function Settings() {
       </div>
 
       {/* Connected accounts */}
-      <div className="card p-5">
+      {/* <div className="card p-5">
         <h2 className="font-semibold text-text-primary mb-4">
           Connected accounts
         </h2>
-        <div className="space-y-3">
-          {/* YouTube */}
-          <div className="flex items-center justify-between p-3 bg-bg-surface rounded-xl">
+        <div className="space-y-3"> */}
+      {/* YouTube */}
+      {/* <div className="flex items-center justify-between p-3 bg-bg-surface rounded-xl">
             <div className="flex items-center gap-3">
               <div className="w-8 h-8 bg-red-100 rounded-lg flex items-center justify-center">
                 <Youtube size={16} className="text-red-600" />
@@ -219,10 +228,10 @@ export default function Settings() {
             <div className="bg-red-50 border border-red-100 text-error text-sm rounded-xl p-3">
               Could not connect YouTube. Please try again.
             </div>
-          )}
+          )} */}
 
-          {/* Facebook */}
-          <div className="flex items-center justify-between p-3 bg-bg-surface rounded-xl">
+      {/* Facebook */}
+      {/* <div className="flex items-center justify-between p-3 bg-bg-surface rounded-xl">
             <div className="flex items-center gap-3">
               <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
                 <Facebook size={16} className="text-blue-600" />
@@ -250,7 +259,7 @@ export default function Settings() {
             )}
           </div>
         </div>
-      </div>
+      </div> */}
 
       {/* Plan */}
       <div className="card p-5">
