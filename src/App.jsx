@@ -23,8 +23,16 @@ export default function App() {
   useEffect(() => {
   // Set up listener FIRST before loadSession
   const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-    if (!session) return
+    // HANDLE LOGOUT
+    if (!session) {
+      localStorage.removeItem('sm_token')
+      localStorage.removeItem('sm_refresh_token')
+      dispatch(setSession(null))
+      dispatch(setClient(null))
+      return
+    }
 
+    // Only handle Google users
     const isGoogleUser =
       session.user.app_metadata?.provider === 'google' ||
       session.user.app_metadata?.providers?.includes('google')
@@ -37,19 +45,19 @@ export default function App() {
       localStorage.setItem('sm_refresh_token', session.refresh_token)
     }
 
-    if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED' || event === 'USER_UPDATED') {
-      try {
-        const res = await fetch(
-          `${import.meta.env.VITE_API_BASE_URL}/api/auth/me`,
-          { headers: { Authorization: `Bearer ${session.access_token}` } }
-        )
-        if (res.ok) {
-          const meData = await res.json()
-          dispatch(setSession({ user: session.user, session }))
-          dispatch(setClient(meData.client))
-        }
-      } catch (e) {}
-    }
+    // if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED' || event === 'USER_UPDATED') {
+    //   try {
+    //     const res = await fetch(
+    //       `${import.meta.env.VITE_API_BASE_URL}/api/auth/me`,
+    //       { headers: { Authorization: `Bearer ${session.access_token}` } }
+    //     )
+    //     if (res.ok) {
+    //       const meData = await res.json()
+    //       dispatch(setSession({ user: session.user, session }))
+    //       dispatch(setClient(meData.client))
+    //     }
+    //   } catch (e) {}
+    // }
   })
 
   // Load session AFTER listener is registered

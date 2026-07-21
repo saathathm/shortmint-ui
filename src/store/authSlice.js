@@ -6,29 +6,41 @@ export const loadSession = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       let token = localStorage.getItem("sm_token");
-      const refreshToken = localStorage.getItem("sm_refresh_token");
+      let currentRefreshToken = localStorage.getItem("sm_refresh_token");
 
-      // Try Supabase session first (Google OAuth)
+      // 1. Try Supabase session first (Google OAuth)
       const { data } = await supabase.auth.getSession();
+
       if (data.session) {
         token = data.session.access_token;
         localStorage.setItem("sm_token", token);
-        if (data.session.refresh_token) {
-          localStorage.setItem("sm_refresh_token", data.session.refresh_token);
+
+        if (data.session?.refresh_token) {
+          currentRefreshToken = data.session.refresh_token;
+          localStorage.setItem("sm_refresh_token", currentRefreshToken);
         }
-      } else if (refreshToken && token) {
+
+        // 2. Try restoring session via refresh token
+      } else if (currentRefreshToken && token) {
         // Try restoring session via refresh token
         try {
           const { data: refreshData, error } = await supabase.auth.setSession({
             access_token: token,
-            refresh_token: refreshToken,
+            refresh_token: currentRefreshToken,
           });
+
           if (!error && refreshData?.session) {
             token = refreshData.session.access_token;
             localStorage.setItem("sm_token", token);
-            localStorage.setItem("sm_refresh_token", refreshData.session.refresh_token);
+
+            if (refreshData.session.refresh_token) {
+              currentRefreshToken = refreshData.session.refresh_token;
+              localStorage.setItem("sm_refresh_token", currentRefreshToken);
+            }
           }
-        } catch (e) {}
+        } catch (e) {
+          console.error("Session restore failed:", e);
+        }
       }
 
       if (!token) return null;
@@ -43,7 +55,7 @@ export const loadSession = createAsyncThunk(
           {
             headers: { Authorization: `Bearer ${token}` },
             signal: controller.signal,
-          }
+          },
         );
         clearTimeout(timeoutId);
 
@@ -57,10 +69,14 @@ export const loadSession = createAsyncThunk(
         return {
           user: meData.user,
           client: meData.client,
-          session: { access_token: token, refresh_token: refreshToken },
+          session: {
+            access_token: token,
+            refresh_token: currentRefreshToken,
+          },
         };
       } catch (e) {
         clearTimeout(timeoutId);
+
         if (e.name === "AbortError") return null;
         localStorage.removeItem("sm_token");
         localStorage.removeItem("sm_refresh_token");
@@ -69,7 +85,7 @@ export const loadSession = createAsyncThunk(
     } catch (e) {
       return rejectWithValue(e.message);
     }
-  }
+  },
 );
 
 export const signUp = createAsyncThunk(
@@ -84,10 +100,13 @@ export const signUp = createAsyncThunk(
           body: JSON.stringify({ name, email, password }),
         },
       );
+
       const data = await res.json();
       if (!res.ok) return rejectWithValue(data.error || "Signup failed");
+
       localStorage.setItem("sm_token", data.access_token);
       localStorage.setItem("sm_refresh_token", data.refresh_token);
+
       return {
         user: data.user,
         session: {
@@ -114,10 +133,13 @@ export const signIn = createAsyncThunk(
           body: JSON.stringify({ email, password }),
         },
       );
+
       const data = await res.json();
       if (!res.ok) return rejectWithValue(data.error);
+
       localStorage.setItem("sm_token", data.access_token);
       localStorage.setItem("sm_refresh_token", data.refresh_token);
+
       return {
         user: data.user,
         session: {
@@ -153,11 +175,13 @@ export const refreshClient = createAsyncThunk(
   "auth/refreshClient",
   async (_, { rejectWithValue }) => {
     try {
+      const token = localStorage.getItem("sm_token");
+      if (!token) return rejectWithValue("No token");
       const res = await fetch(
         `${import.meta.env.VITE_API_BASE_URL}/api/auth/refresh-client`,
         {
           headers: {
-            Authorization: `Bearer ${localStorage.getItem("sm_token")}`,
+            Authorization: `Bearer ${token}`,
           },
         },
       );
@@ -185,9 +209,18 @@ const authSlice = createSlice({
       state.error = null;
     },
     setSession: (state, action) => {
+      if (!action.payload) {
+        state.user = null;
+        state.session = null;
+        state.initialized = true;
+        localStorage.removeItem("sm_token");
+        localStorage.removeItem("sm_refresh_token");
+        return;
+      }
+
       state.user = action.payload.user;
       state.session = action.payload.session;
-      state.initialized = true;
+
       if (action.payload.session?.access_token) {
         localStorage.setItem("sm_token", action.payload.session.access_token);
       }
@@ -200,7 +233,6 @@ const authSlice = createSlice({
     },
     setClient: (state, action) => {
       state.client = action.payload;
-      state.initialized = true;
     },
   },
   extraReducers: (builder) => {
@@ -227,7 +259,6 @@ const authSlice = createSlice({
     });
     builder.addCase(signUp.fulfilled, (state, action) => {
       state.loading = false;
-      state.initialized = true;
       state.user = action.payload.user;
       state.session = action.payload.session;
       state.client = action.payload.client;
@@ -243,7 +274,6 @@ const authSlice = createSlice({
     });
     builder.addCase(signIn.fulfilled, (state, action) => {
       state.loading = false;
-      state.initialized = true;
       state.user = action.payload.user;
       state.client = action.payload.client;
       state.session = action.payload.session;
@@ -257,7 +287,6 @@ const authSlice = createSlice({
       state.user = null;
       state.client = null;
       state.session = null;
-      state.initialized = true;
     });
 
     builder.addCase(refreshClient.fulfilled, (state, action) => {
@@ -265,7 +294,10 @@ const authSlice = createSlice({
     });
 
     builder.addCase(refreshClient.rejected, (state, action) => {
-      console.error("Failed to refresh client:", action.payload);
+      console.error(
+        "Failed to refresh client:",
+        action.error || action.payload,
+      );
     });
   },
 });
