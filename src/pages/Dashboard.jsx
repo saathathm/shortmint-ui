@@ -651,18 +651,18 @@ export default function Dashboard() {
           </div>
         )}
 
-        {/* Style picker */}
-        <div>
-          <label className="text-xs font-semibold text-text-muted uppercase tracking-wide mb-2 block">Video style</label>
-          <StylePicker value={style} onChange={setStyle} />
-        </div>
-
         {/* Error */}
         {error && (
           <div className="bg-red-50 border border-red-100 text-error text-sm rounded-xl p-3 flex items-center gap-2">
             <AlertCircle size={15} /> {error}
           </div>
         )}
+
+        {/* Style picker */}
+        <div>
+          <label className="text-xs font-semibold text-text-muted uppercase tracking-wide mb-2 block">Video style</label>
+          <StylePicker value={style} onChange={setStyle} />
+        </div>
 
         {/* Submit */}
         <button
