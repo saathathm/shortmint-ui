@@ -372,7 +372,7 @@ export default function Dashboard() {
       ) : rangeStatus === 'too-short' ? (
         <div>
           <p className="font-semibold text-error text-xs">Selection too short</p>
-          <p className="text-error text-xs mt-0.5">Please select at least 2 minutes.</p>
+          <p className="text-error text-xs mt-0.5">Please select more than 2 minutes.</p>
         </div>
       ) : rangeStatus === 'warning' ? (
         <div>
@@ -494,7 +494,17 @@ export default function Dashboard() {
 
             <div className="mt-1">
               <p className="text-xs text-text-dim mb-1.5">
-                Supported on <span className="font-semibold capitalize">{clientPlan}</span> plan:
+                {clientPlan === "trial" ? (
+                  <>
+                    Supported on{" "}
+                    <span className="font-semibold capitalize">
+                      {clientPlan}
+                    </span>{" "}
+                    plan:
+                  </>
+                ) : (
+                  "Supported platforms:"
+                )}
               </p>
               <div className="flex flex-wrap gap-1.5">
                 {allowedPlatforms.filter(p => p !== 'upload').map(name => (
@@ -502,9 +512,9 @@ export default function Dashboard() {
                     {name}
                   </span>
                 ))}
-                {clientPlan !== 'pro' && (
+                {clientPlan === 'trial' && (
                   <Link to="/pricing" className="text-xs text-text-dim hover:text-primary transition-colors">
-                    + more with upgrade
+                    Upgrade to unlock more
                   </Link>
                 )}
               </div>
