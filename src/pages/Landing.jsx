@@ -47,9 +47,9 @@ const HOW_IT_WORKS = [
   },
   {
     step: "03",
-    title: "Review, edit, and publish",
+    title: "Review, edit, and download",
     description:
-      "Watch each clip, tweak the title if you want, then publish directly to YouTube Shorts or Facebook Reels - or download.",
+      "Watch each clip, Take the title and description if you want, then download and post wherever you like.",
     icon: "🚀",
   },
 ];
@@ -63,9 +63,9 @@ const FEATURES = [
   },
   {
     icon: Globe,
-    title: "Publish everywhere",
+    title: "Multiple platforms",
     description:
-      "One click to post directly to YouTube Shorts and Facebook Reels.",
+      "Supports YouTube, Facebook, Instagram, TikTok, Vimeo, and more. Upload your own files too.",
   },
   {
     icon: BarChart2,
@@ -83,28 +83,36 @@ const FEATURES = [
 
 const FAQS = [
   {
-    q: "How long does it take to process a video?",
-    a: "Usually 5-10 minutes for a 30-60 minute video. Longer videos may take a bit more. The AI analyses the full audio to find the best moments.",
+    q: "How long does it take?",
+    a: "Most videos are ready in under 8 minutes. The shorter the section you select, the faster it goes.",
   },
   {
-    q: "What languages does ShortMint support?",
-    a: "ShortMint works with any spoken language. Tamil, Arabic, English, Tanglish (mixed Tamil-English), Urdu, and more - the AI transcribes and analyses whatever is spoken.",
+    q: "What languages does it work with?",
+    a: "Any spoken language. English, Spanish, French, German, Arabic, Tamil, Urdu — if someone is speaking it, ShortMint can work with it.",
   },
   {
-    q: "Do I need to connect my YouTube or Facebook account?",
-    a: "Only if you want to publish directly. You can always download the clips and upload them manually. Connecting your accounts is optional.",
+    q: "Do I need to connect any accounts?",
+    a: "No. Download your clips and post them wherever you like. No accounts needed.",
   },
   {
-    q: 'What counts as "hours"?',
-    a: "Hours refers to the total duration of videos you process per month. A 30-minute lecture uses 0.5 hours of your monthly allowance.",
+    q: "How do hours work?",
+    a: "You pay for the minutes you process, not the full video length. Select a 20-minute section — that uses 0.33 hours. Monthly plan hours reset every month. One-time hours never expire.",
   },
   {
-    q: "Can I process the same video more than once?",
-    a: "Yes. Each time you process the same video, the AI may find different clips - it is non-deterministic. All clip batches are saved in your history.",
+    q: "Which platforms does it support?",
+    a: "YouTube, Facebook, Instagram, TikTok, Vimeo, Rumble, Loom, Dropbox — and you can upload your own files too. Everything except the free trial.",
   },
   {
-    q: "What if the AI picks clips I don't like?",
-    a: "You can process the video again and get a fresh set of 3 clips. You can also edit the title and description before publishing.",
+    q: "Can I upload my own video?",
+    a: "Yes. Drop in any MP4, MOV, MKV, AVI, or WEBM file up to 500MB. Perfect for videos that aren't publicly available online.",
+  },
+  {
+    q: "Can I run the same video again?",
+    a: "Yes. Every run may find different moments — the AI is non-deterministic. All your clip batches are saved in History.",
+  },
+  {
+    q: "What if I don't like the clips?",
+    a: "Run it again. You'll get a fresh set of 3 clips. Each clip also has an editable title and description if you want to tweak anything before sharing.",
   },
 ];
 
@@ -189,7 +197,8 @@ export default function Landing() {
         </h1>
         <p className="text-text-muted text-lg mb-8 max-w-xl mx-auto leading-relaxed">
           ShortMint uses AI to find the 3 best clips in any lecture, podcast, or
-          interview. Ready to publish to YouTube Shorts and Facebook Reels.
+          interview. Download and share them anywhere — YouTube Shorts, Facebook
+          Reels, TikTok, and more.
         </p>
         <div className="flex items-center justify-center gap-3 flex-wrap">
           {!initialized ? null : hasActivePlan ? (
