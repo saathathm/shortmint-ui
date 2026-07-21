@@ -214,6 +214,27 @@ export default function Dashboard() {
       return
     }
 
+    // Check duration client-side before uploading
+    const clientDuration = await new Promise((resolve) => {
+      const video = document.createElement("video");
+      video.preload = "metadata";
+      const url = URL.createObjectURL(file);
+      video.onloadedmetadata = () => {
+        URL.revokeObjectURL(url);
+        resolve(Math.floor(video.duration));
+      };
+      video.onerror = () => {
+        URL.revokeObjectURL(url);
+        resolve(0);
+      };
+      video.src = url;
+    });
+
+    if (clientDuration > 0 && clientDuration < 120) {
+      setError("Please upload a video longer than 2 minutes.");
+      return;
+    }
+
     setError('')
     setUploadPreview({ name: file.name, size: (file.size / (1024 * 1024)).toFixed(1) + ' MB' })
     setUploadProgress(0)
