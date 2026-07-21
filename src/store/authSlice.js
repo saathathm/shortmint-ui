@@ -233,6 +233,7 @@ const authSlice = createSlice({
     },
     setClient: (state, action) => {
       state.client = action.payload;
+      state.initialized = true;
     },
   },
   extraReducers: (builder) => {
@@ -259,6 +260,7 @@ const authSlice = createSlice({
     });
     builder.addCase(signUp.fulfilled, (state, action) => {
       state.loading = false;
+      state.initialized = true;
       state.user = action.payload.user;
       state.session = action.payload.session;
       state.client = action.payload.client;
@@ -266,6 +268,7 @@ const authSlice = createSlice({
     builder.addCase(signUp.rejected, (state, action) => {
       state.loading = false;
       state.error = action.payload;
+      state.initialized = true;
     });
 
     builder.addCase(signIn.pending, (state) => {
@@ -274,6 +277,7 @@ const authSlice = createSlice({
     });
     builder.addCase(signIn.fulfilled, (state, action) => {
       state.loading = false;
+      state.initialized = true;
       state.user = action.payload.user;
       state.client = action.payload.client;
       state.session = action.payload.session;
@@ -281,16 +285,19 @@ const authSlice = createSlice({
     builder.addCase(signIn.rejected, (state, action) => {
       state.loading = false;
       state.error = action.payload;
+      state.initialized = true;
     });
 
     builder.addCase(signOut.fulfilled, (state) => {
       state.user = null;
       state.client = null;
       state.session = null;
+      state.initialized = true;
     });
 
     builder.addCase(refreshClient.fulfilled, (state, action) => {
       state.client = action.payload;
+      state.initialized = true;
     });
 
     builder.addCase(refreshClient.rejected, (state, action) => {
