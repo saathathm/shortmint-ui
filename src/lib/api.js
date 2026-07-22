@@ -127,3 +127,6 @@ export const disconnectYouTube = () =>
   api.post("/api/settings/youtube-disconnect");
 
 export default api;
+
+// Profile
+export const updateProfile = (name) => api.patch("/api/auth/profile", { name });

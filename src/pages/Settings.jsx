@@ -13,6 +13,7 @@ import { supabase } from "../lib/supabase.js";
 import {
   // getYouTubeConnectUrl,
   cancelSubscription,
+  updateProfile,
 } from "../lib/api.js";
 import {
   // Youtube,
@@ -43,11 +44,16 @@ export default function Settings() {
   const handleSaveProfile = async (e) => {
     e.preventDefault();
     setSavingProfile(true);
-    await supabase.from("clients").update({ name }).eq("id", user.id);
-    await dispatch(refreshClient());
-    setSavingProfile(false);
-    setProfileSaved(true);
-    setTimeout(() => setProfileSaved(false), 2000);
+    try {
+      await updateProfile(name);
+      await dispatch(refreshClient());
+      setProfileSaved(true);
+      setTimeout(() => setProfileSaved(false), 2000);
+    } catch (e) {
+      alert("Could not save profile. Please try again.");
+    } finally {
+      setSavingProfile(false);
+    }
   };
 
   const handlePasswordReset = async () => {
