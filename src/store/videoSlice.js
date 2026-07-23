@@ -9,7 +9,10 @@ export const startProcessing = createAsyncThunk(
   async ({ videoUrl, clientId, style, startSeconds, endSeconds, videoInfo }, { rejectWithValue }) => {
     try {
       const { data } = await apiProcessVideo(videoUrl, clientId, style, startSeconds, endSeconds, videoInfo)
-      return data
+      return {
+        ...data,
+        selected_duration: (endSeconds || 0) - (startSeconds || 0)  // ← add this
+      }
     } catch (e) {
       return rejectWithValue(e.response?.data?.error || 'Failed to start processing.')
     }
@@ -56,6 +59,7 @@ const videoSlice = createSlice({
     clips: [],
     loading: false,
     error: null,
+    selectedDuration: 0,
   },
   reducers: {
     resetVideo: (state) => {
@@ -66,6 +70,7 @@ const videoSlice = createSlice({
       state.clips = []
       state.loading = false
       state.error = null
+      state.selectedDuration = 0
     },
     updateClipField: (state, action) => {
       const { clipId, field, value } = action.payload
@@ -80,6 +85,7 @@ const videoSlice = createSlice({
       state.loading = false
       state.currentVideoId = action.payload.video_id
       state.status = 'processing'
+      state.selectedDuration = action.payload.selected_duration || 0
     })
     builder.addCase(startProcessing.rejected, (state, action) => {
       state.loading = false
