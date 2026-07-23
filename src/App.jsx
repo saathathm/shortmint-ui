@@ -16,6 +16,7 @@ import History from './pages/History.jsx'
 import Settings from './pages/Settings.jsx'
 import Pricing from './pages/Pricing.jsx'
 import Privacy from './pages/Privacy.jsx'
+import Contact from './pages/Contact.jsx'
 
 export default function App() {
   const dispatch = useDispatch()
