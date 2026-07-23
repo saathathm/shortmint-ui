@@ -448,13 +448,25 @@ export default function Landing() {
               Pricing
             </Link>
             <Link
+              to="/terms"
+              className="hover:text-text-primary transition-colors"
+            >
+              Terms
+            </Link>
+            <Link
               to="/privacy"
               className="hover:text-text-primary transition-colors"
             >
-              Privacy Policy
+              Privacy
+            </Link>
+            <Link
+              to="/refunds"
+              className="hover:text-text-primary transition-colors"
+            >
+              Refunds
             </Link>
             <a
-              href="mailto:hello@addmora.com"
+              href="mailto:saadhath@addmora.com"
               className="hover:text-text-primary transition-colors"
             >
               Support

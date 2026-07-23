@@ -12,6 +12,7 @@ import {
   Zap,
 } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
+import CookieBanner from "./CookieBanner.jsx";
 
 export default function Layout({ children }) {
   const { isAuthenticated, client, initialized } = useAuth();
@@ -241,6 +242,9 @@ export default function Layout({ children }) {
 
       {/* MAIN CONTENT */}
       <main className="max-w-5xl mx-auto px-4 py-8">{children}</main>
+
+      {/* Cookie Banner */}
+      <CookieBanner />
     </div>
   );
 }
