@@ -50,6 +50,13 @@ export default function Layout({ children }) {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  useEffect(() => {
+    if (client && window.$crisp) {
+      window.$crisp.push(["set", "user:email", [client.email]]);
+      window.$crisp.push(["set", "user:nickname", [client.name]]);
+    }
+  }, [client]);
+
   return (
     <div className="min-h-screen bg-bg-primary">
       {/* HEADER */}

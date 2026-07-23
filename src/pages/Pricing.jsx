@@ -177,15 +177,15 @@ export default function Pricing() {
           );
         })}
       </div>
-
       <p className="text-center text-sm text-text-dim mt-8">
-        All plans include a 7-day money-back guarantee. Questions?{" "}
+        All plans include a 7-day money-back guarantee. Payment issue?{" "}
         <a
-          href="mailto:hello@addmora.com"
+          href="mailto:saadhath@addmora.com"
           className="text-primary hover:underline"
         >
-          Contact us
-        </a>
+          Email us
+        </a>{" "}
+        and we'll sort it out fast.
       </p>
     </div>
   );

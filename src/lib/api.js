@@ -130,6 +130,3 @@ export default api;
 
 // Profile
 export const updateProfile = (name) => api.patch("/api/auth/profile", { name });
-
-// Contact
-export const sendContactMessage = (data) => api.post("/api/contact", data);

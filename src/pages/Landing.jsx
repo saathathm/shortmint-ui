@@ -453,12 +453,12 @@ export default function Landing() {
             >
               Privacy Policy
             </Link>
-            <Link
-              to="/contact"
+            <a
+              href="mailto:hello@addmora.com"
               className="hover:text-text-primary transition-colors"
             >
-              Contact
-            </Link>
+              Support
+            </a>
             <span className="text-text-dim">© 2026 Addmora</span>
           </div>
         </div>
