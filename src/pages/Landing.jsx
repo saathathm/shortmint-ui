@@ -227,8 +227,7 @@ export default function Landing() {
         <h1 className="text-4xl sm:text-5xl font-extrabold text-text-primary leading-tight tracking-tight mb-4">
           Your long videos,
           <br />
-          <span className="text-primary">turned into Shorts</span> –
-          automatically
+          <span className="text-primary">Shorts in minutes</span>
         </h1>
         <p className="text-text-muted text-lg mb-8 max-w-xl mx-auto leading-relaxed">
           Most video tools are overcomplicated. ShortMint isn't. Paste a link.
