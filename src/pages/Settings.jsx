@@ -41,6 +41,9 @@ export default function Settings() {
   const [cancelSuccess, setCancelSuccess] = useState(false);
   const [cancelError, setCancelError] = useState("");
 
+  const isGoogleUser = user?.app_metadata?.provider === 'google' ||
+  user?.app_metadata?.providers?.includes('google')
+
   const handleSaveProfile = async (e) => {
     e.preventDefault();
     setSavingProfile(true);
@@ -167,29 +170,31 @@ export default function Settings() {
       </div>
 
       {/* Password */}
-      <div className="card p-5">
-        <div className="flex items-center gap-2 mb-4">
-          <Lock size={16} className="text-text-muted" />
-          <h2 className="font-semibold text-text-primary">Password</h2>
-        </div>
-        {pwSent ? (
-          <div className="flex items-center gap-2 text-success text-sm">
-            <CheckCircle size={16} />
-            Password reset link sent to {user?.email}
+      {!isGoogleUser && (
+        <div className="card p-5">
+          <div className="flex items-center gap-2 mb-4">
+            <Lock size={16} className="text-text-muted" />
+            <h2 className="font-semibold text-text-primary">Password</h2>
           </div>
-        ) : (
-          <button
-            onClick={handlePasswordReset}
-            disabled={changingPassword}
-            className="btn-secondary text-sm py-2 flex items-center gap-2"
-          >
-            {changingPassword ? (
-              <Loader size={14} className="animate-spin" />
-            ) : null}
-            Send password reset email
-          </button>
-        )}
-      </div>
+          {pwSent ? (
+            <div className="flex items-center gap-2 text-success text-sm">
+              <CheckCircle size={16} />
+              Password reset link sent to {user?.email}
+            </div>
+          ) : (
+            <button
+              onClick={handlePasswordReset}
+              disabled={changingPassword}
+              className="btn-secondary text-sm py-2 flex items-center gap-2"
+            >
+              {changingPassword ? (
+                <Loader size={14} className="animate-spin" />
+              ) : null}
+              Send password reset email
+            </button>
+          )}
+        </div>
+      )}
 
       {/* Connected accounts */}
       {/* <div className="card p-5">

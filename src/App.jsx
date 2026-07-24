@@ -20,6 +20,7 @@ import Terms from './pages/Terms.jsx'
 import Refunds from './pages/Refunds.jsx'
 import NotFound from './pages/NotFound.jsx'
 import ForgotPassword from './pages/ForgotPassword.jsx'
+import ResetPassword from './pages/ResetPassword.jsx'
 
 export default function App() {
   const dispatch = useDispatch()
@@ -80,6 +81,7 @@ export default function App() {
         <Route path="/privacy" element={<Layout><Privacy /></Layout>} />
         <Route path="/terms" element={<Layout><Terms /></Layout>} />
         <Route path="/refunds" element={<Layout><Refunds /></Layout>} />
+        <Route path="/reset-password" element={<Layout><ResetPassword /></Layout>} />
         <Route path="/forgot-password" element={<Layout><ForgotPassword /></Layout>} />
         <Route path="/dashboard" element={<ProtectedRoute><Layout><Dashboard /></Layout></ProtectedRoute>} />
         <Route path="/processing/:videoId" element={<ProtectedRoute><Layout><Processing /></Layout></ProtectedRoute>} />
