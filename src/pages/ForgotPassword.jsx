@@ -2,18 +2,33 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { supabase } from "../lib/supabase.js";
 import { CheckCircle, Loader, Scissors } from "lucide-react";
+import { checkProvider } from "../lib/api.js";
 
 export default function ForgotPassword() {
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const [sent, setSent] = useState(false);
   const [error, setError] = useState("");
+  const [isGoogleUser, setIsGoogleUser] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError("");
+
     try {
+      // Check provider first
+      const { data } = await checkProvider(email);
+      const { provider } = data;
+
+      if (provider === "google") {
+        // Show helpful message for Google users
+        setSent(true);
+        setIsGoogleUser(true);
+        return;
+      }
+
+      // Email user — send reset email
       const { error } = await supabase.auth.resetPasswordForEmail(email, {
         redirectTo: `${window.location.origin}/reset-password`,
       });
@@ -44,20 +59,39 @@ export default function ForgotPassword() {
         {sent ? (
           <div className="card p-6 text-center">
             <CheckCircle size={36} className="text-success mx-auto mb-3" />
-            <h2 className="font-bold text-text-primary mb-1">
-              Check your inbox
-            </h2>
-            <p className="text-sm text-text-muted">
-              If an account exists with that email, you'll receive a reset link
-              to <strong>{email}</strong> shortly. Check your inbox and spam
-              folder.
-            </p>
-            <Link
-              to="/login"
-              className="btn-secondary text-sm py-2 px-4 inline-block mt-5"
-            >
-              Back to login
-            </Link>
+            {isGoogleUser ? (
+              <>
+                <h2 className="font-bold text-text-primary mb-1">
+                  Use Google to sign in
+                </h2>
+                <p className="text-sm text-text-muted">
+                  This email is linked to a Google account. You don't need a
+                  password — just sign in with Google.
+                </p>
+                <Link
+                  to="/login"
+                  className="btn-primary text-sm py-2 px-4 inline-block mt-5"
+                >
+                  Sign in with Google
+                </Link>
+              </>
+            ) : (
+              <>
+                <h2 className="font-bold text-text-primary mb-1">
+                  Check your inbox
+                </h2>
+                <p className="text-sm text-text-muted">
+                  If an account exists with that email, you'll receive a reset
+                  link shortly. Check your inbox and spam folder.
+                </p>
+                <Link
+                  to="/login"
+                  className="btn-secondary text-sm py-2 px-4 inline-block mt-5"
+                >
+                  Back to login
+                </Link>
+              </>
+            )}
           </div>
         ) : (
           <div className="card p-6">
