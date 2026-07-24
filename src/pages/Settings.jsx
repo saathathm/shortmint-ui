@@ -41,10 +41,10 @@ export default function Settings() {
   const [cancelSuccess, setCancelSuccess] = useState(false);
   const [cancelError, setCancelError] = useState("");
 
-  const isGoogleUser = user?.app_metadata?.provider === 'google' ||
-  user?.app_metadata?.providers?.includes('google')
+  const providers = user?.app_metadata?.providers || []
+  const hasPassword = providers.includes('email')
 
-  console.log(isGoogleUser);
+  console.log(hasPassword);
   console.log("test");
   console.log(user);
 
@@ -174,7 +174,7 @@ export default function Settings() {
       </div>
 
       {/* Password */}
-      {!isGoogleUser && (
+      {hasPassword && (
         <div className="card p-5">
           <div className="flex items-center gap-2 mb-4">
             <Lock size={16} className="text-text-muted" />

@@ -130,7 +130,3 @@ export default api;
 
 // Profile
 export const updateProfile = (name) => api.patch("/api/auth/profile", { name });
-
-// check if google user or not
-export const checkProvider = (email) =>
-  api.post('/api/auth/check-provider', { email })
