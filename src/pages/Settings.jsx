@@ -44,6 +44,10 @@ export default function Settings() {
   const isGoogleUser = user?.app_metadata?.provider === 'google' ||
   user?.app_metadata?.providers?.includes('google')
 
+  console.log(isGoogleUser);
+  console.log("test");
+  console.log(user);
+
   const handleSaveProfile = async (e) => {
     e.preventDefault();
     setSavingProfile(true);
