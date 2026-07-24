@@ -8,6 +8,7 @@ import {
   ChevronUp,
   CheckCircle,
   Sparkles,
+  Loader,
 } from "lucide-react";
 import { useState } from "react";
 import { useAuth } from "../hooks/useAuth.js";
@@ -214,50 +215,64 @@ function DemoClip({ clip }) {
 }
 
 function LeadForm() {
-  const [email, setEmail] = useState('')
-  const [contentType, setContentType] = useState('')
-  const [loading, setLoading] = useState(false)
-  const [done, setDone] = useState(false)
-  const [error, setError] = useState('')
+  const [email, setEmail] = useState("");
+  const [contentType, setContentType] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [done, setDone] = useState(false);
+  const [error, setError] = useState("");
 
   const handleSubmit = async (e) => {
-    e.preventDefault()
-    setLoading(true)
-    setError('')
+    e.preventDefault();
+    setLoading(true);
+    setError("");
     try {
-      await submitLead(email, contentType)
-      setDone(true)
+      await submitLead(email, contentType);
+      setDone(true);
     } catch (err) {
-      setError(err.response?.data?.error || 'Something went wrong. Please try again.')
+      setError(
+        err.response?.data?.error || "Something went wrong. Please try again.",
+      );
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   if (done) {
     return (
       <div className="text-center">
         <CheckCircle size={36} className="text-success mx-auto mb-3" />
         <p className="font-semibold text-text-primary">You're on the list!</p>
-        <p className="text-sm text-text-muted mt-1">We'll be in touch soon. Check your inbox.</p>
+        <p className="text-sm text-text-muted mt-1">
+          We'll be in touch soon. Check your inbox.
+        </p>
       </div>
-    )
+    );
   }
 
   return (
     <form onSubmit={handleSubmit} className="space-y-3">
-      <input
-        type="email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        className="input-field text-center"
-        placeholder="your@email.com"
-        required
-      />
+      <div className="flex gap-2">
+        <input
+          type="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          className="input-field flex-1"
+          placeholder="your@email.com"
+          required
+        />
+        <button
+          type="submit"
+          disabled={loading}
+          className="btn-primary px-5 py-2.5 flex items-center gap-2 shrink-0"
+        >
+          {loading ? <Loader size={15} className="animate-spin" /> : null}
+          Subscribe
+        </button>
+      </div>
       <select
         value={contentType}
         onChange={(e) => setContentType(e.target.value)}
-        className="input-field text-text-muted"
+        className="input-field text-text-muted text-sm"
       >
         <option value="">What type of content do you create? (optional)</option>
         <option value="lectures">Lectures / Islamic content</option>
@@ -266,20 +281,10 @@ function LeadForm() {
         <option value="education">Education / Tutorials</option>
         <option value="other">Other</option>
       </select>
-      {error && (
-        <p className="text-xs text-error">{error}</p>
-      )}
-      <button
-        type="submit"
-        disabled={loading}
-        className="btn-primary w-full py-3 flex items-center justify-center gap-2"
-      >
-        {loading ? <Loader size={16} className="animate-spin" /> : null}
-        Keep me updated
-      </button>
+      {error && <p className="text-xs text-error">{error}</p>}
       <p className="text-xs text-text-dim">No spam. Unsubscribe anytime.</p>
     </form>
-  )
+  );
 }
 
 export default function Landing() {
@@ -572,7 +577,8 @@ export default function Landing() {
             Not ready yet? That's okay.
           </h2>
           <p className="text-text-muted text-sm mb-6">
-            Leave your email and we'll send you creator tips, updates, and let you know when new features drop.
+            Leave your email and we'll send you creator tips, updates, and let
+            you know when new features drop.
           </p>
           <LeadForm />
         </div>
