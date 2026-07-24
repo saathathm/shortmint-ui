@@ -15,40 +15,44 @@ import {
 import { submitFeedback } from "../lib/api.js";
 
 function FeedbackBanner({ videoId }) {
-  const [feedback, setFeedback] = useState(null)
-  const [comment, setComment] = useState('')
-  const [submitted, setSubmitted] = useState(false)
-  const [showComment, setShowComment] = useState(false)
-  const [loading, setLoading] = useState(false)
+  const storageKey = `feedback_${videoId}`;
+  const [feedback, setFeedback] = useState(null);
+  const [comment, setComment] = useState("");
+  const [submitted, setSubmitted] = useState(
+    () => !!localStorage.getItem(storageKey),
+  );
+  const [showComment, setShowComment] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const handleFeedback = async (type) => {
-    setFeedback(type)
-    if (type === 'good') {
+    setFeedback(type);
+    if (type === "good") {
       try {
-        await submitFeedback(videoId, 'good', null)
+        await submitFeedback(videoId, "good", null);
       } catch (e) {}
-      setSubmitted(true)
+      localStorage.setItem(storageKey, "good");
+      setSubmitted(true);
     } else {
-      setShowComment(true)
+      setShowComment(true);
     }
-  }
+  };
 
   const handleSubmit = async () => {
-    setLoading(true)
+    setLoading(true);
     try {
-      await submitFeedback(videoId, 'bad', comment)
+      await submitFeedback(videoId, "bad", comment);
     } catch (e) {}
-    setLoading(false)
-    setSubmitted(true)
-  }
+    localStorage.setItem(storageKey, "bad");
+    setLoading(false);
+    setSubmitted(true);
+  };
 
-  if (submitted) {
-    return (
-      <div className="bg-green-50 border border-green-200 rounded-xl p-4 mb-6 text-center">
-        <p className="text-sm font-semibold text-success">Thanks for your feedback! 🙏</p>
-      </div>
-    )
-  }
+  const handleSkip = () => {
+    localStorage.setItem(storageKey, "skipped");
+    setSubmitted(true);
+  };
+
+  if (submitted) return null;
 
   return (
     <div className="bg-bg-surface border border-border rounded-xl p-4 mb-6">
@@ -59,13 +63,13 @@ function FeedbackBanner({ videoId }) {
           </p>
           <div className="flex items-center gap-2">
             <button
-              onClick={() => handleFeedback('good')}
+              onClick={() => handleFeedback("good")}
               className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium bg-green-50 text-success hover:bg-green-100 transition-all"
             >
               <ThumbsUp size={14} /> Great
             </button>
             <button
-              onClick={() => handleFeedback('bad')}
+              onClick={() => handleFeedback("bad")}
               className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium bg-red-50 text-error hover:bg-red-100 transition-all"
             >
               <ThumbsDown size={14} /> Not great
@@ -74,7 +78,9 @@ function FeedbackBanner({ videoId }) {
         </div>
       ) : showComment ? (
         <div className="space-y-3">
-          <p className="text-sm font-semibold text-text-primary">What went wrong?</p>
+          <p className="text-sm font-semibold text-text-primary">
+            What went wrong?
+          </p>
           <textarea
             value={comment}
             onChange={(e) => setComment(e.target.value)}
@@ -92,7 +98,7 @@ function FeedbackBanner({ videoId }) {
               Send feedback
             </button>
             <button
-              onClick={() => setSubmitted(true)}
+              onClick={handleSkip}
               className="text-xs text-text-dim hover:text-text-muted transition"
             >
               Skip
@@ -101,7 +107,7 @@ function FeedbackBanner({ videoId }) {
         </div>
       ) : null}
     </div>
-  )
+  );
 }
 
 export default function Results() {
