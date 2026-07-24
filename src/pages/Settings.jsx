@@ -32,7 +32,6 @@ export default function Settings() {
   const [savingProfile, setSavingProfile] = useState(false);
   const [name, setName] = useState(client?.name || "");
   const [profileSaved, setProfileSaved] = useState(false);
-  const [changingPassword, setChangingPassword] = useState(false);
   // const [searchParams, setSearchParams] = useSearchParams();
   // const youtubeStatus = searchParams.get("youtube");
   const [showCancelModal, setShowCancelModal] = useState(false);
