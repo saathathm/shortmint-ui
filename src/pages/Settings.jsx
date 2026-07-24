@@ -33,7 +33,6 @@ export default function Settings() {
   const [name, setName] = useState(client?.name || "");
   const [profileSaved, setProfileSaved] = useState(false);
   const [changingPassword, setChangingPassword] = useState(false);
-  const [pwSent, setPwSent] = useState(false);
   // const [searchParams, setSearchParams] = useSearchParams();
   // const youtubeStatus = searchParams.get("youtube");
   const [showCancelModal, setShowCancelModal] = useState(false);
@@ -43,6 +42,13 @@ export default function Settings() {
 
   const providers = user?.app_metadata?.providers || []
   const hasPassword = providers.includes('email')
+
+  const [currentPassword, setCurrentPassword] = useState('')
+  const [newPassword, setNewPassword] = useState('')
+  const [confirmPassword, setConfirmPassword] = useState('')
+  const [changingPassword, setChangingPassword] = useState(false)
+  const [passwordError, setPasswordError] = useState('')
+  const [passwordSuccess, setPasswordSuccess] = useState(false)
 
   const handleSaveProfile = async (e) => {
     e.preventDefault();
@@ -59,13 +65,50 @@ export default function Settings() {
     }
   };
 
-  const handlePasswordReset = async () => {
+  const handleChangePassword = async (e) => {
+    e.preventDefault();
+    setPasswordError("");
+    setPasswordSuccess(false);
+
+    if (newPassword.length < 8) {
+      setPasswordError("New password must be at least 8 characters.");
+      return;
+    }
+    if (newPassword !== confirmPassword) {
+      setPasswordError("Passwords do not match.");
+      return;
+    }
+
     setChangingPassword(true);
-    await supabase.auth.resetPasswordForEmail(user.email, {
-      redirectTo: `${window.location.origin}/settings`,
-    });
-    setChangingPassword(false);
-    setPwSent(true);
+    try {
+      // Verify current password by signing in first
+      const { error: signInError } = await supabase.auth.signInWithPassword({
+        email: user.email,
+        password: currentPassword,
+      });
+      if (signInError) {
+        setPasswordError("Current password is incorrect.");
+        return;
+      }
+
+      // Update to new password
+      const { error } = await supabase.auth.updateUser({
+        password: newPassword,
+      });
+      if (error) throw error;
+
+      setPasswordSuccess(true);
+      setCurrentPassword("");
+      setNewPassword("");
+      setConfirmPassword("");
+      setTimeout(() => setPasswordSuccess(false), 3000);
+    } catch (err) {
+      setPasswordError(
+        err.message || "Failed to change password. Please try again.",
+      );
+    } finally {
+      setChangingPassword(false);
+    }
   };
 
   // const handleConnectYoutube = async () => {
@@ -174,25 +217,73 @@ export default function Settings() {
         <div className="card p-5">
           <div className="flex items-center gap-2 mb-4">
             <Lock size={16} className="text-text-muted" />
-            <h2 className="font-semibold text-text-primary">Password</h2>
+            <h2 className="font-semibold text-text-primary">Change password</h2>
           </div>
-          {pwSent ? (
-            <div className="flex items-center gap-2 text-success text-sm">
-              <CheckCircle size={16} />
-              Password reset link sent to {user?.email}
+          <form onSubmit={handleChangePassword} className="space-y-3">
+            <div>
+              <label className="text-xs font-semibold text-text-muted uppercase tracking-wide mb-1 block">
+                Current password
+              </label>
+              <input
+                type="password"
+                value={currentPassword}
+                onChange={(e) => setCurrentPassword(e.target.value)}
+                className="input-field"
+                placeholder="Your current password"
+                required
+              />
             </div>
-          ) : (
+            <div>
+              <label className="text-xs font-semibold text-text-muted uppercase tracking-wide mb-1 block">
+                New password
+              </label>
+              <input
+                type="password"
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+                className="input-field"
+                placeholder="At least 8 characters"
+                required
+              />
+            </div>
+            <div>
+              <label className="text-xs font-semibold text-text-muted uppercase tracking-wide mb-1 block">
+                Confirm new password
+              </label>
+              <input
+                type="password"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                className="input-field"
+                placeholder="Repeat new password"
+                required
+              />
+            </div>
+
+            {passwordError && (
+              <p className="text-xs text-error bg-red-50 border border-red-100 rounded-xl p-3">
+                {passwordError}
+              </p>
+            )}
+
+            {passwordSuccess && (
+              <div className="flex items-center gap-2 text-success text-sm">
+                <CheckCircle size={14} />
+                Password changed successfully.
+              </div>
+            )}
+
             <button
-              onClick={handlePasswordReset}
+              type="submit"
               disabled={changingPassword}
-              className="btn-secondary text-sm py-2 flex items-center gap-2"
+              className="btn-primary text-sm py-2 px-4 flex items-center gap-2"
             >
               {changingPassword ? (
                 <Loader size={14} className="animate-spin" />
               ) : null}
-              Send password reset email
+              Update password
             </button>
-          )}
+          </form>
         </div>
       )}
 

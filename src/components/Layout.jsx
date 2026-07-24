@@ -65,7 +65,7 @@ export default function Layout({ children }) {
         <div className="max-w-5xl mx-auto px-4 h-16 flex items-center justify-between">
           {/* BRAND */}
           <Link
-            to={isAuthenticated ? "/dashboard" : "/"}
+            to="/"
             className="flex items-center gap-3"
           >
             <div className="w-9 h-9 bg-primary rounded-xl flex items-center justify-center shadow-sm">
@@ -242,6 +242,52 @@ export default function Layout({ children }) {
 
       {/* MAIN CONTENT */}
       <main className="max-w-5xl mx-auto px-4 py-8">{children}</main>
+
+      {/* FOOTER */}
+      <footer className="border-t border-border py-8 px-4 mt-auto">
+        <div className="max-w-5xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div className="flex items-center gap-2">
+            <div className="w-6 h-6 bg-primary rounded-lg flex items-center justify-center">
+              <Scissors size={12} className="text-white" />
+            </div>
+            <span className="font-bold text-text-primary">ShortMint</span>
+            <span className="text-text-dim text-sm">by Addmora</span>
+          </div>
+          <div className="flex items-center gap-5 text-sm text-text-muted flex-wrap justify-center">
+            <Link
+              to="/pricing"
+              className="hover:text-text-primary transition-colors"
+            >
+              Pricing
+            </Link>
+            <Link
+              to="/terms"
+              className="hover:text-text-primary transition-colors"
+            >
+              Terms
+            </Link>
+            <Link
+              to="/privacy"
+              className="hover:text-text-primary transition-colors"
+            >
+              Privacy
+            </Link>
+            <Link
+              to="/refunds"
+              className="hover:text-text-primary transition-colors"
+            >
+              Refunds
+            </Link>
+            <a
+              href="mailto:saadhath@addmora.com"
+              className="hover:text-text-primary transition-colors"
+            >
+              Support
+            </a>
+            <span className="text-text-dim">© 2026 Addmora</span>
+          </div>
+        </div>
+      </footer>
 
       {/* Cookie Banner */}
       <CookieBanner />

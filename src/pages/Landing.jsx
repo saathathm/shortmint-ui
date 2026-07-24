@@ -540,52 +540,6 @@ export default function Landing() {
           </div>
         )}
       </section>
-
-      {/* Footer */}
-      <footer className="border-t border-border py-8 px-4">
-        <div className="max-w-5xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-2">
-            <div className="w-6 h-6 bg-primary rounded-lg flex items-center justify-center">
-              <Scissors size={12} className="text-white" />
-            </div>
-            <span className="font-bold text-text-primary">ShortMint</span>
-            <span className="text-text-dim text-sm">by Addmora</span>
-          </div>
-          <div className="flex items-center gap-5 text-sm text-text-muted">
-            <Link
-              to="/pricing"
-              className="hover:text-text-primary transition-colors"
-            >
-              Pricing
-            </Link>
-            <Link
-              to="/terms"
-              className="hover:text-text-primary transition-colors"
-            >
-              Terms
-            </Link>
-            <Link
-              to="/privacy"
-              className="hover:text-text-primary transition-colors"
-            >
-              Privacy
-            </Link>
-            <Link
-              to="/refunds"
-              className="hover:text-text-primary transition-colors"
-            >
-              Refunds
-            </Link>
-            <a
-              href="mailto:saadhath@addmora.com"
-              className="hover:text-text-primary transition-colors"
-            >
-              Support
-            </a>
-            <span className="text-text-dim">© 2026 Addmora</span>
-          </div>
-        </div>
-      </footer>
     </div>
   );
 }
