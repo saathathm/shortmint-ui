@@ -44,10 +44,6 @@ export default function Settings() {
   const providers = user?.app_metadata?.providers || []
   const hasPassword = providers.includes('email')
 
-  console.log(hasPassword);
-  console.log("test");
-  console.log(user);
-
   const handleSaveProfile = async (e) => {
     e.preventDefault();
     setSavingProfile(true);
