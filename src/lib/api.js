@@ -130,3 +130,11 @@ export default api;
 
 // Profile
 export const updateProfile = (name) => api.patch("/api/auth/profile", { name });
+
+// leads
+export const submitLead = (email, contentType) =>
+  api.post("/api/leads", { email, content_type: contentType });
+
+// feedback
+export const submitFeedback = (videoId, rating, comment) =>
+  api.post("/api/feedback", { video_id: videoId, rating, comment });

@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import { useAuth } from "../hooks/useAuth.js";
+import { submitLead } from "../lib/api.js";
 
 const DEMO_CLIPS = [
   {
@@ -210,6 +211,75 @@ function DemoClip({ clip }) {
       </div>
     </div>
   );
+}
+
+function LeadForm() {
+  const [email, setEmail] = useState('')
+  const [contentType, setContentType] = useState('')
+  const [loading, setLoading] = useState(false)
+  const [done, setDone] = useState(false)
+  const [error, setError] = useState('')
+
+  const handleSubmit = async (e) => {
+    e.preventDefault()
+    setLoading(true)
+    setError('')
+    try {
+      await submitLead(email, contentType)
+      setDone(true)
+    } catch (err) {
+      setError(err.response?.data?.error || 'Something went wrong. Please try again.')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  if (done) {
+    return (
+      <div className="text-center">
+        <CheckCircle size={36} className="text-success mx-auto mb-3" />
+        <p className="font-semibold text-text-primary">You're on the list!</p>
+        <p className="text-sm text-text-muted mt-1">We'll be in touch soon. Check your inbox.</p>
+      </div>
+    )
+  }
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-3">
+      <input
+        type="email"
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+        className="input-field text-center"
+        placeholder="your@email.com"
+        required
+      />
+      <select
+        value={contentType}
+        onChange={(e) => setContentType(e.target.value)}
+        className="input-field text-text-muted"
+      >
+        <option value="">What type of content do you create? (optional)</option>
+        <option value="lectures">Lectures / Islamic content</option>
+        <option value="podcasts">Podcasts</option>
+        <option value="interviews">Interviews</option>
+        <option value="education">Education / Tutorials</option>
+        <option value="other">Other</option>
+      </select>
+      {error && (
+        <p className="text-xs text-error">{error}</p>
+      )}
+      <button
+        type="submit"
+        disabled={loading}
+        className="btn-primary w-full py-3 flex items-center justify-center gap-2"
+      >
+        {loading ? <Loader size={16} className="animate-spin" /> : null}
+        Keep me updated
+      </button>
+      <p className="text-xs text-text-dim">No spam. Unsubscribe anytime.</p>
+    </form>
+  )
 }
 
 export default function Landing() {
@@ -492,6 +562,19 @@ export default function Landing() {
               </div>
             </div>
           ))}
+        </div>
+      </section>
+
+      {/* Lead capture */}
+      <section className="py-16 max-w-2xl mx-auto px-4">
+        <div className="card p-8 text-center">
+          <h2 className="text-2xl font-bold text-text-primary mb-2">
+            Not ready yet? That's okay.
+          </h2>
+          <p className="text-text-muted text-sm mb-6">
+            Leave your email and we'll send you creator tips, updates, and let you know when new features drop.
+          </p>
+          <LeadForm />
         </div>
       </section>
 
