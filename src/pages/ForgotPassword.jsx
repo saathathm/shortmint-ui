@@ -48,8 +48,12 @@ export default function ForgotPassword() {
               Check your inbox
             </h2>
             <p className="text-sm text-text-muted">
-              If an account exists with that email, you'll receive a reset link shortly. 
-              Check your inbox and spam folder.
+              We sent a link to <strong>{email}</strong>. Click it to set or
+              reset your password.
+            </p>
+            <p className="text-xs text-text-dim mt-2">
+              Signed up with Google? You can use this link to add a password to
+              your account too.
             </p>
             <Link
               to="/login"
