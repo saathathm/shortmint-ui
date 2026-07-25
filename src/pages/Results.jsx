@@ -12,18 +12,28 @@ import {
   ThumbsUp,
   ThumbsDown,
 } from "lucide-react";
-import { submitFeedback } from "../lib/api.js";
+import { checkFeedback, submitFeedback } from "../lib/api.js";
 
 function FeedbackBanner({ videoId }) {
-  const storageKey = `feedback_${videoId}`;
   const [feedback, setFeedback] = useState(null);
   const [comment, setComment] = useState("");
-  const [submitted, setSubmitted] = useState(
-    () => !!localStorage.getItem(storageKey),
-  );
+  const [submitted, setSubmitted] = useState(false);
   const [showComment, setShowComment] = useState(false);
   const [loading, setLoading] = useState(false);
   const [showThanks, setShowThanks] = useState(false);
+  const [checking, setChecking] = useState(true);
+
+  // Check DB on mount
+  useEffect(() => {
+    const check = async () => {
+      try {
+        const { data } = await checkFeedback(videoId);
+        if (data.exists) setSubmitted(true);
+      } catch (e) {}
+      setChecking(false);
+    };
+    check();
+  }, [videoId]);
 
   const handleFeedback = async (type) => {
     setFeedback(type);
@@ -31,7 +41,6 @@ function FeedbackBanner({ videoId }) {
       try {
         await submitFeedback(videoId, "good", null);
       } catch (e) {}
-      localStorage.setItem(storageKey, "good");
       setShowThanks(true);
       setTimeout(() => setShowThanks(false), 3000);
       setSubmitted(true);
@@ -45,7 +54,6 @@ function FeedbackBanner({ videoId }) {
     try {
       await submitFeedback(videoId, "bad", comment);
     } catch (e) {}
-    localStorage.setItem(storageKey, "bad");
     setLoading(false);
     setShowThanks(true);
     setTimeout(() => setShowThanks(false), 3000);
@@ -53,9 +61,10 @@ function FeedbackBanner({ videoId }) {
   };
 
   const handleSkip = () => {
-    localStorage.setItem(storageKey, "skipped");
     setSubmitted(true);
   };
+
+  if (checking) return null;
 
   if (showThanks) {
     if (feedback === "good") {

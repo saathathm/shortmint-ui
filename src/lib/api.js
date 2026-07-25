@@ -136,5 +136,7 @@ export const submitLead = (email, contentType) =>
   api.post("/api/leads", { email, content_type: contentType });
 
 // feedback
+export const checkFeedback = (videoId) => api.get(`/api/feedback/${videoId}`);
+
 export const submitFeedback = (videoId, rating, comment) =>
   api.post("/api/feedback", { video_id: videoId, rating, comment });
