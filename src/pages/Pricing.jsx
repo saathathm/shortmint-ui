@@ -38,7 +38,7 @@ export default function Pricing() {
           Simple, honest pricing
         </h1>
         <p className="text-text-muted mt-2">
-          Choose how you want to pay — no surprises.
+          Choose how you want to pay – no surprises.
         </p>
       </div>
 
@@ -164,7 +164,7 @@ export default function Pricing() {
                   {plan.hours} hours
                   {paymentType === "subscription"
                     ? " per month"
-                    : " — never expire"}
+                    : " – never expire"}
                 </p>
               </div>
 

@@ -21,7 +21,7 @@ export default function Privacy() {
             <li><strong>Account data:</strong> Your name and email address when you sign up.</li>
             <li><strong>Video data:</strong> Video URLs or files you submit for processing, video titles, and processing status.</li>
             <li><strong>Usage data:</strong> How many hours of video you have processed, for billing purposes.</li>
-            <li><strong>Payment data:</strong> Billing is handled by Stripe. We do not store your card details — Stripe handles all payment data securely.</li>
+            <li><strong>Payment data:</strong> Billing is handled by Stripe. We do not store your card details – Stripe handles all payment data securely.</li>
             <li><strong>Technical data:</strong> Basic usage logs for debugging and service improvement.</li>
           </ul>
         </section>
@@ -29,7 +29,7 @@ export default function Privacy() {
         <section>
           <h2 className="text-lg font-bold text-text-primary mb-2">3. How We Use Your Data</h2>
           <ul className="space-y-2 list-disc pl-5">
-            <li>To provide the ShortMint service — processing your videos and generating clips.</li>
+            <li>To provide the ShortMint service – processing your videos and generating clips.</li>
             <li>To manage your subscription or one-time purchase and enforce usage limits.</li>
             <li>To send you important account or service emails such as welcome messages and payment confirmations.</li>
             <li>To respond to your support requests.</li>
@@ -39,14 +39,14 @@ export default function Privacy() {
         <section>
           <h2 className="text-lg font-bold text-text-primary mb-2">4. Data Storage & Security</h2>
           <p>
-            Your account data is stored securely in Supabase (EU region). Video clips are stored temporarily on our server and automatically deleted after a short period — save them locally if you need them long term. We never sell your data to third parties.
+            Your account data is stored securely in Supabase (EU region). Video clips are stored temporarily on our server and automatically deleted after a short period – save them locally if you need them long term. We never sell your data to third parties.
           </p>
         </section>
 
         <section>
           <h2 className="text-lg font-bold text-text-primary mb-2">5. Data Retention</h2>
           <ul className="space-y-2 list-disc pl-5">
-            <li><strong>Video clips:</strong> Deleted automatically after 2 days — download them before then.</li>
+            <li><strong>Video clips:</strong> Deleted automatically after 2 days – download them before then.</li>
             <li><strong>Account data:</strong> Retained until you delete your account.</li>
             <li><strong>Payment records:</strong> Retained as required by law.</li>
           </ul>
@@ -69,18 +69,18 @@ export default function Privacy() {
           <h2 className="text-lg font-bold text-text-primary mb-2">7. Third-Party Services</h2>
           <p>ShortMint uses the following third-party services:</p>
           <ul className="space-y-2 list-disc pl-5 mt-2">
-            <li><strong>Supabase</strong> — database and authentication (EU region)</li>
-            <li><strong>Stripe</strong> — payment processing</li>
-            <li><strong>Google Gemini API</strong> — AI transcription and video analysis</li>
-            <li><strong>Resend</strong> — transactional email delivery</li>
-            <li><strong>Crisp</strong> — customer support chat</li>
+            <li><strong>Supabase</strong> – database and authentication (EU region)</li>
+            <li><strong>Stripe</strong> – payment processing</li>
+            <li><strong>Google Gemini API</strong> – AI transcription and video analysis</li>
+            <li><strong>Resend</strong> – transactional email delivery</li>
+            <li><strong>Crisp</strong> – customer support chat</li>
           </ul>
         </section>
 
         <section>
           <h2 className="text-lg font-bold text-text-primary mb-2">8. Cookies</h2>
           <p>
-            We use only essential cookies required for authentication — session tokens stored in your browser's local storage. We use Crisp for support chat which may set its own cookies. We do not use advertising or tracking cookies.
+            We use only essential cookies required for authentication – session tokens stored in your browser's local storage. We use Crisp for support chat which may set its own cookies. We do not use advertising or tracking cookies.
           </p>
         </section>
 

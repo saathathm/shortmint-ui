@@ -376,7 +376,7 @@ export default function Dashboard() {
     }
   }
 
-  // Usage estimate JSX — shared between URL and upload
+  // Usage estimate JSX – shared between URL and upload
   const UsageEstimate = () => (
     <div className={`rounded-xl p-3 text-sm ${!hasEnoughHours ? 'bg-red-50 border border-red-100' :
         rangeStatus === 'warning' ? 'bg-amber-50 border border-amber-100' :
@@ -414,7 +414,7 @@ export default function Dashboard() {
     <div className="max-w-xl mx-auto">
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-text-primary">Create Shorts</h1>
-        <p className="text-text-muted mt-1 text-sm">Paste a link or upload a video — we'll find the best moments automatically.</p>
+        <p className="text-text-muted mt-1 text-sm">Paste a link or upload a video – we'll find the best moments automatically.</p>
       </div>
 
       <UsageBar />
@@ -635,7 +635,7 @@ export default function Dashboard() {
               </div>
             )}
 
-            {/* Range slider — only after upload complete */}
+            {/* Range slider – only after upload complete */}
             {uploadState === 'done' && uploadDuration > 0 && (
               <div className="card p-4 space-y-4">
                 <div>

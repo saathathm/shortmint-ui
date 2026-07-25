@@ -107,7 +107,7 @@ export default function Layout({ children }) {
                   </Link>
                 ))}
 
-                {/* Upgrade button — desktop, non-pro only */}
+                {/* Upgrade button – desktop, non-pro only */}
                 {client?.plan !== "pro" && (
                   <Link
                     to="/pricing"
@@ -185,7 +185,7 @@ export default function Layout({ children }) {
                       </div>
                     </div>
 
-                    {/* UPGRADE — non-pro only */}
+                    {/* UPGRADE – non-pro only */}
                     {client?.plan !== "pro" && (
                       <Link
                         to="/pricing"

@@ -23,6 +23,7 @@ function FeedbackBanner({ videoId }) {
   );
   const [showComment, setShowComment] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [showThanks, setShowThanks] = useState(false);
 
   const handleFeedback = async (type) => {
     setFeedback(type);
@@ -31,6 +32,8 @@ function FeedbackBanner({ videoId }) {
         await submitFeedback(videoId, "good", null);
       } catch (e) {}
       localStorage.setItem(storageKey, "good");
+      setShowThanks(true);
+      setTimeout(() => setShowThanks(false), 3000);
       setSubmitted(true);
     } else {
       setShowComment(true);
@@ -44,6 +47,8 @@ function FeedbackBanner({ videoId }) {
     } catch (e) {}
     localStorage.setItem(storageKey, "bad");
     setLoading(false);
+    setShowThanks(true);
+    setTimeout(() => setShowThanks(false), 3000);
     setSubmitted(true);
   };
 
@@ -51,6 +56,34 @@ function FeedbackBanner({ videoId }) {
     localStorage.setItem(storageKey, "skipped");
     setSubmitted(true);
   };
+
+  if (showThanks) {
+    if (feedback === "good") {
+      return (
+        <div className="bg-green-50 border border-green-200 rounded-xl p-4 mb-6 text-center animate-in fade-in">
+          <p className="text-sm font-semibold text-green-600">
+            Thanks for your feedback! 🙏
+          </p>
+        </div>
+      );
+    } else if (feedback === "bad") {
+      return (
+        <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 mb-6 text-center animate-in fade-in">
+          <p className="text-sm font-semibold text-amber-700">
+            Got it – thanks for sharing this with us. We'll reach out shortly 🙏
+          </p>
+        </div>
+      );
+    } else {
+      return (
+        <div className="bg-gray-50 border border-gray-200 rounded-xl p-4 mb-6 text-center animate-in fade-in">
+          <p className="text-sm font-semibold text-gray-700">
+            Thanks for your feedback! 🙏
+          </p>
+        </div>
+      );
+    }
+  }
 
   if (submitted) return null;
 

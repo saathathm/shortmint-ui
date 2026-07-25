@@ -10,7 +10,7 @@ export default function Refunds() {
 
         <section>
           <h2 className="text-lg font-bold text-text-primary mb-2">7-Day Money-Back Guarantee</h2>
-          <p>We stand behind ShortMint. If you're not satisfied with your purchase for any reason, contact us within 7 days of your payment and we'll issue a full refund — no questions asked.</p>
+          <p>We stand behind ShortMint. If you're not satisfied with your purchase for any reason, contact us within 7 days of your payment and we'll issue a full refund – no questions asked.</p>
         </section>
 
         <section>
@@ -25,7 +25,7 @@ export default function Refunds() {
 
         <section>
           <h2 className="text-lg font-bold text-text-primary mb-2">Subscriptions</h2>
-          <p>For monthly subscriptions, the 7-day guarantee applies to your most recent payment. If you cancel after 7 days, your subscription will remain active until the end of the current billing period — no further charges will be made.</p>
+          <p>For monthly subscriptions, the 7-day guarantee applies to your most recent payment. If you cancel after 7 days, your subscription will remain active until the end of the current billing period – no further charges will be made.</p>
         </section>
 
         <section>

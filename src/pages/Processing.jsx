@@ -131,7 +131,7 @@ export default function Processing() {
           </h2>
           <p className="text-text-muted text-sm mb-6">
             {error ||
-              "Something interrupted the process. Try again — it usually works on the second attempt."}
+              "Something interrupted the process. Try again – it usually works on the second attempt."}
           </p>
           <Link
             to="/dashboard"
@@ -224,7 +224,7 @@ export default function Processing() {
 
         {/* Leave reassurance */}
         <p className="text-xs text-text-dim mt-6">
-          You can safely leave — we’ll keep working in the background.
+          You can safely leave – we’ll keep working in the background.
           <br />
           Check{" "}
           <Link to="/history" className="text-primary hover:underline">

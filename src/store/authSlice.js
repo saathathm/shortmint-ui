@@ -45,7 +45,7 @@ export const loadSession = createAsyncThunk(
 
       if (!token) return null;
 
-      // Single source of truth — always validate via backend
+      // Single source of truth – always validate via backend
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 8000);
 
