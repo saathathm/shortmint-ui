@@ -39,15 +39,15 @@ export default function Settings() {
   const [cancelSuccess, setCancelSuccess] = useState(false);
   const [cancelError, setCancelError] = useState("");
 
-  const providers = user?.app_metadata?.providers || []
-  const hasPassword = providers.includes('email')
+  const providers = user?.app_metadata?.providers || [];
+  const hasPassword = providers.includes("email");
 
-  const [currentPassword, setCurrentPassword] = useState('')
-  const [newPassword, setNewPassword] = useState('')
-  const [confirmPassword, setConfirmPassword] = useState('')
-  const [changingPassword, setChangingPassword] = useState(false)
-  const [passwordError, setPasswordError] = useState('')
-  const [passwordSuccess, setPasswordSuccess] = useState(false)
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [changingPassword, setChangingPassword] = useState(false);
+  const [passwordError, setPasswordError] = useState("");
+  const [passwordSuccess, setPasswordSuccess] = useState(false);
 
   const handleSaveProfile = async (e) => {
     e.preventDefault();
@@ -150,7 +150,8 @@ export default function Settings() {
   const isSubscription =
     client?.plan_type === "subscription" &&
     !!client?.stripe_subscription_id &&
-    client?.plan !== "trial";
+    client?.plan !== "trial" &&
+    client?.subscription_status !== "inactive";
 
   const isCancelling =
     isSubscription && client?.subscription_cancel_at_period_end;
@@ -420,6 +421,13 @@ export default function Settings() {
           </div>
         )}
 
+        {client?.subscription_status === "past_due" && (
+          <div className="bg-red-50 border border-red-200 text-error text-xs rounded-xl p-3 mb-3">
+            ⚠️ Your last payment failed. Please update your payment method to
+            keep access.
+          </div>
+        )}
+
         {/* Cancel subscription */}
         {isSubscription && !isCancelling && !cancelSuccess && (
           <button
@@ -433,7 +441,9 @@ export default function Settings() {
         {isCancelling && (
           <p className="text-xs text-amber-600 mt-1 flex items-center gap-1">
             ⚠️ Subscription cancels on{" "}
-            {new Date(client.plan_expires_at).toLocaleDateString("en-US", {
+            {new Date(
+              client.current_period_end || client.plan_expires_at,
+            ).toLocaleDateString("en-US", {
               month: "long",
               day: "numeric",
               year: "numeric",
