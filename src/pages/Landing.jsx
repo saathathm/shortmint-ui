@@ -44,7 +44,7 @@ const HOW_IT_WORKS = [
     step: "02",
     title: "AI does the work",
     description:
-      "ShortMint listens to your video, finds the 3 most powerful moments, and writes a title and description for each one. You don't lift a finger.",
+      "ShortMint listens to your video, finds the 2–3 most powerful moments, and writes a title and description for each one. You don't lift a finger.",
     icon: "🧠",
   },
   {
@@ -85,6 +85,16 @@ const FEATURES = [
 
 const WHY_SHORTMINT = [
   {
+    icon: "✂️",
+    title: "2–3 clips, not just one",
+    desc: "Most tools give you one clip and call it done. ShortMint finds 2–3 of the best moments from your video — so you get more content from every upload.",
+  },
+  {
+    icon: "✍️",
+    title: "Ready-to-post titles and descriptions",
+    desc: "Every clip comes with an AI-written title, description, and reason — ready to copy and paste to YouTube, Instagram, or TikTok. No writing needed.",
+  },
+  {
     icon: "😌",
     title: "No confusion. Just paste and go.",
     desc: "Other tools overwhelm you with settings, timelines, and options. ShortMint has one job – find your best moments and hand them to you. That is it.",
@@ -111,8 +121,8 @@ const WHY_SHORTMINT = [
   },
   {
     icon: "🔒",
-    title: "7-day money-back guarantee",
-    desc: "Not happy? Email us within 7 days and we'll refund you in full. No questions, no hassle.",
+    title: "Cancel anytime, refund your balance",
+    desc: "Not happy? Cancel anytime and we'll refund the unused hours remaining on your plan. No time limits, no hassle.",
   },
 ];
 
@@ -147,7 +157,7 @@ const FAQS = [
   },
   {
     q: "What if I don't like the clips?",
-    a: "Run it again. You'll get a fresh set of 3 clips. Each clip also has an editable title and description if you want to tweak anything before sharing.",
+    a: "Run it again. You'll get a fresh set of 2–3 clips. Each clip also has an editable title and description if you want to tweak anything before sharing.",
   },
 ];
 
@@ -334,11 +344,8 @@ export default function Landing() {
               no card needed
             </span>
             <span className="text-xs text-text-muted flex items-center gap-1.5">
-              <CheckCircle size={13} className="text-success" /> 7-day
-              money-back guarantee
-            </span>
-            <span className="text-xs text-text-muted flex items-center gap-1.5">
-              <CheckCircle size={13} className="text-success" /> Cancel anytime
+              <CheckCircle size={13} className="text-success" /> Cancel anytime,
+              refund your balance
             </span>
           </div>
         )}
@@ -465,7 +472,7 @@ export default function Landing() {
           <p className="text-sm text-text-muted mb-4">
             Every new account gets{" "}
             <strong>15 minutes of free processing</strong>. That's enough to
-            turn a real video into 3 ready-to-post Shorts – completely free.
+            turn a real video into 2–3 ready-to-post Shorts – completely free.
           </p>
           {!isAuthenticated && (
             <Link
@@ -602,7 +609,7 @@ export default function Landing() {
           Stop leaving content on the table
         </h2>
         <p className="text-text-muted mb-2">
-          Every long video you post has 3 great Shorts hiding inside it.
+          Every long video you post has 2–3 great Shorts hiding inside it.
         </p>
         <p className="text-text-muted mb-8">
           ShortMint finds them for you – in minutes, in any language, with no
@@ -624,7 +631,7 @@ export default function Landing() {
               <CheckCircle size={18} /> Try it free – no card needed
             </Link>
             <p className="text-xs text-text-dim">
-              7-day money-back guarantee on all paid plans
+              Cancel anytime — unused hours refunded
             </p>
           </div>
         )}

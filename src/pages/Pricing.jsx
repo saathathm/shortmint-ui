@@ -91,7 +91,7 @@ export default function Pricing() {
     <ul className="mt-2 space-y-1">
       {[
         '15 minutes of processing',
-        'AI picks your 3 best clips',
+        'AI picks your 2–3 best clips',
         'YouTube links + file upload',
         'Download clips',
       ].map((f) => (
@@ -218,7 +218,7 @@ export default function Pricing() {
         })}
       </div>
       <p className="text-center text-sm text-text-dim mt-8">
-        All plans include a 7-day money-back guarantee. Payment issue?{" "}
+        Cancel anytime. Unused hours will be refunded. Payment issue?{" "}
         <a
           href="mailto:saadhath@addmora.com"
           className="text-primary hover:underline"

@@ -25,7 +25,7 @@ export const PLANS = [
     ],
     features: [
       "10 hours of processing",
-      "AI picks your 3 best clips",
+      "AI picks your 2–3 best clips",
       "Every major platform supported",
       "Blur, crop, or custom background",
       "Download ready to post",
@@ -54,7 +54,7 @@ export const PLANS = [
     ],
     features: [
       "25 hours of processing",
-      "AI picks your 3 best clips",
+      "AI picks your 2–3 best clips",
       "Every major platform supported",
       "Blur, crop, or custom background",
       "Download ready to post",
@@ -83,7 +83,7 @@ export const PLANS = [
     ],
     features: [
       "60 hours of processing",
-      "AI picks your 3 best clips",
+      "AI picks your 2–3 best clips",
       "Every major platform supported",
       "Blur, crop, or custom background",
       "Download ready to post",

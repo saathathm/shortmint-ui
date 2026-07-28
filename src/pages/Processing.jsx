@@ -167,6 +167,10 @@ export default function Processing() {
           {stage.label}
         </h2>
 
+        <p className="text-xs text-text-dim mt-2">
+          You'll receive 2–3 clips depending on your video content.
+        </p>
+
         <p className="text-sm text-text-muted mb-2 leading-relaxed">
           {stage.detail}
         </p>

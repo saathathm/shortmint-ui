@@ -676,7 +676,9 @@ export default function Dashboard() {
             <><Sparkles size={18} /> Create Shorts</>
           )}
         </button>
-
+        <p className="text-xs text-text-dim text-center mt-2">
+          You'll receive 2–3 clips depending on your video content.
+        </p>
       </form>
     </div>
   )

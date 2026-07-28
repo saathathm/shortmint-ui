@@ -214,6 +214,12 @@ export default function Results() {
           </p>
         </div>
       </div>
+      <div className="bg-amber-50 border border-amber-200 rounded-xl p-3 mb-6 flex items-start gap-2">
+        <span className="text-amber-500 text-sm shrink-0">⚠️</span>
+        <p className="text-xs text-amber-700 leading-relaxed">
+          ShortMint is AI-powered and can make mistakes. Please double check the clips before sharing.
+        </p>
+      </div>
 
       {clips.length === 0 ? (
         <div className="text-center py-16">

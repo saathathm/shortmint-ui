@@ -43,7 +43,7 @@ export default function Terms() {
 
         <section>
           <h2 className="text-lg font-bold text-text-primary mb-2">6. Refunds</h2>
-          <p>We offer a 7-day money-back guarantee on all plans. If you are not satisfied with the Service, contact us within 7 days of your purchase for a full refund. See our <Link to="/refunds" className="text-primary hover:underline">Refund Policy</Link> for full details.</p>
+          <p>You can cancel your plan at any time. We will refund the proportional value of your unused hours. See our <Link to="/refunds" className="text-primary hover:underline">Refund Policy</Link> for full details.</p>
         </section>
 
         <section>
