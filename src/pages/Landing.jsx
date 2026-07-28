@@ -87,12 +87,12 @@ const WHY_SHORTMINT = [
   {
     icon: "✂️",
     title: "2–3 clips, not just one",
-    desc: "Most tools give you one clip and call it done. ShortMint finds 2–3 of the best moments from your video — so you get more content from every upload.",
+    desc: "Most tools give you one clip and call it done. ShortMint finds 2–3 of the best moments from your video – so you get more content from every upload.",
   },
   {
     icon: "✍️",
     title: "Ready-to-post titles and descriptions",
-    desc: "Every clip comes with an AI-written title, description, and reason — ready to copy and paste to YouTube, Instagram, or TikTok. No writing needed.",
+    desc: "Every clip comes with an AI-written title, description, and reason – ready to copy and paste to YouTube, Instagram, or TikTok. No writing needed.",
   },
   {
     icon: "😌",
@@ -631,7 +631,7 @@ export default function Landing() {
               <CheckCircle size={18} /> Try it free – no card needed
             </Link>
             <p className="text-xs text-text-dim">
-              Cancel anytime — unused hours refunded
+              Cancel anytime – unused hours refunded
             </p>
           </div>
         )}
