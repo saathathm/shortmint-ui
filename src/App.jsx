@@ -29,13 +29,15 @@ export default function App() {
   // Set up listener FIRST before loadSession
   const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
     // HANDLE LOGOUT
-    if (!session) {
-      localStorage.removeItem('sm_token')
-      localStorage.removeItem('sm_refresh_token')
-      dispatch(setSession(null))
-      dispatch(setClient(null))
-      return
-    }
+      if (!session) {
+        if (event === "SIGNED_OUT") {
+          localStorage.removeItem("sm_token");
+          localStorage.removeItem("sm_refresh_token");
+          dispatch(setSession(null));
+          dispatch(setClient(null));
+        }
+        return;
+      }
 
     // Only handle Google users
     const isGoogleUser =

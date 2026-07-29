@@ -203,7 +203,13 @@ export default function Results() {
     <div className="max-w-xl mx-auto">
       <div className="flex items-center gap-3 mb-6">
         <button
-          onClick={() => navigate("/dashboard")}
+          onClick={() => {
+            if (window.history.length > 1) {
+              navigate(-1);
+            } else {
+              navigate("/history");
+            }
+          }}
           className="p-2 hover:bg-bg-surface rounded-xl transition-all"
         >
           <ArrowLeft size={20} className="text-text-muted" />
