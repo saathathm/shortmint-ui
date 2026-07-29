@@ -1,56 +1,75 @@
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
-import { processVideo as apiProcessVideo, checkStatus as apiCheckStatus, getResults } from '../lib/api.js'
-import { refreshClient } from './authSlice.js'
-
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import {
+  processVideo as apiProcessVideo,
+  checkStatus as apiCheckStatus,
+  getResults,
+} from "../lib/api.js";
+import { refreshClient } from "./authSlice.js";
 
 // Start processing a video
 export const startProcessing = createAsyncThunk(
-  'video/startProcessing',
-  async ({ videoUrl, clientId, style, startSeconds, endSeconds, videoInfo }, { rejectWithValue }) => {
+  "video/startProcessing",
+  async (
+    { videoUrl, clientId, style, startSeconds, endSeconds, videoInfo },
+    { rejectWithValue },
+  ) => {
     try {
-      const { data } = await apiProcessVideo(videoUrl, clientId, style, startSeconds, endSeconds, videoInfo)
+      const { data } = await apiProcessVideo(
+        videoUrl,
+        clientId,
+        style,
+        startSeconds,
+        endSeconds,
+        videoInfo,
+      );
       return {
         ...data,
-        selected_duration: (endSeconds || 0) - (startSeconds || 0)  // ← add this
-      }
+        selected_duration: (endSeconds || 0) - (startSeconds || 0), // ← add this
+      };
     } catch (e) {
-      return rejectWithValue(e.response?.data?.error || 'Failed to start processing.')
+      return rejectWithValue(
+        e.response?.data?.error || "Failed to start processing.",
+      );
     }
-  }
-)
+  },
+);
 
 // Poll check-status
 export const pollStatus = createAsyncThunk(
-  'video/pollStatus',
+  "video/pollStatus",
   async (videoId, { rejectWithValue, dispatch }) => {
     try {
-      const { data } = await apiCheckStatus(videoId)
-      if (data.status === 'completed') {
-        dispatch(refreshClient())
+      const { data } = await apiCheckStatus(videoId);
+      if (data.status === "completed") {
+        dispatch(refreshClient());
       }
-      return data
+      return data;
     } catch (e) {
-      return rejectWithValue(e.response?.data?.message || 'Failed to check status.')
+      return rejectWithValue(
+        e.response?.data?.message || "Failed to check status.",
+      );
     }
-  }
-)
+  },
+);
 
 // Load results from backend API
 export const loadResults = createAsyncThunk(
-  'video/loadResults',
+  "video/loadResults",
   async (videoId, { rejectWithValue }) => {
     try {
-      const { data } = await getResults(videoId)
+      const { data } = await getResults(videoId);
 
-      return { video: data.video, clips: data.clips }
+      return { video: data.video, clips: data.clips };
     } catch (e) {
-      return rejectWithValue(e.response?.data?.message || 'Could not load results.')
+      return rejectWithValue(
+        e.response?.data?.message || "Could not load results.",
+      );
     }
-  }
-)
+  },
+);
 
 const videoSlice = createSlice({
-  name: 'video',
+  name: "video",
   initialState: {
     currentVideoId: null,
     status: null,
@@ -63,63 +82,74 @@ const videoSlice = createSlice({
   },
   reducers: {
     resetVideo: (state) => {
-      state.currentVideoId = null
-      state.status = null
-      state.title = null
-      state.style = null
-      state.clips = []
-      state.loading = false
-      state.error = null
-      state.selectedDuration = 0
+      state.currentVideoId = null;
+      state.status = null;
+      state.title = null;
+      state.style = null;
+      state.clips = [];
+      state.loading = false;
+      state.error = null;
+      state.selectedDuration = 0;
     },
     updateClipField: (state, action) => {
-      const { clipId, field, value } = action.payload
-      const clip = state.clips.find((c) => c.id === clipId)
-      if (clip) clip[field] = value
+      const { clipId, field, value } = action.payload;
+      const clip = state.clips.find((c) => c.id === clipId);
+      if (clip) clip[field] = value;
+    },
+    setUploadMeta: (state, action) => {
+      state.selectedDuration = action.payload.selectedDuration;
+      state.style = action.payload.style;
     },
   },
   extraReducers: (builder) => {
     // startProcessing
-    builder.addCase(startProcessing.pending, (state) => { state.loading = true; state.error = null })
+    builder.addCase(startProcessing.pending, (state) => {
+      state.loading = true;
+      state.error = null;
+    });
     builder.addCase(startProcessing.fulfilled, (state, action) => {
-      state.loading = false
-      state.currentVideoId = action.payload.video_id
-      state.status = 'processing'
-      state.selectedDuration = action.payload.selected_duration || 0
-    })
+      state.loading = false;
+      state.currentVideoId = action.payload.video_id;
+      state.status = "processing";
+      state.selectedDuration = action.payload.selected_duration || 0;
+    });
     builder.addCase(startProcessing.rejected, (state, action) => {
-      state.loading = false
-      state.error = action.payload
-    })
+      state.loading = false;
+      state.error = action.payload;
+    });
 
     // pollStatus
     builder.addCase(pollStatus.fulfilled, (state, action) => {
-      state.status = action.payload.status
-      if (action.payload.status === 'completed') {
-        state.title = action.payload.title
-        state.clips = action.payload.clips || []
+      state.status = action.payload.status;
+      if (action.payload.status === "completed") {
+        state.title = action.payload.title;
+        state.clips = action.payload.clips || [];
       }
-      if (action.payload.status === 'failed') {
-        state.error = action.payload.error_message || 'Processing failed. Please try again.'
+      if (action.payload.status === "failed") {
+        state.error =
+          action.payload.error_message ||
+          "Processing failed. Please try again.";
       }
-    })
+    });
 
     // loadResults
-    builder.addCase(loadResults.pending, (state) => { state.loading = true })
+    builder.addCase(loadResults.pending, (state) => {
+      state.loading = true;
+    });
     builder.addCase(loadResults.fulfilled, (state, action) => {
-      state.loading = false
-      state.currentVideoId = action.payload.video.id
-      state.title = action.payload.video.title
-      state.style = action.payload.video.style
-      state.status = action.payload.video.status
-      state.clips = action.payload.clips
-    })
+      state.loading = false;
+      state.currentVideoId = action.payload.video.id;
+      state.title = action.payload.video.title;
+      state.style = action.payload.video.style;
+      state.status = action.payload.video.status;
+      state.clips = action.payload.clips;
+    });
     builder.addCase(loadResults.rejected, (state, action) => {
-      state.loading = false
-      state.error = action.payload
-    })
+      state.loading = false;
+      state.error = action.payload;
+    });
   },
-})
+});
 
-export const { resetVideo, updateClipField } = videoSlice.actions
-export default videoSlice.reducer
+export const { resetVideo, updateClipField, setUploadMeta } = videoSlice.actions;
+export default videoSlice.reducer;

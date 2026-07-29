@@ -49,20 +49,6 @@ export default function App() {
     if (session.refresh_token) {
       localStorage.setItem('sm_refresh_token', session.refresh_token)
     }
-
-    // if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED' || event === 'USER_UPDATED') {
-    //   try {
-    //     const res = await fetch(
-    //       `${import.meta.env.VITE_API_BASE_URL}/api/auth/me`,
-    //       { headers: { Authorization: `Bearer ${session.access_token}` } }
-    //     )
-    //     if (res.ok) {
-    //       const meData = await res.json()
-    //       dispatch(setSession({ user: session.user, session }))
-    //       dispatch(setClient(meData.client))
-    //     }
-    //   } catch (e) {}
-    // }
   })
 
   // Load session AFTER listener is registered

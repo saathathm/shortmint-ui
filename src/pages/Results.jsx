@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { loadResults } from "../store/videoSlice.js";
+import { loadResults, resetVideo } from "../store/videoSlice.js";
 import { useAuth } from "../hooks/useAuth.js";
 import ClipCard from "../components/ClipCard.jsx";
 import {
@@ -162,8 +162,11 @@ export default function Results() {
   );
 
   useEffect(() => {
-    if (videoId) dispatch(loadResults(videoId));
-  }, [videoId]);
+    if (videoId) {
+      dispatch(resetVideo());
+      dispatch(loadResults(videoId));
+    }
+  }, [videoId, dispatch]);
 
   if (loading) {
     return (
