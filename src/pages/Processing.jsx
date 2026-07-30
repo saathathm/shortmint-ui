@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { pollStatus } from "../store/videoSlice.js";
+import { pollStatus, resetVideo } from "../store/videoSlice.js";
+import { reprocessVideo } from "../lib/api.js";
+import { Loader, RefreshCw } from "lucide-react";
 
 const STAGES = [
   {
@@ -56,11 +58,15 @@ export default function Processing() {
   const { videoId } = useParams();
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { status, error, selectedDuration } = useSelector((s) => s.video);
+  const { status, error, selectedDuration, style } = useSelector(
+    (s) => s.video,
+  );
 
   const [displayPct, setDisplayPct] = useState(5);
   const [targetPct, setTargetPct] = useState(5);
   const [messageIndex, setMessageIndex] = useState(0);
+  const [retrying, setRetrying] = useState(false);
+  const [uploadedVideoError, setUploadedVideoError] = useState(false);
 
   // Poll every 5 seconds
   useEffect(() => {
@@ -107,8 +113,23 @@ export default function Processing() {
     return () => clearInterval(interval);
   }, [status]);
 
-  const getTimeEstimate = (duration) => {
+  const handleRetry = async () => {
+    setRetrying(true);
+    try {
+      await reprocessVideo(videoId);
+      dispatch(resetVideo());
+      dispatch(pollStatus(videoId));
+    } catch (e) {
+      if (e.response?.data?.error === "uploaded_video") {
+        setUploadedVideoError(true);
+      }
+      setRetrying(false);
+    }
+  };
+
+  const getTimeEstimate = (duration, style) => {
     if (!duration) return "4–8 minutes";
+    if (style === "custom") return "around 7 minutes";
     const minutes = Math.floor(duration / 60);
     if (minutes <= 5) return "2–4 minutes";
     if (minutes <= 15) return "4–6 minutes";
@@ -127,18 +148,39 @@ export default function Processing() {
         <div className="text-center max-w-sm">
           <div className="text-4xl mb-4">😕</div>
           <h2 className="text-xl font-bold text-text-primary mb-2">
-            We couldn’t finish this one
+            Processing failed
           </h2>
           <p className="text-text-muted text-sm mb-6">
-            {error ||
-              "Something interrupted the process. Try again – it usually works on the second attempt."}
+            {uploadedVideoError
+              ? "Your uploaded video could not be processed. Please upload it again to continue."
+              : error ||
+                "Something went wrong while processing your video. Please try again."}
           </p>
-          <Link
-            to="/dashboard"
-            className="btn-primary inline-flex items-center gap-2"
-          >
-            Try again
-          </Link>
+          <div className="flex items-center justify-center gap-3">
+            {!uploadedVideoError && (
+              <button
+                onClick={handleRetry}
+                disabled={retrying}
+                className="btn-primary inline-flex items-center gap-2"
+              >
+                {retrying ? (
+                  <>
+                    <Loader size={16} className="animate-spin" /> Retrying...
+                  </>
+                ) : (
+                  <>
+                    <RefreshCw size={16} /> Try again
+                  </>
+                )}
+              </button>
+            )}
+            <Link
+              to="/dashboard"
+              className="btn-secondary inline-flex items-center gap-2"
+            >
+              {uploadedVideoError ? "Go to dashboard" : "Upload new video"}
+            </Link>
+          </div>
         </div>
       </div>
     );
@@ -198,7 +240,7 @@ export default function Processing() {
         {/* Time expectation */}
         {status !== "completed" && (
           <p className="text-xs text-text-dim mt-2">
-            Usually takes {getTimeEstimate(selectedDuration)}
+            Usually takes {getTimeEstimate(selectedDuration, style)}
           </p>
         )}
 
