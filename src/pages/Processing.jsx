@@ -43,7 +43,7 @@ const STAGES = [
 ];
 
 const MESSAGES = [
-  "Good clips take a moment 🤌",
+  "Good clips take a moment",
   "We're finding moments people won't skip",
   "Almost there… this is the good part",
 ];

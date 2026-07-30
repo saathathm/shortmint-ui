@@ -75,6 +75,9 @@ export const processVideo = (
       : null,
   });
 
+export const reprocessVideo = (videoId) =>
+  api.post(`/api/video/reprocess/${videoId}`);
+
 export const checkStatus = (videoId) => api.get(`/api/video/status/${videoId}`);
 
 export const getHistory = () => api.get("/api/video/history");
