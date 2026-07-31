@@ -153,8 +153,7 @@ export default function Processing() {
           <p className="text-text-muted text-sm mb-6">
             {uploadedVideoError
               ? "Your uploaded video could not be processed. Please upload it again to continue."
-              : error ||
-                "Something went wrong while processing your video. Please try again."}
+              : "Something went wrong while processing your video. Please try again."}
           </p>
           <div className="flex items-center justify-center gap-3">
             {!uploadedVideoError && (
