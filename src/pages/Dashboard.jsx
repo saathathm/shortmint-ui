@@ -1,11 +1,11 @@
 import { useState, useEffect, useRef, useCallback } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, Link, useSearchParams } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { useAuth } from "../hooks/useAuth.js";
 import { startProcessing } from "../store/videoSlice.js";
 import StylePicker from "../components/StylePicker.jsx";
 import UsageBar from "../components/UsageBar.jsx";
-import { getVideoInfo, deleteUpload } from "../lib/api.js";
+import { getVideoInfo, deleteUpload, startTrial } from "../lib/api.js";
 import api from "../lib/api.js";
 import {
   AlertCircle,
@@ -197,6 +197,8 @@ export default function Dashboard() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { client } = useAuth();
+  const [searchParams] = useSearchParams();
+  const trialStarted = searchParams.get("trial") === "started";
 
   // Mode
   const [inputMode, setInputMode] = useState("url");
@@ -235,6 +237,37 @@ export default function Dashboard() {
   const selectedHours = selectedDuration / 3600;
   const hasEnoughHours = selectedHours <= hoursRemaining;
   const hasActivePlan = client?.usage_hours_limit > 0;
+
+  function TrialButton() {
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState("");
+
+    const handleTrial = async () => {
+      setLoading(true);
+      setError("");
+      try {
+        const { data } = await startTrial();
+        window.location.href = data.checkout_url;
+      } catch (e) {
+        setError(e.response?.data?.error || "Something went wrong.");
+        setLoading(false);
+      }
+    };
+
+    return (
+      <div className="shrink-0">
+        <button
+          onClick={handleTrial}
+          disabled={loading}
+          className="btn-primary text-sm py-2 px-4 flex items-center gap-2 whitespace-nowrap"
+        >
+          {loading ? <Loader size={14} className="animate-spin" /> : null}
+          Start free trial
+        </button>
+        {error && <p className="text-xs text-error mt-1">{error}</p>}
+      </div>
+    );
+  }
 
   const getRangeStatus = () => {
     if (selectedDuration <= 120) return "too-short";
@@ -570,23 +603,58 @@ export default function Dashboard() {
 
       <UsageBar />
 
-      {!hasActivePlan && (
-        <div className="mt-4 bg-bg-secondary border border-blue-100 rounded-xl p-4 flex items-start gap-3">
-          <AlertCircle size={18} className="text-primary mt-0.5 shrink-0" />
+      {trialStarted && (
+        <div className="mt-4 bg-green-50 border border-green-200 rounded-xl p-4 flex items-center gap-3">
+          <CheckCircle size={18} className="text-success shrink-0" />
           <div>
-            <p className="text-sm font-semibold text-text-primary">
-              Choose a plan to get started
+            <p className="text-sm font-bold text-text-primary">
+              Your free trial is active! 🎉
             </p>
             <p className="text-sm text-text-muted mt-0.5">
-              Your account is free but you need a plan to process videos.
+              You have 10 hours to use — no charge until day 7. Start creating
+              your first Shorts.
             </p>
-            <Link
-              to="/pricing"
-              className="text-sm font-semibold text-primary hover:underline mt-2 inline-block"
-            >
-              View plans →
-            </Link>
           </div>
+        </div>
+      )}
+
+      {!hasActivePlan && (
+        <div className="mt-4 space-y-3">
+          {/* Free trial CTA */}
+          {!client?.has_used_trial && (
+            <div className="bg-primary/5 border border-primary/20 rounded-xl p-4 flex items-start justify-between gap-4">
+              <div>
+                <p className="text-sm font-bold text-text-primary">
+                  Start your 7-day free trial
+                </p>
+                <p className="text-sm text-text-muted mt-0.5">
+                  Get 10 hours free. Add your card — no charge for 7 days.
+                  Cancel anytime before day 7.
+                </p>
+              </div>
+              <TrialButton />
+            </div>
+          )}
+          {/* Already used trial */}
+          {client?.has_used_trial && (
+            <div className="bg-bg-secondary border border-blue-100 rounded-xl p-4 flex items-start gap-3">
+              <AlertCircle size={18} className="text-primary mt-0.5 shrink-0" />
+              <div>
+                <p className="text-sm font-semibold text-text-primary">
+                  Choose a plan to continue
+                </p>
+                <p className="text-sm text-text-muted mt-0.5">
+                  Your trial has ended. Subscribe to keep creating Shorts.
+                </p>
+                <Link
+                  to="/pricing"
+                  className="text-sm font-semibold text-primary hover:underline mt-2 inline-block"
+                >
+                  View plans →
+                </Link>
+              </div>
+            </div>
+          )}
         </div>
       )}
 
