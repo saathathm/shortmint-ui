@@ -46,11 +46,25 @@ export default function App() {
 
     if (!isGoogleUser) return
 
-    // Store tokens immediately and synchronously
-    localStorage.setItem('sm_token', session.access_token)
-    if (session.refresh_token) {
-      localStorage.setItem('sm_refresh_token', session.refresh_token)
-    }
+      // Store tokens immediately and synchronously
+      localStorage.setItem("sm_token", session.access_token);
+      if (session.refresh_token) {
+        localStorage.setItem("sm_refresh_token", session.refresh_token);
+      }
+
+      // Explicitly create client row for Google users
+      try {
+        await fetch(
+          `${import.meta.env.VITE_API_BASE_URL}/api/auth/google-callback`,
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ access_token: session.access_token }),
+          },
+        );
+      } catch (e) {
+        console.error("Google callback error:", e);
+      }
   })
 
   // Load session AFTER listener is registered
