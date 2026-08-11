@@ -116,7 +116,7 @@ export default function Pricing() {
             </span>
           </div>
           <p className="text-sm text-text-muted">
-            Add your card and get instant access. Cancel before day 7 — no
+            Add your card and get instant access. Cancel before day 7 – no
             charge.
           </p>
           <ul className="mt-2 space-y-1">
@@ -124,7 +124,7 @@ export default function Pricing() {
               "10 hours of processing",
               "AI picks your 2–3 best clips",
               "All platforms included",
-              "Cancel before day 7 — completely free",
+              "Cancel before day 7 – completely free",
             ].map((f) => (
               <li
                 key={f}
@@ -254,7 +254,7 @@ export default function Pricing() {
         })}
       </div>
       <p className="text-center text-sm text-text-dim mt-8">
-        Trial: cancel before day 7 — no charge. Subscriptions: cancel anytime,
+        Trial: cancel before day 7 – no charge. Subscriptions: cancel anytime,
         no refunds. Payment issue?{" "}
         <a
           href="mailto:saadhath@addmora.com"

@@ -141,8 +141,8 @@ export default function Settings() {
   };
 
   const planLabels = {
-    trial: "Free Trial",
-    starter: "Starter",
+    trial: "No active plan",
+    starter: isOnTrial ? "Starter – Free Trial" : "Starter",
     growth: "Growth",
     pro: "Pro",
   };
@@ -156,6 +156,11 @@ export default function Settings() {
   const isCancelling =
     isSubscription && client?.subscription_cancel_at_period_end;
   const hasActivePlan = client?.plan && client.plan !== "trial";
+
+  const isOnTrial =
+    isSubscription &&
+    !!client?.trial_ends_at &&
+    new Date(client.trial_ends_at) > new Date();
 
   // useEffect(() => {
   //   if (youtubeStatus) {
@@ -400,7 +405,11 @@ export default function Settings() {
             )}
           </div>
           <Link to="/pricing" className="btn-primary text-sm py-2 px-4">
-            {hasActivePlan ? "Buy more" : "Upgrade"}
+            {hasActivePlan
+              ? "Buy more"
+              : client?.has_used_trial
+                ? "View plans"
+                : "Start trial"}
           </Link>
         </div>
 
@@ -428,6 +437,20 @@ export default function Settings() {
           </div>
         )}
 
+        {isOnTrial && !isCancelling && (
+          <div className="bg-blue-50 border border-blue-200 text-primary text-xs rounded-xl p-3 mb-3">
+            🎁 Trial ends{" "}
+            <strong>
+              {new Date(client.trial_ends_at).toLocaleDateString("en-US", {
+                month: "long",
+                day: "numeric",
+                year: "numeric",
+              })}
+            </strong>
+            . Cancel before then and you won't be charged.
+          </div>
+        )}
+
         {/* Cancel subscription */}
         {isSubscription && !isCancelling && !cancelSuccess && (
           <button
@@ -440,15 +463,16 @@ export default function Settings() {
 
         {isCancelling && (
           <p className="text-xs text-amber-600 mt-1 flex items-center gap-1">
-            ⚠️ Subscription cancels on{" "}
-            {new Date(
-              client.current_period_end || client.plan_expires_at,
-            ).toLocaleDateString("en-US", {
-              month: "long",
-              day: "numeric",
-              year: "numeric",
-            })}
-            . You still have full access until then.
+            ⚠️{" "}
+            {isOnTrial
+              ? "Trial cancelled – you won't be charged."
+              : `Subscription cancels on ${new Date(
+                  client.current_period_end || client.plan_expires_at,
+                ).toLocaleDateString("en-US", {
+                  month: "long",
+                  day: "numeric",
+                  year: "numeric",
+                })}. You still have full access until then.`}
           </p>
         )}
 
@@ -466,14 +490,17 @@ export default function Settings() {
           <div className="bg-white rounded-2xl p-6 max-w-sm w-full shadow-xl">
             <AlertTriangle size={32} className="text-amber-500 mx-auto mb-3" />
             <h3 className="font-bold text-center text-text-primary mb-2">
-              Cancel subscription?
+              {isOnTrial ? "Cancel free trial?" : "Cancel subscription?"}
             </h3>
             <p className="text-sm text-text-muted text-center mb-2">
-              You'll keep access to your current plan until the end of your
-              billing period.
+              {isOnTrial
+                ? "You won't be charged anything. Your access will end immediately."
+                : "You'll keep access to your current plan until the end of your billing period."}
             </p>
             <p className="text-sm text-text-muted text-center mb-5">
-              After that, your account will be downgraded to the free trial.
+              {isOnTrial
+                ? "You have already used your free trial – to regain access you'll need to subscribe to a plan."
+                : "After that, your account will be moved to the free tier with no access."}
             </p>
             {cancelError && (
               <p className="text-xs text-error text-center mb-3">

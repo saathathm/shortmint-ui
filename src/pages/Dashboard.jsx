@@ -17,7 +17,17 @@ import {
 } from "lucide-react";
 
 const PLATFORM_TIERS = {
-  trial: ["youtube", "upload"],
+  trial: [
+    "youtube",
+    "facebook",
+    "instagram",
+    "vimeo",
+    "tiktok",
+    "rumble",
+    "loom",
+    "dropbox",
+    "upload",
+  ],
   starter: [
     "youtube",
     "facebook",
@@ -611,7 +621,7 @@ export default function Dashboard() {
               Your free trial is active! 🎉
             </p>
             <p className="text-sm text-text-muted mt-0.5">
-              You have 10 hours to use — no charge until day 7. Start creating
+              You have 10 hours to use – no charge until day 7. Start creating
               your first Shorts.
             </p>
           </div>
@@ -628,7 +638,7 @@ export default function Dashboard() {
                   Start your 7-day free trial
                 </p>
                 <p className="text-sm text-text-muted mt-0.5">
-                  Get 10 hours free. Add your card — no charge for 7 days.
+                  Get 10 hours free. Add your card – no charge for 7 days.
                   Cancel anytime before day 7.
                 </p>
               </div>
@@ -784,14 +794,6 @@ export default function Dashboard() {
                       {name}
                     </span>
                   ))}
-                {clientPlan === "trial" && (
-                  <Link
-                    to="/pricing"
-                    className="text-xs text-text-dim hover:text-primary transition-colors"
-                  >
-                    Upgrade to unlock more
-                  </Link>
-                )}
               </div>
             </div>
           </>

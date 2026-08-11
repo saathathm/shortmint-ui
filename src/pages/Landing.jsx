@@ -121,12 +121,16 @@ const WHY_SHORTMINT = [
   },
   {
     icon: "🔒",
-    title: "Cancel anytime, refund your balance",
-    desc: "Not happy? Cancel anytime and we'll refund the unused hours remaining on your plan. No time limits, no hassle.",
+    title: "7-day free trial – no risk",
+    desc: "Add your card and get 10 hours free for 7 days. Cancel before day 7 and you won't be charged a thing.",
   },
 ];
 
 const FAQS = [
+  {
+    q: "How does the free trial work?",
+    a: "Sign up, add your card, and get 10 hours of processing free for 7 days. No charge until day 7. Cancel anytime before then and you won't be charged anything. After 7 days, $29/month is charged automatically.",
+  },
   {
     q: "How long does it take?",
     a: "Most videos are ready in under 8 minutes. The shorter the section you select, the faster it goes.",
@@ -145,7 +149,7 @@ const FAQS = [
   },
   {
     q: "Which platforms does it support?",
-    a: "YouTube, Facebook, Instagram, TikTok, Vimeo, Rumble, Loom, Dropbox – and you can upload your own files too. Everything except the free trial.",
+    a: "YouTube, Facebook, Instagram, TikTok, Vimeo, Rumble, Loom, Dropbox – and you can upload your own files too. All platforms are available from day one.",
   },
   {
     q: "Can I upload my own video?",
@@ -340,12 +344,12 @@ export default function Landing() {
         {initialized && !hasActivePlan && (
           <div className="mt-5 flex items-center justify-center gap-6 flex-wrap">
             <span className="text-xs text-text-muted flex items-center gap-1.5">
-              <CheckCircle size={13} className="text-success" /> 15 min free –
-              no card needed
+              <CheckCircle size={13} className="text-success" /> 7-day free
+              trial
             </span>
             <span className="text-xs text-text-muted flex items-center gap-1.5">
-              <CheckCircle size={13} className="text-success" /> Cancel anytime,
-              refund your balance
+              <CheckCircle size={13} className="text-success" /> Cancel before
+              day 7 – no charge
             </span>
           </div>
         )}
@@ -464,22 +468,22 @@ export default function Landing() {
       <section className="py-10 max-w-2xl mx-auto px-4 text-center">
         <div className="card p-6 border-2 border-dashed border-primary/30 bg-bg-secondary">
           <p className="text-xs font-bold text-primary uppercase tracking-widest mb-2">
-            Free to start
+            7-day free trial
           </p>
           <h3 className="text-xl font-bold text-text-primary mb-2">
-            Try before you pay – no card needed
+            Try ShortMint free for 7 days
           </h3>
           <p className="text-sm text-text-muted mb-4">
-            Every new account gets{" "}
-            <strong>15 minutes of free processing</strong>. That's enough to
-            turn a real video into 2–3 ready-to-post Shorts – completely free.
+            Add your card and get <strong>10 hours of processing free</strong>{" "}
+            for 7 days. Cancel before day 7 and you won't be charged a thing.
+            After 7 days, just $29/month.
           </p>
           {!isAuthenticated && (
             <Link
               to="/signup"
               className="btn-primary text-sm py-2.5 px-6 inline-block"
             >
-              Start free – no card needed
+              Start your free trial →
             </Link>
           )}
         </div>
@@ -628,10 +632,10 @@ export default function Landing() {
               to="/signup"
               className="btn-primary text-base py-3.5 px-8 inline-flex items-center gap-2"
             >
-              <CheckCircle size={18} /> Try it free – no card needed
+              <CheckCircle size={18} /> Start your free trial →
             </Link>
             <p className="text-xs text-text-dim">
-              Cancel anytime – unused hours refunded
+              7-day free trial – cancel before day 7, no charge
             </p>
           </div>
         )}
