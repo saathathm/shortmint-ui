@@ -43,6 +43,7 @@ export default function App() {
     const isGoogleUser =
       session.user.app_metadata?.provider === 'google' ||
       session.user.app_metadata?.providers?.includes('google')
+      
 
     if (!isGoogleUser) return
 
