@@ -36,8 +36,9 @@ export default function Layout({ children }) {
   ];
 
   const hoursUsed = parseFloat(client?.usage_hours_used || 0);
-  const hoursLimit = parseFloat(client?.usage_hours_limit || 1);
-  const usagePct = Math.min((hoursUsed / hoursLimit) * 100, 100);
+  const hoursLimit = parseFloat(client?.usage_hours_limit || 0);
+  const usagePct =
+    hoursLimit > 0 ? Math.min((hoursUsed / hoursLimit) * 100, 100) : 0;
   const usageColor =
     usagePct > 80 ? "bg-error" : usagePct > 60 ? "bg-amber-400" : "bg-primary";
 
@@ -64,10 +65,7 @@ export default function Layout({ children }) {
       <header className="border-b border-border bg-white/80 backdrop-blur sticky top-0 z-50">
         <div className="max-w-5xl mx-auto px-4 h-16 flex items-center justify-between">
           {/* BRAND */}
-          <Link
-            to="/"
-            className="flex items-center gap-3"
-          >
+          <Link to="/" className="flex items-center gap-3">
             <div className="w-9 h-9 bg-primary rounded-xl flex items-center justify-center shadow-sm">
               <Scissors size={16} className="text-white" />
             </div>
@@ -172,17 +170,19 @@ export default function Layout({ children }) {
                       <p className="text-xs text-text-muted truncate">
                         {client?.email}
                       </p>
-                      <div className="mt-2 flex items-center gap-2">
-                        <div className="flex-1 h-1.5 bg-gray-100 rounded-full overflow-hidden">
-                          <div
-                            className={`h-full rounded-full transition-all ${usageColor}`}
-                            style={{ width: `${usagePct}%` }}
-                          />
+                      {hoursLimit > 0 && (
+                        <div className="mt-2 flex items-center gap-2">
+                          <div className="flex-1 h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                            <div
+                              className={`h-full rounded-full transition-all ${usageColor}`}
+                              style={{ width: `${usagePct}%` }}
+                            />
+                          </div>
+                          <span className="text-xs text-text-dim whitespace-nowrap">
+                            {hoursUsed.toFixed(1)}/{hoursLimit}h
+                          </span>
                         </div>
-                        <span className="text-xs text-text-dim whitespace-nowrap">
-                          {hoursUsed.toFixed(1)}/{hoursLimit}h
-                        </span>
-                      </div>
+                      )}
                     </div>
 
                     {/* UPGRADE – non-pro only */}
