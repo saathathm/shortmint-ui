@@ -140,13 +140,6 @@ export default function Settings() {
     }
   };
 
-  const planLabels = {
-    trial: "No active plan",
-    starter: isOnTrial ? "Starter – Free Trial" : "Starter",
-    growth: "Growth",
-    pro: "Pro",
-  };
-
   const isSubscription =
     client?.plan_type === "subscription" &&
     !!client?.stripe_subscription_id &&
@@ -161,6 +154,13 @@ export default function Settings() {
     isSubscription &&
     !!client?.trial_ends_at &&
     new Date(client.trial_ends_at) > new Date();
+
+  const planLabels = {
+    trial: "No active plan",
+    starter: isOnTrial ? "Starter – Free Trial" : "Starter",
+    growth: "Growth",
+    pro: "Pro",
+  };
 
   // useEffect(() => {
   //   if (youtubeStatus) {
