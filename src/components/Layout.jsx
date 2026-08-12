@@ -195,7 +195,9 @@ export default function Layout({ children }) {
                         <Zap size={14} />
                         Upgrade plan
                         <span className="ml-auto text-xs bg-amber-100 text-amber-600 px-1.5 py-0.5 rounded-md capitalize">
-                          {client?.plan || "trial"}
+                          {client?.usage_hours_limit > 0
+                            ? client?.plan
+                            : "free"}
                         </span>
                       </Link>
                     )}
