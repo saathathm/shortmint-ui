@@ -6,7 +6,13 @@ export const useAuth = () => {
   );
 
   const isAuthenticated = !!session && !!user;
-  
+
+  const isOnTrial = !!(
+    client?.trial_ends_at &&
+    new Date(client.trial_ends_at) > new Date() &&
+    client?.subscription_status === "active"
+  );
+
   return {
     user,
     client,
@@ -15,6 +21,7 @@ export const useAuth = () => {
     error,
     initialized,
     isAuthenticated,
+    isOnTrial,
     hasActivePlan: client && client.usage_hours_limit > 0,
     usagePercent:
       client && client.usage_hours_limit > 0
