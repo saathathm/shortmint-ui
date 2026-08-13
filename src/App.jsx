@@ -26,9 +26,10 @@ export default function App() {
   const dispatch = useDispatch()
 
   useEffect(() => {
-  // Set up listener FIRST before loadSession
-  const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-    // HANDLE LOGOUT
+    // Set up listener FIRST before loadSession
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange(async (event, session) => {
       if (!session) {
         if (event === "SIGNED_OUT") {
           localStorage.removeItem("sm_token");
@@ -39,21 +40,17 @@ export default function App() {
         return;
       }
 
-    // Only handle Google users
-    const isGoogleUser =
-      session.user.app_metadata?.provider === 'google' ||
-      session.user.app_metadata?.providers?.includes('google')
-      
+      const isGoogleUser =
+        session.user.app_metadata?.provider === "google" ||
+        session.user.app_metadata?.providers?.includes("google");
 
-    if (!isGoogleUser) return
+      if (!isGoogleUser) return;
 
-      // Store tokens immediately and synchronously
       localStorage.setItem("sm_token", session.access_token);
       if (session.refresh_token) {
         localStorage.setItem("sm_refresh_token", session.refresh_token);
       }
 
-      // Explicitly create client row for Google users
       try {
         await fetch(
           `${import.meta.env.VITE_API_BASE_URL}/api/auth/google-callback`,
@@ -66,13 +63,16 @@ export default function App() {
       } catch (e) {
         console.error("Google callback error:", e);
       }
-  })
 
-  // Load session AFTER listener is registered
-  dispatch(loadSession())
+      // Load session AFTER google-callback completes for Google users
+      dispatch(loadSession());
+    });
 
-  return () => subscription.unsubscribe()
-}, [dispatch])
+    // Load session for email users only (no Google session on page load)
+    dispatch(loadSession());
+
+    return () => subscription.unsubscribe();
+  }, [dispatch]);
 
   return (
     <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
