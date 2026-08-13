@@ -14,7 +14,7 @@ export default function Terms() {
             1. Acceptance of Terms
           </h2>
           <p>
-            By accessing or using ShortMint ("the Service"), operated by
+            By accessing or using ShortTrim ("the Service"), operated by
             Addmora, you agree to be bound by these Terms of Service. If you do
             not agree, do not use the Service.
           </p>
@@ -25,7 +25,7 @@ export default function Terms() {
             2. Description of Service
           </h2>
           <p>
-            ShortMint is an AI-powered short-form video creation tool that
+            ShortTrim is an AI-powered short-form video creation tool that
             processes video content to identify and extract highlight clips. The
             Service is provided on a subscription or one-time purchase basis.
           </p>
@@ -47,7 +47,7 @@ export default function Terms() {
           <h2 className="text-lg font-bold text-text-primary mb-2">
             4. Acceptable Use
           </h2>
-          <p>You agree not to use ShortMint to process content that:</p>
+          <p>You agree not to use ShortTrim to process content that:</p>
           <ul className="list-disc pl-5 mt-2 space-y-1">
             <li>
               Infringes on any third party's copyright or intellectual property
@@ -68,7 +68,7 @@ export default function Terms() {
             5. Payments and Plans
           </h2>
           <p>
-            ShortMint offers monthly subscription plans and one-time purchase
+            ShortTrim offers monthly subscription plans and one-time purchase
             plans. Subscription plans auto-renew monthly until cancelled.
             One-time purchases grant a fixed number of processing hours that
             never expire.
@@ -84,7 +84,7 @@ export default function Terms() {
             6. Free Trial and Refunds
           </h2>
           <p>
-            ShortMint offers a 7-day free trial. You will not be charged if you
+            ShortTrim offers a 7-day free trial. You will not be charged if you
             cancel before the trial period ends. All subscription and one-time
             payments made after the trial are non-refundable. See our{" "}
             <Link to="/refunds" className="text-primary hover:underline">
@@ -99,7 +99,7 @@ export default function Terms() {
             7. Intellectual Property
           </h2>
           <p>
-            ShortMint and its original content, features, and functionality are
+            ShortTrim and its original content, features, and functionality are
             owned by Addmora. You retain full ownership of any content you
             process through the Service. We do not claim any rights over your
             videos or clips.

@@ -32,7 +32,7 @@ export default function Login() {
         <div className="text-center mb-8">
           <h1 className="text-2xl font-bold text-text-primary">Welcome back</h1>
           <p className="text-text-muted mt-1 text-sm">
-            Sign in to your ShortMint account
+            Sign in to your ShortTrim account
           </p>
         </div>
 

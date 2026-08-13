@@ -9,9 +9,9 @@ export default function Privacy() {
       <div className="space-y-8 text-text-muted leading-relaxed">
 
         <section>
-          <h2 className="text-lg font-bold text-text-primary mb-2">1. About ShortMint</h2>
+          <h2 className="text-lg font-bold text-text-primary mb-2">1. About ShortTrim</h2>
           <p>
-            ShortMint is a product by Addmora (addmora.com). We help content creators turn long-form videos into short-form clips ready to post anywhere. This Privacy Policy explains how we collect, use, and protect your data.
+            ShortTrim is a product by Addmora (addmora.com). We help content creators turn long-form videos into short-form clips ready to post anywhere. This Privacy Policy explains how we collect, use, and protect your data.
           </p>
         </section>
 
@@ -29,7 +29,7 @@ export default function Privacy() {
         <section>
           <h2 className="text-lg font-bold text-text-primary mb-2">3. How We Use Your Data</h2>
           <ul className="space-y-2 list-disc pl-5">
-            <li>To provide the ShortMint service – processing your videos and generating clips.</li>
+            <li>To provide the ShortTrim service – processing your videos and generating clips.</li>
             <li>To manage your subscription or one-time purchase and enforce usage limits.</li>
             <li>To send you important account or service emails such as welcome messages and payment confirmations.</li>
             <li>To respond to your support requests.</li>
@@ -67,7 +67,7 @@ export default function Privacy() {
 
         <section>
           <h2 className="text-lg font-bold text-text-primary mb-2">7. Third-Party Services</h2>
-          <p>ShortMint uses the following third-party services:</p>
+          <p>ShortTrim uses the following third-party services:</p>
           <ul className="space-y-2 list-disc pl-5 mt-2">
             <li><strong>Supabase</strong> – database and authentication (EU region)</li>
             <li><strong>Stripe</strong> – payment processing</li>

@@ -44,7 +44,7 @@ const HOW_IT_WORKS = [
     step: "02",
     title: "AI does the work",
     description:
-      "ShortMint listens to your video, finds the 2–3 most powerful moments, and writes a title and description for each one. You don't lift a finger.",
+      "ShortTrim listens to your video, finds the 2–3 most powerful moments, and writes a title and description for each one. You don't lift a finger.",
     icon: "🧠",
   },
   {
@@ -61,7 +61,7 @@ const FEATURES = [
     icon: Zap,
     title: "Works in any language",
     description:
-      "English, Arabic, Tamil, French, Spanish, Urdu – ShortMint understands whatever is spoken. Most tools only work well in English.",
+      "English, Arabic, Tamil, French, Spanish, Urdu – ShortTrim understands whatever is spoken. Most tools only work well in English.",
   },
   {
     icon: Globe,
@@ -73,7 +73,7 @@ const FEATURES = [
     icon: BarChart2,
     title: "No editing skills needed",
     description:
-      "If you can click a button, you can use ShortMint. No timelines, no software, no learning curve. Anyone can do it.",
+      "If you can click a button, you can use ShortTrim. No timelines, no software, no learning curve. Anyone can do it.",
   },
   {
     icon: Scissors,
@@ -87,7 +87,7 @@ const WHY_SHORTMINT = [
   {
     icon: "✂️",
     title: "2–3 clips, not just one",
-    desc: "Most tools give you one clip and call it done. ShortMint finds 2–3 of the best moments from your video – so you get more content from every upload.",
+    desc: "Most tools give you one clip and call it done. ShortTrim finds 2–3 of the best moments from your video – so you get more content from every upload.",
   },
   {
     icon: "✍️",
@@ -97,12 +97,12 @@ const WHY_SHORTMINT = [
   {
     icon: "😌",
     title: "No confusion. Just paste and go.",
-    desc: "Other tools overwhelm you with settings, timelines, and options. ShortMint has one job – find your best moments and hand them to you. That is it.",
+    desc: "Other tools overwhelm you with settings, timelines, and options. ShortTrim has one job – find your best moments and hand them to you. That is it.",
   },
   {
     icon: "🌍",
     title: "Works in your language",
-    desc: "Arabic, Tamil, French, Spanish, Urdu – most competitors only handle English well. ShortMint works natively in any spoken language.",
+    desc: "Arabic, Tamil, French, Spanish, Urdu – most competitors only handle English well. ShortTrim works natively in any spoken language.",
   },
   {
     icon: "💳",
@@ -137,7 +137,7 @@ const FAQS = [
   },
   {
     q: "What languages does it work with?",
-    a: "Any spoken language. English, Spanish, French, German, Arabic, Tamil, Urdu – if someone is speaking it, ShortMint can work with it.",
+    a: "Any spoken language. English, Spanish, French, German, Arabic, Tamil, Urdu – if someone is speaking it, ShortTrim can work with it.",
   },
   {
     q: "Do I need to connect any accounts?",
@@ -169,17 +169,17 @@ const TESTIMONIALS = [
   {
     name: "Br. Ismail R.",
     role: "Islamic content creator, London",
-    text: "I used to spend 3-4 hours cutting each lecture by hand. Now I paste the link and walk away. ShortMint picks better clips than I do.",
+    text: "I used to spend 3-4 hours cutting each lecture by hand. Now I paste the link and walk away. ShortTrim picks better clips than I do.",
   },
   {
     name: "Ustadh Faaris K.",
     role: "Arabic & Tamil speaker, UK",
-    text: "I tried other tools but they mangled my Arabic. ShortMint gets it right every time – even Tanglish. It actually understands what is being said.",
+    text: "I tried other tools but they mangled my Arabic. ShortTrim gets it right every time – even Tanglish. It actually understands what is being said.",
   },
   {
     name: "Sister Anisa M.",
     role: "Podcast creator, Leicester",
-    text: "The blur background style looks so clean on Reels. My audience thinks I have a video editor. I just use ShortMint.",
+    text: "The blur background style looks so clean on Reels. My audience thinks I have a video editor. I just use ShortTrim.",
   },
 ];
 
@@ -319,7 +319,7 @@ export default function Landing() {
           <span className="text-primary">Shorts in minutes</span>
         </h1>
         <p className="text-text-muted text-lg mb-8 max-w-xl mx-auto leading-relaxed">
-          Most video tools are overcomplicated. ShortMint isn't. Paste a link.
+          Most video tools are overcomplicated. ShortTrim isn't. Paste a link.
           Pick a style. Done – clips ready in minutes, in any language.
         </p>
         <div className="flex items-center justify-center gap-3 flex-wrap">
@@ -359,7 +359,7 @@ export default function Landing() {
       <section className="py-12 bg-bg-surface border-y border-border">
         <div className="max-w-5xl mx-auto px-4">
           <h2 className="text-center text-2xl font-bold text-text-primary mb-2">
-            Real outputs from ShortMint
+            Real outputs from ShortTrim
           </h2>
           <p className="text-center text-text-muted text-sm mb-8">
             These clips were generated automatically – no editing involved
@@ -438,13 +438,13 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* Why ShortMint */}
+      {/* Why ShortTrim */}
       <section className="py-16 max-w-4xl mx-auto px-4">
         <h2 className="text-center text-2xl font-bold text-text-primary mb-3">
-          Why creators choose ShortMint
+          Why creators choose ShortTrim
         </h2>
         <p className="text-center text-text-muted text-sm mb-10">
-          There are other tools out there. Here's what makes ShortMint
+          There are other tools out there. Here's what makes ShortTrim
           different.
         </p>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -471,7 +471,7 @@ export default function Landing() {
             7-day free trial
           </p>
           <h3 className="text-xl font-bold text-text-primary mb-2">
-            Try ShortMint free for 7 days
+            Try ShortTrim free for 7 days
           </h3>
           <p className="text-sm text-text-muted mb-4">
             Add your card and get <strong>10 hours of processing free</strong>{" "}
@@ -616,7 +616,7 @@ export default function Landing() {
           Every long video you post has 2–3 great Shorts hiding inside it.
         </p>
         <p className="text-text-muted mb-8">
-          ShortMint finds them for you – in minutes, in any language, with no
+          ShortTrim finds them for you – in minutes, in any language, with no
           editing skills needed.
         </p>
         {!initialized ? null : hasActivePlan ? (

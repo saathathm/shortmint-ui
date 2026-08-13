@@ -14,7 +14,7 @@ export default function Refunds() {
             Free Trial
           </h2>
           <p>
-            ShortMint offers a 7-day free trial. If you cancel before the 7-day
+            ShortTrim offers a 7-day free trial. If you cancel before the 7-day
             trial period ends, you will not be charged anything. Once the trial
             converts to a paid subscription after 7 days, no refund is available
             for that charge.

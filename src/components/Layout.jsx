@@ -71,7 +71,7 @@ export default function Layout({ children }) {
             </div>
             <div className="leading-tight">
               <div className="font-bold text-text-primary text-base tracking-tight">
-                ShortMint
+                ShortTrim
               </div>
               <div className="text-[11px] text-text-dim hidden sm:block">
                 Turn videos into engaging Shorts
@@ -239,7 +239,7 @@ export default function Layout({ children }) {
             <div className="w-6 h-6 bg-primary rounded-lg flex items-center justify-center">
               <Scissors size={12} className="text-white" />
             </div>
-            <span className="font-bold text-text-primary">ShortMint</span>
+            <span className="font-bold text-text-primary">ShortTrim</span>
             <span className="text-text-dim text-sm">by Addmora</span>
           </div>
           <div className="flex items-center gap-5 text-sm text-text-muted flex-wrap justify-center">

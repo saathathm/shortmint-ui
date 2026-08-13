@@ -224,7 +224,7 @@ export default function Results() {
         </div>
       </div>
       <p className="text-xs text-text-dim mb-6">
-        ShortMint is AI-powered and can make mistakes. Please double check the
+        ShortTrim is AI-powered and can make mistakes. Please double check the
         clips before sharing.
       </p>
 
