@@ -104,21 +104,6 @@ export default function Layout({ children }) {
                     <span>{label}</span>
                   </Link>
                 ))}
-
-                {/* Upgrade button – desktop, non-pro only */}
-                {client?.plan !== "pro" && (
-                  <Link
-                    to="/pricing"
-                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
-                      isActive("/pricing")
-                        ? "bg-amber-50 text-amber-600"
-                        : "text-amber-600 hover:bg-amber-50"
-                    }`}
-                  >
-                    <Zap size={14} />
-                    <span>Upgrade</span>
-                  </Link>
-                )}
               </div>
 
               {/* MOBILE CREATE BUTTON */}

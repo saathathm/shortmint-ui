@@ -143,16 +143,6 @@ export default function Terms() {
 
         <section>
           <h2 className="text-lg font-bold text-text-primary mb-2">
-            11. Governing Law
-          </h2>
-          <p>
-            These Terms are governed by the laws of Sri Lanka. Any disputes
-            shall be resolved in the courts of Sri Lanka.
-          </p>
-        </section>
-
-        <section>
-          <h2 className="text-lg font-bold text-text-primary mb-2">
             12. Contact
           </h2>
           <p>
