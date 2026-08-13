@@ -8,7 +8,7 @@ import {
 } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { useAuth } from "../hooks/useAuth.js";
-import { refreshClient } from "../store/authSlice.js";
+import { refreshClient, setClient } from "../store/authSlice.js";
 import { supabase } from "../lib/supabase.js";
 import {
   // getYouTubeConnectUrl,
@@ -128,9 +128,18 @@ export default function Settings() {
     setCancelError("");
     try {
       await cancelSubscription();
-      setCancelSuccess(true);
       setShowCancelModal(false);
-      await dispatch(refreshClient());
+      setCancelSuccess(true);
+      dispatch(
+        setClient({
+          ...client,
+          usage_hours_limit: 0,
+          subscription_status: "inactive",
+          stripe_subscription_id: null,
+          trial_ends_at: null,
+          subscription_cancel_at_period_end: false,
+        }),
+      );
     } catch (e) {
       setCancelError(
         e.response?.data?.error || "Failed to cancel. Please try again.",
