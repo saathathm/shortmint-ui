@@ -148,10 +148,10 @@ export default function Terms() {
           <p>
             For any questions about these Terms, contact us at{" "}
             <a
-              href="mailto:saadhath@addmora.com"
+              href="mailto:hello@addmora.com"
               className="text-primary hover:underline"
             >
-              saadhath@addmora.com
+              hello@addmora.com
             </a>
             .
           </p>

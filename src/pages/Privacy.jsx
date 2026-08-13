@@ -56,8 +56,8 @@ export default function Privacy() {
           <h2 className="text-lg font-bold text-text-primary mb-2">6. Your Rights</h2>
           <p>
             You have the right to access, correct, or delete your personal data at any time. To request full account deletion or a copy of your data, email us at{' '}
-            <a href="mailto:saadhath@addmora.com" className="text-primary hover:underline">
-              saadhath@addmora.com
+            <a href="mailto:hello@addmora.com" className="text-primary hover:underline">
+              hello@addmora.com
             </a>.
           </p>
           <p className="mt-2">
@@ -95,8 +95,8 @@ export default function Privacy() {
           <h2 className="text-lg font-bold text-text-primary mb-2">10. Contact</h2>
           <p>
             For any privacy-related questions, contact us at:{' '}
-            <a href="mailto:saadhath@addmora.com" className="text-primary hover:underline">
-              saadhath@addmora.com
+            <a href="mailto:hello@addmora.com" className="text-primary hover:underline">
+              hello@addmora.com
             </a>
             <br />
             Addmora, addmora.com

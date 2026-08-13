@@ -16,17 +16,17 @@ import { submitLead } from "../lib/api.js";
 
 const DEMO_CLIPS = [
   {
-    url: "https://shortmint.addmora.com/files/clip_blur.mp4",
+    url: "https://shorttrim.com/files/clip_blur.mp4",
     label: "Tamil Islamic lecture",
     style: "Blur BG",
   },
   {
-    url: "https://shortmint.addmora.com/files/clip_crop.mp4",
+    url: "https://shorttrim.com/files/clip_crop.mp4",
     label: "Religious talk",
     style: "9:16 Crop",
   },
   {
-    url: "https://shortmint.addmora.com/files/clip_custombg.mp4",
+    url: "https://shorttrim.com/files/clip_custombg.mp4",
     label: "Same video, custom clip",
     style: "Custom",
   },

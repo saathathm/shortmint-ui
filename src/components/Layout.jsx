@@ -268,7 +268,7 @@ export default function Layout({ children }) {
               Refunds
             </Link>
             <a
-              href="mailto:saadhath@addmora.com"
+              href="mailto:hello@addmora.com"
               className="hover:text-text-primary transition-colors"
             >
               Support

@@ -6,4 +6,4 @@ Disallow: /results
 Disallow: /history
 Disallow: /settings
 
-Sitemap: https://shortmint.addmora.com/sitemap.xml
+Sitemap: https://shorttrim.com/sitemap.xml
