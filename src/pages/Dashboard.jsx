@@ -621,7 +621,7 @@ export default function Dashboard() {
               Your free trial is active! 🎉
             </p>
             <p className="text-sm text-text-muted mt-0.5">
-              You have 10 hours to use – no charge until day 7. Start creating
+              You have 10 hours to use, no charge until day 7. Start creating
               your first Shorts.
             </p>
           </div>
@@ -632,13 +632,13 @@ export default function Dashboard() {
         <div className="mt-4 space-y-3">
           {/* Free trial CTA */}
           {!client?.has_used_trial && (
-            <div className="bg-primary/5 border border-primary/20 rounded-xl p-4 flex items-start justify-between gap-4">
+            <div className="bg-primary/5 border border-primary/20 rounded-xl p-4 flex items-center justify-between gap-4">
               <div>
                 <p className="text-sm font-bold text-text-primary">
                   Start your 7-day free trial
                 </p>
                 <p className="text-sm text-text-muted mt-0.5">
-                  Get 10 hours free. Add your card – no charge for 7 days.
+                  Get 10 hours free. Add your card, no charge for 7 days.
                   Cancel anytime before day 7.
                 </p>
               </div>
@@ -654,7 +654,7 @@ export default function Dashboard() {
                   Choose a plan to continue
                 </p>
                 <p className="text-sm text-text-muted mt-0.5">
-                  Your trial has ended. Subscribe to keep creating Shorts.
+                  Your free trial has ended. Subscribe to keep creating Shorts.
                 </p>
                 <Link
                   to="/pricing"
