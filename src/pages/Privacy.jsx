@@ -11,7 +11,7 @@ export default function Privacy() {
         <section>
           <h2 className="text-lg font-bold text-text-primary mb-2">1. About ShortTrim</h2>
           <p>
-            ShortTrim is a product by Addmora (addmora.com). We help content creators turn long-form videos into short-form clips ready to post anywhere. This Privacy Policy explains how we collect, use, and protect your data.
+            ShortTrim (shorttrim.com) helps content creators turn long-form videos into short-form clips ready to post anywhere. This Privacy Policy explains how we collect, use, and protect your data.
           </p>
         </section>
 
@@ -56,8 +56,8 @@ export default function Privacy() {
           <h2 className="text-lg font-bold text-text-primary mb-2">6. Your Rights</h2>
           <p>
             You have the right to access, correct, or delete your personal data at any time. To request full account deletion or a copy of your data, email us at{' '}
-            <a href="mailto:hello@addmora.com" className="text-primary hover:underline">
-              hello@addmora.com
+            <a href="mailto:hello@shorttrim.com" className="text-primary hover:underline">
+              hello@shorttrim.com
             </a>.
           </p>
           <p className="mt-2">
@@ -95,11 +95,9 @@ export default function Privacy() {
           <h2 className="text-lg font-bold text-text-primary mb-2">10. Contact</h2>
           <p>
             For any privacy-related questions, contact us at:{' '}
-            <a href="mailto:hello@addmora.com" className="text-primary hover:underline">
-              hello@addmora.com
+            <a href="mailto:hello@shorttrim.com" className="text-primary hover:underline">
+              hello@shorttrim.com
             </a>
-            <br />
-            Addmora, addmora.com
           </p>
         </section>
 

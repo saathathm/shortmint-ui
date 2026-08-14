@@ -14,9 +14,7 @@ export default function Terms() {
             1. Acceptance of Terms
           </h2>
           <p>
-            By accessing or using ShortTrim ("the Service"), operated by
-            Addmora, you agree to be bound by these Terms of Service. If you do
-            not agree, do not use the Service.
+            By accessing or using ShortTrim ("the Service"), you agree to be bound by these Terms of Service.
           </p>
         </section>
 
@@ -100,9 +98,9 @@ export default function Terms() {
           </h2>
           <p>
             ShortTrim and its original content, features, and functionality are
-            owned by Addmora. You retain full ownership of any content you
-            process through the Service. We do not claim any rights over your
-            videos or clips.
+owned by ShortTrim. You retain full ownership of any content you
+process through the Service. We do not claim any rights over your
+videos or clips.
           </p>
         </section>
 
@@ -111,11 +109,10 @@ export default function Terms() {
             8. Limitation of Liability
           </h2>
           <p>
-            The Service is provided "as is" without warranties of any kind.
-            Addmora shall not be liable for any indirect, incidental, or
-            consequential damages arising from your use of the Service. Our
-            total liability to you shall not exceed the amount you paid us in
-            the 30 days prior to the claim.
+            ShortTrim shall not be liable for any indirect, incidental, or
+consequential damages arising from your use of the Service. Our
+total liability to you shall not exceed the amount you paid us in
+the 30 days prior to the claim.
           </p>
         </section>
 
@@ -143,15 +140,15 @@ export default function Terms() {
 
         <section>
           <h2 className="text-lg font-bold text-text-primary mb-2">
-            12. Contact
+            11. Contact
           </h2>
           <p>
             For any questions about these Terms, contact us at{" "}
             <a
-              href="mailto:hello@addmora.com"
+              href="mailto:hello@shorttrim.com"
               className="text-primary hover:underline"
             >
-              hello@addmora.com
+              hello@shorttrim.com
             </a>
             .
           </p>

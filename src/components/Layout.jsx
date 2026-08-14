@@ -240,7 +240,6 @@ export default function Layout({ children }) {
               <Scissors size={12} className="text-white" />
             </div>
             <span className="font-bold text-text-primary">ShortTrim</span>
-            <span className="text-text-dim text-sm">by Addmora</span>
           </div>
           <div className="flex items-center gap-5 text-sm text-text-muted flex-wrap justify-center">
             <Link
@@ -268,12 +267,12 @@ export default function Layout({ children }) {
               Refunds
             </Link>
             <a
-              href="mailto:hello@addmora.com"
+              href="mailto:hello@shorttrim.com"
               className="hover:text-text-primary transition-colors"
             >
               Support
             </a>
-            <span className="text-text-dim">© 2026 Addmora</span>
+            <span className="text-text-dim">© {new Date().getFullYear()} ShortTrim</span>
           </div>
         </div>
       </footer>

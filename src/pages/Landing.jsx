@@ -83,7 +83,7 @@ const FEATURES = [
   },
 ];
 
-const WHY_SHORTMINT = [
+const WHY_SHORTTRIM = [
   {
     icon: "✂️",
     title: "2–3 clips, not just one",
@@ -448,7 +448,7 @@ export default function Landing() {
           different.
         </p>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          {WHY_SHORTMINT.map((item) => (
+          {WHY_SHORTTRIM.map((item) => (
             <div key={item.title} className="card p-5 flex items-start gap-4">
               <div className="text-2xl shrink-0">{item.icon}</div>
               <div>

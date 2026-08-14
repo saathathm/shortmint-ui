@@ -257,7 +257,7 @@ export default function Pricing() {
         Trial: cancel before day 7 – no charge. Subscriptions: cancel anytime,
         no refunds. Payment issue?{" "}
         <a
-          href="mailto:hello@addmora.com"
+          href="mailto:hello@shorttrim.com"
           className="text-primary hover:underline"
         >
           Email us
