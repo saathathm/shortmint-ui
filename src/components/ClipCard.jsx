@@ -48,9 +48,6 @@ export default function ClipCard({ clip, clipIndex }) {
   const [showPromptModal, setShowPromptModal] = useState(false);
   const [promptTopText, setPromptTopText] = useState(clip.title || "");
   const [promptBottomText, setPromptBottomText] = useState("");
-  const [promptStyle, setPromptStyle] = useState("universal");
-  const [promptCustomStyle, setPromptCustomStyle] = useState("");
-  const [promptColor, setPromptColor] = useState("");
   const [promptCopied, setPromptCopied] = useState(false);
 
   const togglePlay = () => {
@@ -160,74 +157,37 @@ export default function ClipCard({ clip, clipIndex }) {
     }
   };
 
-  const DESIGN_STYLES = [
-    { value: "auto", label: "Auto — match the mood of my text (recommended)" },
-    {
-      value: "serious",
-      label: "Serious & Thought-provoking (deep, dark tones)",
-    },
-    { value: "emotional", label: "Emotional & Moving (warm, soft tones)" },
-    { value: "inspiring", label: "Inspiring & Uplifting (bright, energetic)" },
-    { value: "peaceful", label: "Peaceful & Spiritual (calm, minimal)" },
-    { value: "urgent", label: "Urgent & Warning (bold, high contrast)" },
-    { value: "celebratory", label: "Celebratory & Joyful (vibrant, warm)" },
-    {
-      value: "educational",
-      label: "Educational & Informative (clean, structured)",
-    },
-    { value: "islamic", label: "Islamic / Spiritual (elegant, traditional)" },
-    { value: "custom", label: "Custom (describe your own)" },
-  ];
-
-  const getMoodInstructions = (style) => {
-    const map = {
-      auto: `Analyze the meaning and emotional tone of the text provided, and automatically choose a design style, typography weight, and color palette that best matches that mood and message.`,
-      serious: `The mood is serious and thought-provoking. Use deep, dark tones — navy, charcoal, dark purple, or black. Typography should feel heavy and impactful. The overall feel should be solemn and powerful.`,
-      emotional: `The mood is emotional and moving. Use warm, soft tones — deep reds, burgundy, warm browns, or muted oranges. Typography should feel heartfelt. The design should evoke empathy and feeling.`,
-      inspiring: `The mood is inspiring and uplifting. Use bright, energetic colors — gold, bright blue, or vibrant green. Typography should feel bold and motivating.`,
-      peaceful: `The mood is peaceful and spiritual. Use calm, minimal tones — soft whites, light blues, or sage greens. Typography should feel gentle and serene.`,
-      urgent: `The mood is urgent and warning. Use bold, high-contrast colors — red and black, or deep orange and dark. Typography should feel alarming and immediate.`,
-      celebratory: `The mood is celebratory and joyful. Use vibrant warm colors — gold, yellow, orange, or festive combinations. Typography should feel energetic and cheerful.`,
-      educational: `The mood is educational and informative. Use clean, structured colors — professional blues, whites, and grays. Typography should feel clear and trustworthy.`,
-      islamic: `The style is Islamic and spiritual. Use elegant traditional tones — deep green, gold, black, or rich blue. Typography should feel refined, and subtle Arabic geometric patterns or calligraphy-inspired elements are welcome in the top/bottom sections only.`,
-      custom: null,
-    };
-    return map[style] || map.auto;
-  };
-
   const generatePrompt = () => {
     const topSection = promptTopText.trim()
-      ? `Top / top-center section: Display this text in a visually - situation of the text — "${promptTopText.trim()}"`
-      : `Top / top-center section: Leave empty or fill with a subtle decorative design that matches the overall mood. No text.`;
+      ? `Top / top-center section: Display this text prominently and beautifully — "${promptTopText.trim()}". The typography, visual treatment, atmosphere, lighting, colors, textures, and overall visual style must be intelligently chosen based entirely on the meaning, emotion, subject, and situation expressed by this text.`
+      : `Top / top-center section: Leave empty or use a subtle visual element that naturally matches the overall subject and atmosphere. No text.`;
 
     const bottomSection = promptBottomText.trim()
       ? `Bottom-center to bottom section: Display this text clearly — "${promptBottomText.trim()}". Make sure the text is not too close to the edge.`
-      : `Bottom-center to bottom section: Leave empty or add a subtle design element. No text.`;
+      : `Bottom-center to bottom section: Leave empty or add a subtle visual element that naturally matches the subject and atmosphere. No text.`;
 
-    const moodInstructions =
-      promptStyle === "custom"
-        ? `Design style and color palette: ${promptCustomStyle.trim() || "clean and modern"}`
-        : getMoodInstructions(promptStyle);
+    return `Create a cinematic 9:16 background image for overlaying a 16:9 video (to convert it into a 9:16 format).
 
-    const colorLine = promptColor.trim()
-      ? `Override color palette with: ${promptColor.trim()}`
-      : ``;
-
-    return `Create a 9:16 background image for overlaying a 16:9 video (to convert it into a 9:16 format).
+The entire visual concept, atmosphere, color palette, lighting, environment, textures, composition, and emotional tone must be intelligently determined from the meaning and situation of the provided text. Do not use a generic preset style. Make the image visually represent and complement what the text is about.
 
 LAYOUT (strictly follow this):
 
 ${topSection}
 
-Middle section (landscape-center): Leave this area completely empty — no placeholder, no design elements — since the 16:9 video will be overlaid here.
+Middle section (landscape-center): Leave this area completely empty and visually clean — no text, no objects, no important subjects, no patterns, and no design elements that would interfere with the 16:9 video overlay. The surrounding visual environment should naturally flow around this empty area.
 
 ${bottomSection}
 
-${moodInstructions}
-${colorLine}
+VISUAL QUALITY:
+Create a rich, cinematic, immersive visual rather than a flat wallpaper, generic background, or simple gradient. Use appropriate environmental elements, atmospheric depth, cinematic lighting, subtle textures, shadows, depth of field, and layered details when they fit the meaning of the text.
+
+The visual style should feel intentionally designed for the specific text. If the text is emotional, create an emotionally appropriate atmosphere. If it is mysterious, create mystery. If it is educational or scientific, create an appropriate cinematic environment. If it is humorous, dramatic, inspirational, spiritual, romantic, historical, or any other subject, automatically adapt the visual concept accordingly.
+
+Do not ask the user to choose a style or color palette. Make all creative decisions automatically based on the text.
+
 Image size: 1080 x 1920 pixels (9:16 ratio)
 
-Make it look professional, eye-catching, and suitable for YouTube Shorts or Instagram Reels. The overall design should feel cohesive from top to bottom, with the empty middle blending naturally into the design.`.trim();
+Make it professional, cinematic, immersive, eye-catching, and suitable for YouTube Shorts or Instagram Reels. The final composition should feel cohesive from top to bottom, with the visual environment naturally framing the 16:9 video area.`;
   };
 
   const handleCopyPrompt = () => {
@@ -534,11 +494,11 @@ Make it look professional, eye-catching, and suitable for YouTube Shorts or Inst
             <div className="flex items-center justify-between p-5 border-b border-border">
               <div>
                 <h3 className="font-bold text-text-primary">
-                  Generate Background Prompt
+                  Create Background
                 </h3>
                 <p className="text-xs text-text-muted mt-0.5">
-                  Copy this prompt and paste it into ChatGPT, Gemini, or
-                  Midjourney
+                  Generate a cinematic background based on your clip's content —
+                  paste the prompt into ChatGPT, Gemini, or Midjourney
                 </p>
               </div>
               <button
@@ -556,7 +516,7 @@ Make it look professional, eye-catching, and suitable for YouTube Shorts or Inst
                 <label className="text-xs font-semibold text-text-muted uppercase tracking-wide mb-1 block">
                   Text on top{" "}
                   <span className="text-text-dim font-normal normal-case">
-                    (optional — clear to remove)
+                    (clear to remove)
                   </span>
                 </label>
                 <input
@@ -564,7 +524,7 @@ Make it look professional, eye-catching, and suitable for YouTube Shorts or Inst
                   value={promptTopText}
                   onChange={(e) => setPromptTopText(e.target.value)}
                   className="input-field text-sm"
-                  placeholder="e.g. clip title, channel name..."
+                  placeholder="Leave empty for no text on top..."
                 />
               </div>
 
@@ -585,56 +545,12 @@ Make it look professional, eye-catching, and suitable for YouTube Shorts or Inst
                 />
               </div>
 
-              {/* Design style */}
-              <div>
-                <label className="text-xs font-semibold text-text-muted uppercase tracking-wide mb-1 block">
-                  Mood & Visual Tone
-                </label>
-                <select
-                  value={promptStyle}
-                  onChange={(e) => setPromptStyle(e.target.value)}
-                  className="input-field text-sm"
-                >
-                  {DESIGN_STYLES.map((s) => (
-                    <option key={s.value} value={s.value}>
-                      {s.label}
-                    </option>
-                  ))}
-                </select>
-                {promptStyle === "custom" && (
-                  <input
-                    type="text"
-                    value={promptCustomStyle}
-                    onChange={(e) => setPromptCustomStyle(e.target.value)}
-                    className="input-field text-sm mt-2"
-                    placeholder="Describe your style..."
-                  />
-                )}
-              </div>
-
-              {/* Color preference */}
-              <div>
-                <label className="text-xs font-semibold text-text-muted uppercase tracking-wide mb-1 block">
-                  Color override{" "}
-                  <span className="text-text-dim font-normal normal-case">
-                    (optional — leave empty to auto-pick based on mood)
-                  </span>
-                </label>
-                <input
-                  type="text"
-                  value={promptColor}
-                  onChange={(e) => setPromptColor(e.target.value)}
-                  className="input-field text-sm"
-                  placeholder="e.g. dark green and gold, blue and white..."
-                />
-              </div>
-
-              {/* Preview */}
+              {/* Generated prompt preview */}
               <div>
                 <label className="text-xs font-semibold text-text-muted uppercase tracking-wide mb-1 block">
                   Generated prompt
                 </label>
-                <div className="bg-bg-surface border border-border rounded-xl p-3 text-xs text-text-muted leading-relaxed whitespace-pre-wrap max-h-40 overflow-y-auto">
+                <div className="bg-bg-surface border border-border rounded-xl p-3 text-xs text-text-muted leading-relaxed whitespace-pre-wrap max-h-48 overflow-y-auto">
                   {generatePrompt()}
                 </div>
               </div>
