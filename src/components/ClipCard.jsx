@@ -161,57 +161,57 @@ export default function ClipCard({ clip, clipIndex }) {
   };
 
   const DESIGN_STYLES = [
-    { value: "universal", label: "Universal (clean & modern)" },
-    { value: "minimalist", label: "Minimalist (light, simple)" },
-    { value: "bold", label: "Bold & Vibrant (strong colors)" },
-    { value: "elegant", label: "Elegant & Dark (dark bg, light text)" },
-    { value: "islamic", label: "Islamic / Arabic Style" },
-    { value: "decorative", label: "Decorative Word Art" },
+    { value: "auto", label: "Auto — match the mood of my text (recommended)" },
+    {
+      value: "serious",
+      label: "Serious & Thought-provoking (deep, dark tones)",
+    },
+    { value: "emotional", label: "Emotional & Moving (warm, soft tones)" },
+    { value: "inspiring", label: "Inspiring & Uplifting (bright, energetic)" },
+    { value: "peaceful", label: "Peaceful & Spiritual (calm, minimal)" },
+    { value: "urgent", label: "Urgent & Warning (bold, high contrast)" },
+    { value: "celebratory", label: "Celebratory & Joyful (vibrant, warm)" },
+    {
+      value: "educational",
+      label: "Educational & Informative (clean, structured)",
+    },
+    { value: "islamic", label: "Islamic / Spiritual (elegant, traditional)" },
     { value: "custom", label: "Custom (describe your own)" },
   ];
 
-  const generatePrompt = () => {
-    const detectTextSituation = (text) => {
-      if (!text.trim()) return null;
-      const hasTamil = /[\u0B80-\u0BFF]/.test(text);
-      const hasArabic = /[\u0600-\u06FF]/.test(text);
-      const wordCount = text.trim().split(/\s+/).length;
-      const isQuestion = text.includes("?") || text.includes("؟");
-      const isShort = wordCount <= 4;
-
-      let lang = "English";
-      if (hasTamil && hasArabic) lang = "mixed Tamil and Arabic";
-      else if (hasTamil) lang = "Tamil";
-      else if (hasArabic) lang = "Arabic";
-
-      let length = isShort ? "short text (few words)" : "longer sentence";
-      let tone = isQuestion ? "a question" : "a statement";
-
-      return `${lang}, ${length}, ${tone}`;
+  const getMoodInstructions = (style) => {
+    const map = {
+      auto: `Analyze the meaning and emotional tone of the text provided, and automatically choose a design style, typography weight, and color palette that best matches that mood and message.`,
+      serious: `The mood is serious and thought-provoking. Use deep, dark tones — navy, charcoal, dark purple, or black. Typography should feel heavy and impactful. The overall feel should be solemn and powerful.`,
+      emotional: `The mood is emotional and moving. Use warm, soft tones — deep reds, burgundy, warm browns, or muted oranges. Typography should feel heartfelt. The design should evoke empathy and feeling.`,
+      inspiring: `The mood is inspiring and uplifting. Use bright, energetic colors — gold, bright blue, or vibrant green. Typography should feel bold and motivating.`,
+      peaceful: `The mood is peaceful and spiritual. Use calm, minimal tones — soft whites, light blues, or sage greens. Typography should feel gentle and serene.`,
+      urgent: `The mood is urgent and warning. Use bold, high-contrast colors — red and black, or deep orange and dark. Typography should feel alarming and immediate.`,
+      celebratory: `The mood is celebratory and joyful. Use vibrant warm colors — gold, yellow, orange, or festive combinations. Typography should feel energetic and cheerful.`,
+      educational: `The mood is educational and informative. Use clean, structured colors — professional blues, whites, and grays. Typography should feel clear and trustworthy.`,
+      islamic: `The style is Islamic and spiritual. Use elegant traditional tones — deep green, gold, black, or rich blue. Typography should feel refined, and subtle Arabic geometric patterns or calligraphy-inspired elements are welcome in the top/bottom sections only.`,
+      custom: null,
     };
+    return map[style] || map.auto;
+  };
 
-    const topSituation = detectTextSituation(promptTopText);
-    const bottomSituation = detectTextSituation(promptBottomText);
-
+  const generatePrompt = () => {
     const topSection = promptTopText.trim()
-      ? `Top section (upper 25% of the image): Display this text in a visually attractive way that suits the language and tone — "${promptTopText.trim()}"
-  Note: This is ${topSituation}. Choose a font style, size, and layout that fits naturally for this type of text. If it is Tamil or Arabic, use a font that renders those characters beautifully.`
-      : `Top section (upper 25% of the image): Leave empty or fill with a subtle decorative design that matches the overall style. No text.`;
+      ? `Top section (upper 25% of the image): Display this text in a visually attractive way that matches the mood — "${promptTopText.trim()}"`
+      : `Top section (upper 25% of the image): Leave empty or fill with a subtle decorative design that matches the overall mood. No text.`;
 
     const bottomSection = promptBottomText.trim()
-      ? `Bottom section (lower 25% of the image): Display this text clearly — "${promptBottomText.trim()}"
-  Note: This is ${bottomSituation}. Make sure the text is not too close to the edge and is easy to read.`
+      ? `Bottom section (lower 25% of the image): Display this text clearly — "${promptBottomText.trim()}". Make sure the text is not too close to the edge.`
       : `Bottom section (lower 25% of the image): Leave empty or add a subtle design element. No text.`;
 
-    const styleLabel =
+    const moodInstructions =
       promptStyle === "custom"
-        ? promptCustomStyle.trim() || "clean and modern"
-        : DESIGN_STYLES.find((s) => s.value === promptStyle)?.label ||
-          "clean and modern";
+        ? `Design style and color palette: ${promptCustomStyle.trim() || "clean and modern"}`
+        : getMoodInstructions(promptStyle);
 
     const colorLine = promptColor.trim()
-      ? `Color palette: ${promptColor.trim()}`
-      : `Color palette: Choose colors that complement the text language and design style, and look great on social media.`;
+      ? `Override color palette with: ${promptColor.trim()}`
+      : ``;
 
     return `Create a 9:16 vertical background image for a short-form video.
 
@@ -223,11 +223,11 @@ Middle section (center 50% of the image): THIS MUST BE COMPLETELY EMPTY. No text
 
 ${bottomSection}
 
-Design style: ${styleLabel}
+${moodInstructions}
 ${colorLine}
 Image size: 1080 x 1920 pixels (9:16 ratio)
 
-Make it look professional, eye-catching, and suitable for YouTube Shorts or Instagram Reels. The overall design should feel cohesive from top to bottom, with the empty middle blending naturally into the design.`;
+Make it look professional, eye-catching, and suitable for YouTube Shorts or Instagram Reels. The overall design should feel cohesive from top to bottom, with the empty middle blending naturally into the design.`.trim();
   };
 
   const handleCopyPrompt = () => {
@@ -588,7 +588,7 @@ Make it look professional, eye-catching, and suitable for YouTube Shorts or Inst
               {/* Design style */}
               <div>
                 <label className="text-xs font-semibold text-text-muted uppercase tracking-wide mb-1 block">
-                  Design style
+                  Mood & Visual Tone
                 </label>
                 <select
                   value={promptStyle}
@@ -615,9 +615,9 @@ Make it look professional, eye-catching, and suitable for YouTube Shorts or Inst
               {/* Color preference */}
               <div>
                 <label className="text-xs font-semibold text-text-muted uppercase tracking-wide mb-1 block">
-                  Color preference{" "}
+                  Color override{" "}
                   <span className="text-text-dim font-normal normal-case">
-                    (optional)
+                    (optional — leave empty to auto-pick based on mood)
                   </span>
                 </label>
                 <input
