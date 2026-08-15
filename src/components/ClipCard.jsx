@@ -163,17 +163,18 @@ export default function ClipCard({ clip, clipIndex }) {
 
     const topSection = promptTopText.trim()
       ? `Top / top-center section: Display this text prominently and beautifully — "${promptTopText.trim()}".`
-      : `Top / top-center section: Leave empty or use a subtle visual element that naturally matches the overall subject and atmosphere. No text.`;
+      : `Top / top-center section: Leave empty or use a subtle visual element that naturally matches the subject. No text.`;
 
     const bottomSection = promptBottomText.trim()
       ? `Bottom-center to bottom section: Display this text clearly — "${promptBottomText.trim()}". Make sure the text is not too close to the edge.`
-      : `Bottom-center to bottom section: Leave empty or add a subtle visual element that naturally matches the subject and atmosphere. No text.`;
+      : `Bottom-center to bottom section: Leave empty or use subtle visual elements that naturally match the subject. No text.`;
 
     const situationLine = situation
-      ? `CONTENT CONTEXT (use this to determine the entire visual concept):
+      ? `CONTENT CONTEXT (use this to understand the subject and meaning of the design):
 "${situation}"
-The typography, visual treatment, atmosphere, lighting, colors, textures, environment, composition, and emotional tone must all be intelligently chosen based on the meaning, emotion, subject, and situation expressed by this context.`
-      : `The typography, visual treatment, atmosphere, lighting, colors, textures, environment, composition, and emotional tone must be intelligently determined from the text provided in the top section.`;
+
+Automatically choose the appropriate colors, shapes, patterns, illustrations, decorative elements, typography style, and overall visual appearance based on the meaning and subject of this content.`
+      : `Automatically choose the colors, visual elements, and overall design based on the text provided in the top section.`;
 
     return `Create a 9:16 background image for overlaying a 16:9 video (to convert it into a 9:16 format).
 
@@ -183,20 +184,26 @@ LAYOUT (strictly follow this):
 
 ${topSection}
 
-Middle section (landscape-center): Leave this area completely empty and visually clean — no text, no objects, no important subjects, no patterns, and no design elements that would interfere with the 16:9 video overlay. The surrounding visual environment should naturally flow around this empty area.
+Middle section (landscape-center): Leave this area completely empty and visually clean — no text, no objects, no important subjects, no patterns, and no design elements that would interfere with the 16:9 video overlay.
 
 ${bottomSection}
 
-VISUAL QUALITY:
-Create a immersive visual rather than a flat wallpaper, generic background, or simple gradient. Use appropriate environmental elements, atmospheric depth, subtle textures, shadows, depth of field, and layered details when they fit the context.
+DESIGN STYLE:
+Create a clean, attractive, modern background that visually matches the subject of the content.
 
-The visual style should feel intentionally designed for the specific content. If the context is emotional, create an emotionally appropriate atmosphere. If it is mysterious, create mystery. If it is educational or scientific, create an appropriate cinematic environment. If it is humorous, dramatic, inspirational, spiritual, romantic, historical, or any other subject, automatically adapt the visual concept accordingly.
+The background should feel like a professionally designed social media background, not a cinematic scene or realistic environment.
 
-Do not use a generic preset style. Make all creative decisions automatically based on the provided context.
+Use simple but visually appealing colors, shapes, patterns, illustrations, gradients, textures, or decorative elements when appropriate. Automatically choose the design based on the content.
+
+Do not create a generic wallpaper. The design should clearly feel relevant to the subject and emotion of the provided content.
+
+Do not force a specific color palette or visual style. Make the creative decisions automatically based on the content.
+
+Keep the design clean and balanced so the central 16:9 video remains the main focus.
 
 Image size: 1080 x 1920 pixels (9:16 ratio)
 
-Make it suitable for YouTube Shorts or Instagram Reels. The final composition should feel cohesive from top to bottom, with the visual environment naturally framing the 16:9 video area.`;
+Make it suitable for YouTube Shorts or Instagram Reels. The final composition should feel cohesive from top to bottom, with the background naturally supporting and framing the central 16:9 video area.`;
   };
 
   const handleCopyPrompt = () => {
