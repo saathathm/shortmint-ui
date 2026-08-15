@@ -197,12 +197,12 @@ export default function ClipCard({ clip, clipIndex }) {
 
   const generatePrompt = () => {
     const topSection = promptTopText.trim()
-      ? `Top section (upper 25% of the image): Display this text in a visually attractive way that matches the mood — "${promptTopText.trim()}"`
-      : `Top section (upper 25% of the image): Leave empty or fill with a subtle decorative design that matches the overall mood. No text.`;
+      ? `Top / top-center section: Display this text in a visually - situation of the text — "${promptTopText.trim()}"`
+      : `Top / top-center section: Leave empty or fill with a subtle decorative design that matches the overall mood. No text.`;
 
     const bottomSection = promptBottomText.trim()
-      ? `Bottom section (lower 25% of the image): Display this text clearly — "${promptBottomText.trim()}". Make sure the text is not too close to the edge.`
-      : `Bottom section (lower 25% of the image): Leave empty or add a subtle design element. No text.`;
+      ? `Bottom-center to bottom section: Display this text clearly — "${promptBottomText.trim()}". Make sure the text is not too close to the edge.`
+      : `Bottom-center to bottom section: Leave empty or add a subtle design element. No text.`;
 
     const moodInstructions =
       promptStyle === "custom"
@@ -213,13 +213,13 @@ export default function ClipCard({ clip, clipIndex }) {
       ? `Override color palette with: ${promptColor.trim()}`
       : ``;
 
-    return `Create a 9:16 vertical background image for a short-form video.
+    return `Create a 9:16 background image for overlaying a 16:9 video (to convert it into a 9:16 format).
 
 LAYOUT (strictly follow this):
 
 ${topSection}
 
-Middle section (center 50% of the image): THIS MUST BE COMPLETELY EMPTY. No text, no patterns, no icons, no decorations of any kind. Use only a plain color or very subtle gradient in this area. This space is where the video will be placed on top.
+Middle section (landscape-center): Leave this area completely empty — no placeholder, no design elements — since the 16:9 video will be overlaid here.
 
 ${bottomSection}
 
