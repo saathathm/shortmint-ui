@@ -4,12 +4,15 @@ import {
   Download,
   Play,
   Pause,
-  // Youtube,
-  // Facebook,
   Upload,
   AlertTriangle,
   CheckCircle,
   Loader,
+  Sparkles,
+  Copy,
+  X,
+  // Youtube,
+  // Facebook,
 } from "lucide-react";
 import { updateClipField } from "../store/videoSlice.js";
 import {
@@ -42,6 +45,13 @@ export default function ClipCard({ clip, clipIndex }) {
   const [successMsg, setSuccessMsg] = useState(false);
   const fileInputRef = useRef(null);
   const pollRef = useRef(null);
+  const [showPromptModal, setShowPromptModal] = useState(false);
+  const [promptTopText, setPromptTopText] = useState(clip.title || "");
+  const [promptBottomText, setPromptBottomText] = useState("");
+  const [promptStyle, setPromptStyle] = useState("universal");
+  const [promptCustomStyle, setPromptCustomStyle] = useState("");
+  const [promptColor, setPromptColor] = useState("");
+  const [promptCopied, setPromptCopied] = useState(false);
 
   const togglePlay = () => {
     if (!videoRef.current) return;
@@ -148,6 +158,58 @@ export default function ClipCard({ clip, clipIndex }) {
       alert("Could not process image. Please try again.");
       setApplyingBg(false);
     }
+  };
+
+  const DESIGN_STYLES = [
+    { value: "universal", label: "Universal (clean & modern)" },
+    { value: "minimalist", label: "Minimalist (light, simple)" },
+    { value: "bold", label: "Bold & Vibrant (strong colors)" },
+    { value: "elegant", label: "Elegant & Dark (dark bg, light text)" },
+    { value: "islamic", label: "Islamic / Arabic Style" },
+    { value: "decorative", label: "Decorative Word Art" },
+    { value: "custom", label: "Custom (describe your own)" },
+  ];
+
+  const generatePrompt = () => {
+    const topSection = promptTopText.trim()
+      ? `Top section (upper 25% of the image): Display this text in a visually attractive way — "${promptTopText.trim()}"`
+      : `Top section (upper 25% of the image): Leave empty or fill with a subtle decorative design that matches the overall style. No text.`;
+
+    const bottomSection = promptBottomText.trim()
+      ? `Bottom section (lower 25% of the image): Display this text clearly — "${promptBottomText.trim()}". Make sure the text is not too close to the edge.`
+      : `Bottom section (lower 25% of the image): Leave empty or add a subtle design element. No text.`;
+
+    const styleLabel =
+      promptStyle === "custom"
+        ? promptCustomStyle.trim() || "clean and modern"
+        : DESIGN_STYLES.find((s) => s.value === promptStyle)?.label ||
+          "clean and modern";
+
+    const colorLine = promptColor.trim()
+      ? `Color palette: ${promptColor.trim()}`
+      : `Color palette: Choose colors that match the design style and look great on social media.`;
+
+    return `Create a 9:16 vertical background image for a short-form video.
+
+LAYOUT (strictly follow this):
+
+${topSection}
+
+Middle section (center 50% of the image): THIS MUST BE COMPLETELY EMPTY. No text, no patterns, no icons, no decorations of any kind. Use only a plain color or very subtle gradient in this area. This space is where the video will be placed on top.
+
+${bottomSection}
+
+Design style: ${styleLabel}
+${colorLine}
+Image size: 1080 x 1920 pixels (9:16 ratio)
+
+Make it look professional, eye-catching, and suitable for YouTube Shorts or Instagram Reels. The overall design should feel cohesive from top to bottom, with the empty middle blending naturally into the design.`;
+  };
+
+  const handleCopyPrompt = () => {
+    navigator.clipboard.writeText(generatePrompt());
+    setPromptCopied(true);
+    setTimeout(() => setPromptCopied(false), 2000);
   };
 
   const isCustomStyle = clip.style === "custom";
@@ -294,6 +356,13 @@ export default function ClipCard({ clip, clipIndex }) {
                 className="hidden"
                 onChange={handleBgUpload}
               />
+              <button
+                onClick={() => setShowPromptModal(true)}
+                className="flex items-center gap-1.5 bg-white border border-amber-300 text-amber-800 text-xs font-semibold px-3 py-1.5 rounded-lg hover:bg-amber-50 transition-all"
+              >
+                <Sparkles size={13} />
+                Get Background Prompt
+              </button>
               {/* <button
                 onClick={() => setShowLandscapeWarning(true)}
                 className="text-xs font-semibold text-amber-700 px-3 py-1.5 rounded-lg hover:bg-amber-100 transition-all"
@@ -432,6 +501,147 @@ export default function ClipCard({ clip, clipIndex }) {
           </p>
         )} */}
       </div>
+
+      {/* Background Prompt Modal */}
+      {showPromptModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl shadow-xl w-full max-w-md max-h-[90vh] overflow-y-auto">
+            {/* Header */}
+            <div className="flex items-center justify-between p-5 border-b border-border">
+              <div>
+                <h3 className="font-bold text-text-primary">
+                  Generate Background Prompt
+                </h3>
+                <p className="text-xs text-text-muted mt-0.5">
+                  Copy this prompt and paste it into ChatGPT, Gemini, or
+                  Midjourney
+                </p>
+              </div>
+              <button
+                onClick={() => setShowPromptModal(false)}
+                className="p-1.5 hover:bg-bg-surface rounded-lg transition"
+              >
+                <X size={18} className="text-text-muted" />
+              </button>
+            </div>
+
+            {/* Fields */}
+            <div className="p-5 space-y-4">
+              {/* Top text */}
+              <div>
+                <label className="text-xs font-semibold text-text-muted uppercase tracking-wide mb-1 block">
+                  Text on top{" "}
+                  <span className="text-text-dim font-normal normal-case">
+                    (optional — clear to remove)
+                  </span>
+                </label>
+                <input
+                  type="text"
+                  value={promptTopText}
+                  onChange={(e) => setPromptTopText(e.target.value)}
+                  className="input-field text-sm"
+                  placeholder="e.g. clip title, channel name..."
+                />
+              </div>
+
+              {/* Bottom text */}
+              <div>
+                <label className="text-xs font-semibold text-text-muted uppercase tracking-wide mb-1 block">
+                  Text on bottom{" "}
+                  <span className="text-text-dim font-normal normal-case">
+                    (optional)
+                  </span>
+                </label>
+                <input
+                  type="text"
+                  value={promptBottomText}
+                  onChange={(e) => setPromptBottomText(e.target.value)}
+                  className="input-field text-sm"
+                  placeholder="e.g. Link in bio, Subscribe now..."
+                />
+              </div>
+
+              {/* Design style */}
+              <div>
+                <label className="text-xs font-semibold text-text-muted uppercase tracking-wide mb-1 block">
+                  Design style
+                </label>
+                <select
+                  value={promptStyle}
+                  onChange={(e) => setPromptStyle(e.target.value)}
+                  className="input-field text-sm"
+                >
+                  {DESIGN_STYLES.map((s) => (
+                    <option key={s.value} value={s.value}>
+                      {s.label}
+                    </option>
+                  ))}
+                </select>
+                {promptStyle === "custom" && (
+                  <input
+                    type="text"
+                    value={promptCustomStyle}
+                    onChange={(e) => setPromptCustomStyle(e.target.value)}
+                    className="input-field text-sm mt-2"
+                    placeholder="Describe your style..."
+                  />
+                )}
+              </div>
+
+              {/* Color preference */}
+              <div>
+                <label className="text-xs font-semibold text-text-muted uppercase tracking-wide mb-1 block">
+                  Color preference{" "}
+                  <span className="text-text-dim font-normal normal-case">
+                    (optional)
+                  </span>
+                </label>
+                <input
+                  type="text"
+                  value={promptColor}
+                  onChange={(e) => setPromptColor(e.target.value)}
+                  className="input-field text-sm"
+                  placeholder="e.g. dark green and gold, blue and white..."
+                />
+              </div>
+
+              {/* Preview */}
+              <div>
+                <label className="text-xs font-semibold text-text-muted uppercase tracking-wide mb-1 block">
+                  Generated prompt
+                </label>
+                <div className="bg-bg-surface border border-border rounded-xl p-3 text-xs text-text-muted leading-relaxed whitespace-pre-wrap max-h-40 overflow-y-auto">
+                  {generatePrompt()}
+                </div>
+              </div>
+            </div>
+
+            {/* Footer */}
+            <div className="p-5 border-t border-border flex gap-2">
+              <button
+                onClick={handleCopyPrompt}
+                className="btn-primary flex-1 flex items-center justify-center gap-2 text-sm py-2.5"
+              >
+                {promptCopied ? (
+                  <>
+                    <CheckCircle size={15} /> Copied!
+                  </>
+                ) : (
+                  <>
+                    <Copy size={15} /> Copy Prompt
+                  </>
+                )}
+              </button>
+              <button
+                onClick={() => setShowPromptModal(false)}
+                className="btn-secondary text-sm py-2.5 px-4"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
