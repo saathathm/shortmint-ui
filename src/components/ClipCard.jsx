@@ -159,44 +159,23 @@ export default function ClipCard({ clip, clipIndex }) {
   };
 
   const generatePrompt = () => {
-    const situation =
-      promptSituation.trim() ||
-      clip.description?.trim() ||
-      clip.reason?.trim() ||
-      promptTopText.trim() ||
-      "";
+    const situation = promptSituation.trim() || clip.description || "";
 
     const topSection = promptTopText.trim()
-      ? `Top / top-center section: Display this text prominently and beautifully — "${promptTopText.trim()}". The typography should naturally fit the meaning and emotional tone of the content.`
-      : `Top / top-center section: Leave empty or use a subtle visual element that naturally belongs to the scene. No text.`;
+      ? `Top / top-center section: Display this text prominently and beautifully — "${promptTopText.trim()}".`
+      : `Top / top-center section: Leave empty or use a subtle visual element that naturally matches the overall subject and atmosphere. No text.`;
 
     const bottomSection = promptBottomText.trim()
       ? `Bottom-center to bottom section: Display this text clearly — "${promptBottomText.trim()}". Make sure the text is not too close to the edge.`
-      : `Bottom-center to bottom section: Leave empty or continue the surrounding visual environment naturally. No text.`;
+      : `Bottom-center to bottom section: Leave empty or add a subtle visual element that naturally matches the subject and atmosphere. No text.`;
 
     const situationLine = situation
-      ? `CONTENT CONTEXT:
+      ? `CONTENT CONTEXT (use this to determine the entire visual concept):
 "${situation}"
+The typography, visual treatment, atmosphere, lighting, colors, textures, environment, composition, and emotional tone must all be intelligently chosen based on the meaning, emotion, subject, and situation expressed by this context.`
+      : `The typography, visual treatment, atmosphere, lighting, colors, textures, environment, composition, and emotional tone must be intelligently determined from the text provided in the top section.`;
 
-Understand this content before deciding what the image should look like.
-
-Do not simply identify the main topic or keywords. Understand the complete meaning and reconstruct the specific situation being described.
-
-Determine dynamically:
-- what is happening
-- who or what is involved
-- the emotional tone and atmosphere
-- the circumstances and lifestyle
-- the appropriate environment and surroundings
-- any implied location, culture, or time period
-- the overall feeling the viewer should experience
-
-The visual concept must be determined by the actual meaning of this content. Do not assume a particular emotion, visual style, environment, culture, or mood in advance.
-
-The content determines the visual world.`
-      : `Understand the text displayed in the top section and use its meaning to determine the visual concept dynamically. Do not assume a predefined mood, style, environment, or emotion.`;
-
-    return `Create a cinematic 9:16 background image for overlaying a 16:9 video in the center (to convert it into a 9:16 format).
+    return `Create a 9:16 background image for overlaying a 16:9 video (to convert it into a 9:16 format).
 
 ${situationLine}
 
@@ -204,37 +183,20 @@ LAYOUT (strictly follow this):
 
 ${topSection}
 
-Middle section (landscape-center): Leave this area completely empty and visually clean — no text, no objects, no important subjects, no faces, no patterns, and no design elements that would interfere with the 16:9 video overlay. The surrounding visual environment should naturally frame and flow around this empty area.
+Middle section (landscape-center): Leave this area completely empty and visually clean — no text, no objects, no important subjects, no patterns, and no design elements that would interfere with the 16:9 video overlay. The surrounding visual environment should naturally flow around this empty area.
 
 ${bottomSection}
 
-VISUAL DIRECTION:
+VISUAL QUALITY:
+Create a immersive visual rather than a flat wallpaper, generic background, or simple gradient. Use appropriate environmental elements, atmospheric depth, subtle textures, shadows, depth of field, and layered details when they fit the context.
 
-Create a rich, immersive, believable cinematic scene that visually represents the specific situation described by the content.
+The visual style should feel intentionally designed for the specific content. If the context is emotional, create an emotionally appropriate atmosphere. If it is mysterious, create mystery. If it is educational or scientific, create an appropriate cinematic environment. If it is humorous, dramatic, inspirational, spiritual, romantic, historical, or any other subject, automatically adapt the visual concept accordingly.
 
-Do not create an image that is merely related to the topic. Reconstruct the actual situation and atmosphere of the content.
-
-The emotional tone must be determined dynamically from the content. For example, the same subject may be happy, sad, peaceful, tense, romantic, humorous, nostalgic, hopeful, serious, dramatic, or something else depending on what the content actually expresses.
-
-Likewise, the environment must be determined by the content. If a particular location, culture, lifestyle, social setting, level of wealth, or time period is implied, represent it naturally and appropriately.
-
-Do not unnecessarily beautify, romanticize, modernize, or make the environment wealthier or more luxurious than the situation described.
-
-Avoid generic luxury scenery, foreign-looking environments, generic stock-photo compositions, fantasy landscapes, or visually unrelated decorative elements unless the content specifically calls for them.
-
-Do not use a generic preset style. Make all creative decisions automatically from the meaning of the content.
-
-The result should feel like a believable moment from the world described by the content — not simply a pretty image about the same topic.
-
-CINEMATIC QUALITY:
-
-Use realistic environmental details, natural or context-appropriate lighting, atmospheric depth, subtle textures, shadows, depth of field, and layered visual details where they genuinely enhance the scene.
-
-Keep the visual rich and cinematic, but grounded and appropriate to the actual situation. The cinematic treatment should enhance the content, not change or exaggerate it.
+Do not use a generic preset style. Make all creative decisions automatically based on the provided context.
 
 Image size: 1080 x 1920 pixels (9:16 ratio)
 
-Make it professional, cinematic, immersive, eye-catching, and suitable for YouTube Shorts or Instagram Reels. The final composition should feel cohesive from top to bottom, with the visual environment naturally framing the central 16:9 video area.`;
+Make it suitable for YouTube Shorts or Instagram Reels. The final composition should feel cohesive from top to bottom, with the visual environment naturally framing the 16:9 video area.`;
   };
 
   const handleCopyPrompt = () => {
