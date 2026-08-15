@@ -171,12 +171,36 @@ export default function ClipCard({ clip, clipIndex }) {
   ];
 
   const generatePrompt = () => {
+    const detectTextSituation = (text) => {
+      if (!text.trim()) return null;
+      const hasTamil = /[\u0B80-\u0BFF]/.test(text);
+      const hasArabic = /[\u0600-\u06FF]/.test(text);
+      const wordCount = text.trim().split(/\s+/).length;
+      const isQuestion = text.includes("?") || text.includes("؟");
+      const isShort = wordCount <= 4;
+
+      let lang = "English";
+      if (hasTamil && hasArabic) lang = "mixed Tamil and Arabic";
+      else if (hasTamil) lang = "Tamil";
+      else if (hasArabic) lang = "Arabic";
+
+      let length = isShort ? "short text (few words)" : "longer sentence";
+      let tone = isQuestion ? "a question" : "a statement";
+
+      return `${lang}, ${length}, ${tone}`;
+    };
+
+    const topSituation = detectTextSituation(promptTopText);
+    const bottomSituation = detectTextSituation(promptBottomText);
+
     const topSection = promptTopText.trim()
-      ? `Top section (upper 25% of the image): Display this text in a visually attractive way — "${promptTopText.trim()}"`
+      ? `Top section (upper 25% of the image): Display this text in a visually attractive way that suits the language and tone — "${promptTopText.trim()}"
+  Note: This is ${topSituation}. Choose a font style, size, and layout that fits naturally for this type of text. If it is Tamil or Arabic, use a font that renders those characters beautifully.`
       : `Top section (upper 25% of the image): Leave empty or fill with a subtle decorative design that matches the overall style. No text.`;
 
     const bottomSection = promptBottomText.trim()
-      ? `Bottom section (lower 25% of the image): Display this text clearly — "${promptBottomText.trim()}". Make sure the text is not too close to the edge.`
+      ? `Bottom section (lower 25% of the image): Display this text clearly — "${promptBottomText.trim()}"
+  Note: This is ${bottomSituation}. Make sure the text is not too close to the edge and is easy to read.`
       : `Bottom section (lower 25% of the image): Leave empty or add a subtle design element. No text.`;
 
     const styleLabel =
@@ -187,7 +211,7 @@ export default function ClipCard({ clip, clipIndex }) {
 
     const colorLine = promptColor.trim()
       ? `Color palette: ${promptColor.trim()}`
-      : `Color palette: Choose colors that match the design style and look great on social media.`;
+      : `Color palette: Choose colors that complement the text language and design style, and look great on social media.`;
 
     return `Create a 9:16 vertical background image for a short-form video.
 
