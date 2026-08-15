@@ -48,6 +48,7 @@ export default function ClipCard({ clip, clipIndex }) {
   const [showPromptModal, setShowPromptModal] = useState(false);
   const [promptTopText, setPromptTopText] = useState(clip.title || "");
   const [promptBottomText, setPromptBottomText] = useState("");
+  const [promptSituation, setPromptSituation] = useState("");
   const [promptCopied, setPromptCopied] = useState(false);
 
   const togglePlay = () => {
@@ -158,17 +159,25 @@ export default function ClipCard({ clip, clipIndex }) {
   };
 
   const generatePrompt = () => {
+    const situation = promptSituation.trim() || clip.description || "";
+
     const topSection = promptTopText.trim()
-      ? `Top / top-center section: Display this text prominently and beautifully — "${promptTopText.trim()}". The typography, visual treatment, atmosphere, lighting, colors, textures, and overall visual style must be intelligently chosen based entirely on the meaning, emotion, subject, and situation expressed by this text.`
+      ? `Top / top-center section: Display this text prominently and beautifully — "${promptTopText.trim()}".`
       : `Top / top-center section: Leave empty or use a subtle visual element that naturally matches the overall subject and atmosphere. No text.`;
 
     const bottomSection = promptBottomText.trim()
       ? `Bottom-center to bottom section: Display this text clearly — "${promptBottomText.trim()}". Make sure the text is not too close to the edge.`
       : `Bottom-center to bottom section: Leave empty or add a subtle visual element that naturally matches the subject and atmosphere. No text.`;
 
+    const situationLine = situation
+      ? `CONTENT CONTEXT (use this to determine the entire visual concept):
+"${situation}"
+The typography, visual treatment, atmosphere, lighting, colors, textures, environment, composition, and emotional tone must all be intelligently chosen based on the meaning, emotion, subject, and situation expressed by this context.`
+      : `The typography, visual treatment, atmosphere, lighting, colors, textures, environment, composition, and emotional tone must be intelligently determined from the text provided in the top section.`;
+
     return `Create a cinematic 9:16 background image for overlaying a 16:9 video (to convert it into a 9:16 format).
 
-The entire visual concept, atmosphere, color palette, lighting, environment, textures, composition, and emotional tone must be intelligently determined from the meaning and situation of the provided text. Do not use a generic preset style. Make the image visually represent and complement what the text is about.
+${situationLine}
 
 LAYOUT (strictly follow this):
 
@@ -179,11 +188,11 @@ Middle section (landscape-center): Leave this area completely empty and visually
 ${bottomSection}
 
 VISUAL QUALITY:
-Create a rich, cinematic, immersive visual rather than a flat wallpaper, generic background, or simple gradient. Use appropriate environmental elements, atmospheric depth, cinematic lighting, subtle textures, shadows, depth of field, and layered details when they fit the meaning of the text.
+Create a rich, cinematic, immersive visual rather than a flat wallpaper, generic background, or simple gradient. Use appropriate environmental elements, atmospheric depth, cinematic lighting, subtle textures, shadows, depth of field, and layered details when they fit the context.
 
-The visual style should feel intentionally designed for the specific text. If the text is emotional, create an emotionally appropriate atmosphere. If it is mysterious, create mystery. If it is educational or scientific, create an appropriate cinematic environment. If it is humorous, dramatic, inspirational, spiritual, romantic, historical, or any other subject, automatically adapt the visual concept accordingly.
+The visual style should feel intentionally designed for the specific content. If the context is emotional, create an emotionally appropriate atmosphere. If it is mysterious, create mystery. If it is educational or scientific, create an appropriate cinematic environment. If it is humorous, dramatic, inspirational, spiritual, romantic, historical, or any other subject, automatically adapt the visual concept accordingly.
 
-Do not ask the user to choose a style or color palette. Make all creative decisions automatically based on the text.
+Do not use a generic preset style. Make all creative decisions automatically based on the provided context.
 
 Image size: 1080 x 1920 pixels (9:16 ratio)
 
@@ -543,6 +552,30 @@ Make it professional, cinematic, immersive, eye-catching, and suitable for YouTu
                   className="input-field text-sm"
                   placeholder="e.g. Link in bio, Subscribe now..."
                 />
+              </div>
+
+              {/* Situation */}
+              <div>
+                <label className="text-xs font-semibold text-text-muted uppercase tracking-wide mb-1 block">
+                  Context{" "}
+                  <span className="text-text-dim font-normal normal-case">
+                    (what is this clip about? — auto-filled from description)
+                  </span>
+                </label>
+                <textarea
+                  value={promptSituation}
+                  onChange={(e) => setPromptSituation(e.target.value)}
+                  rows={2}
+                  className="input-field text-sm resize-none"
+                  placeholder={
+                    clip.description || "Describe what this clip is about..."
+                  }
+                />
+                {!promptSituation.trim() && clip.description && (
+                  <p className="text-xs text-text-dim mt-1">
+                    Using clip description as context.
+                  </p>
+                )}
               </div>
 
               {/* Generated prompt preview */}
