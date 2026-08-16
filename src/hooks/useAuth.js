@@ -22,13 +22,17 @@ export const useAuth = () => {
     initialized,
     isAuthenticated,
     isOnTrial,
-    hasActivePlan: client && client.usage_hours_limit > 0,
-    usagePercent:
-      client && client.usage_hours_limit > 0
-        ? Math.min(
-            (client.usage_hours_used / client.usage_hours_limit) * 100,
-            100,
-          )
-        : 0,
+    hasActivePlan:
+      client &&
+      parseFloat(client.usage_hours_limit || 0) +
+        parseFloat(client.credit_hours || 0) >
+        0,
+    usagePercent: (() => {
+      const total =
+        parseFloat(client?.usage_hours_limit || 0) +
+        parseFloat(client?.credit_hours || 0);
+      const used = parseFloat(client?.usage_hours_used || 0);
+      return total > 0 ? Math.min((used / total) * 100, 100) : 0;
+    })(),
   };
 };

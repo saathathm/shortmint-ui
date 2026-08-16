@@ -241,7 +241,7 @@ export default function Dashboard() {
   const allowedPlatforms =
     PLATFORM_TIERS[clientPlan] || PLATFORM_TIERS["trial"];
   const hoursUsed = parseFloat(client?.usage_hours_used || 0);
-  const hoursLimit = parseFloat(client?.usage_hours_limit || 0);
+  const hoursLimit = parseFloat(client?.usage_hours_limit || 0) + parseFloat(client?.credit_hours || 0);
   const hoursRemaining = Math.max(hoursLimit - hoursUsed, 0);
   const selectedDuration = rangeEnd - rangeStart;
   const selectedHours = selectedDuration / 3600;

@@ -399,9 +399,19 @@ export default function Settings() {
             </div>
             <p className="text-sm text-text-muted mt-0.5">
               {parseFloat(client?.usage_hours_used || 0).toFixed(1)} of{" "}
-              {client?.usage_hours_limit || 0} hours used
+              {(
+                parseFloat(client?.usage_hours_limit || 0) +
+                parseFloat(client?.credit_hours || 0)
+              ).toFixed(1)}{" "}
+              hours used
               {isSubscription ? " this month" : ""}
             </p>
+            {parseFloat(client?.credit_hours || 0) > 0 && (
+              <p className="text-xs text-text-dim mt-0.5">
+                Includes {parseFloat(client.credit_hours).toFixed(1)}hrs
+                one-time credit (never expires)
+              </p>
+            )}
             {client?.plan_expires_at && isSubscription && !isCancelling && (
               <p className="text-xs text-text-dim mt-0.5">
                 Renews{" "}
@@ -422,22 +432,25 @@ export default function Settings() {
           </Link>
         </div>
 
-        {client && client.usage_hours_limit > 0 && (
-          <div className="w-full h-2 bg-gray-100 rounded-full overflow-hidden mb-3">
-            <div
-              className={`h-full rounded-full transition-all ${
-                client.usage_hours_used / client.usage_hours_limit > 0.8
-                  ? "bg-error"
-                  : client.usage_hours_used / client.usage_hours_limit > 0.6
-                    ? "bg-amber-400"
-                    : "bg-primary"
-              }`}
-              style={{
-                width: `${Math.min((client.usage_hours_used / client.usage_hours_limit) * 100, 100)}%`,
-              }}
-            />
-          </div>
-        )}
+        {client &&
+          parseFloat(client.usage_hours_limit || 0) +
+            parseFloat(client.credit_hours || 0) >
+            0 && (
+            <div className="w-full h-2 bg-gray-100 rounded-full overflow-hidden mb-3">
+              <div
+                className={`h-full rounded-full transition-all ${
+                  client.usage_hours_used / client.usage_hours_limit > 0.8
+                    ? "bg-error"
+                    : client.usage_hours_used / client.usage_hours_limit > 0.6
+                      ? "bg-amber-400"
+                      : "bg-primary"
+                }`}
+                style={{
+                  width: `${Math.min((parseFloat(client.usage_hours_used || 0) / (parseFloat(client.usage_hours_limit || 0) + parseFloat(client.credit_hours || 0))) * 100, 100)}%`,
+                }}
+              />
+            </div>
+          )}
 
         {client?.subscription_status === "past_due" && (
           <div className="bg-red-50 border border-red-200 text-error text-xs rounded-xl p-3 mb-3">

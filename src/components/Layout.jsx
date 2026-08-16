@@ -36,7 +36,9 @@ export default function Layout({ children }) {
   ];
 
   const hoursUsed = parseFloat(client?.usage_hours_used || 0);
-  const hoursLimit = parseFloat(client?.usage_hours_limit || 0);
+  const hoursLimit =
+    parseFloat(client?.usage_hours_limit || 0) +
+    parseFloat(client?.credit_hours || 0);
   const usagePct =
     hoursLimit > 0 ? Math.min((hoursUsed / hoursLimit) * 100, 100) : 0;
   const usageColor =
@@ -272,7 +274,9 @@ export default function Layout({ children }) {
             >
               Support
             </a>
-            <span className="text-text-dim">© {new Date().getFullYear()} ShortTrim</span>
+            <span className="text-text-dim">
+              © {new Date().getFullYear()} ShortTrim
+            </span>
           </div>
         </div>
       </footer>
