@@ -130,16 +130,30 @@ export default function Settings() {
       await cancelSubscription();
       setShowCancelModal(false);
       setCancelSuccess(true);
-      dispatch(
-        setClient({
-          ...client,
-          usage_hours_limit: 0,
-          subscription_status: "inactive",
-          stripe_subscription_id: null,
-          trial_ends_at: null,
-          subscription_cancel_at_period_end: false,
-        }),
-      );
+
+      if (isOnTrial) {
+        // Trial cancel — immediate, zero hours now
+        dispatch(
+          setClient({
+            ...client,
+            usage_hours_limit: 0,
+            subscription_status: "inactive",
+            stripe_subscription_id: null,
+            trial_ends_at: null,
+            subscription_cancel_at_period_end: false,
+          }),
+        );
+      } else {
+        // Regular cancel — keep access until period end, just mark as cancelling
+        dispatch(
+          setClient({
+            ...client,
+            subscription_cancel_at_period_end: true,
+          }),
+        );
+        // Refresh from DB to get accurate state
+        await dispatch(refreshClient());
+      }
     } catch (e) {
       setCancelError(
         e.response?.data?.error || "Failed to cancel. Please try again.",
