@@ -157,7 +157,10 @@ export default function Settings() {
 
   const isCancelling =
     isSubscription && client?.subscription_cancel_at_period_end;
-  const hasActivePlan = client?.plan && client.plan !== "trial";
+  const hasActivePlan =
+    parseFloat(client?.usage_hours_limit || 0) +
+      parseFloat(client?.credit_hours || 0) >
+    0;
 
   const isOnTrial =
     isSubscription &&
@@ -439,9 +442,15 @@ export default function Settings() {
             <div className="w-full h-2 bg-gray-100 rounded-full overflow-hidden mb-3">
               <div
                 className={`h-full rounded-full transition-all ${
-                  client.usage_hours_used / client.usage_hours_limit > 0.8
+                  parseFloat(client.usage_hours_used || 0) /
+                    (parseFloat(client.usage_hours_limit || 0) +
+                      parseFloat(client.credit_hours || 0)) >
+                  0.8
                     ? "bg-error"
-                    : client.usage_hours_used / client.usage_hours_limit > 0.6
+                    : parseFloat(client.usage_hours_used || 0) /
+                          (parseFloat(client.usage_hours_limit || 0) +
+                            parseFloat(client.credit_hours || 0)) >
+                        0.6
                       ? "bg-amber-400"
                       : "bg-primary"
                 }`}
@@ -500,8 +509,9 @@ export default function Settings() {
 
         {cancelSuccess && (
           <div className="bg-amber-50 border border-amber-200 text-amber-700 text-xs rounded-xl p-3 mt-3">
-            Your subscription has been cancelled. You'll keep access until the
-            end of your billing period.
+            {isOnTrial
+              ? "Your trial has been cancelled. You have not been charged."
+              : "Your subscription has been cancelled. You'll keep access until the end of your billing period."}
           </div>
         )}
       </div>
