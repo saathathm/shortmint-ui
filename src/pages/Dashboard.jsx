@@ -246,7 +246,7 @@ export default function Dashboard() {
   const selectedDuration = rangeEnd - rangeStart;
   const selectedHours = selectedDuration / 3600;
   const hasEnoughHours = selectedHours <= hoursRemaining;
-  const hasActivePlan = client?.usage_hours_limit > 0;
+  const hasActivePlan = parseFloat(client?.usage_hours_limit || 0) + parseFloat(client?.credit_hours || 0) > 0;
 
   function TrialButton() {
     const [loading, setLoading] = useState(false);
