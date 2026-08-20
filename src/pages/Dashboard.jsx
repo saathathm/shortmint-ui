@@ -14,6 +14,8 @@ import {
   Loader,
   X,
   CheckCircle,
+  Link2,
+  Upload,
 } from "lucide-react";
 
 const PLATFORM_TIERS = {
@@ -166,7 +168,7 @@ function RangeSlider({ duration, start, end, onChange }) {
   };
 
   return (
-    <div className="py-4">
+    <div className="py-3">
       <div
         ref={trackRef}
         className="relative h-2 bg-gray-200 rounded-full mx-3"
@@ -191,7 +193,7 @@ function RangeSlider({ duration, start, end, onChange }) {
           onTouchMove={handleTouchMove("end")}
         />
       </div>
-      <div className="flex justify-between mt-3">
+      <div className="flex justify-between mt-2 px-1">
         <span className="text-xs font-mono text-text-muted">
           {formatTime(start)}
         </span>
@@ -203,6 +205,35 @@ function RangeSlider({ duration, start, end, onChange }) {
   );
 }
 
+function TrialButton() {
+  const [loading, setLoading] = useState(false);
+  const [err, setErr] = useState("");
+  const handleTrial = async () => {
+    setLoading(true);
+    setErr("");
+    try {
+      const { data } = await startTrial();
+      window.location.href = data.checkout_url;
+    } catch (e) {
+      setErr(e.response?.data?.error || "Something went wrong.");
+      setLoading(false);
+    }
+  };
+  return (
+    <div>
+      <button
+        onClick={handleTrial}
+        disabled={loading}
+        className="btn-primary text-sm py-2 px-4 flex items-center gap-2 whitespace-nowrap"
+      >
+        {loading && <Loader size={14} className="animate-spin" />}
+        Start free trial
+      </button>
+      {err && <p className="text-xs text-error mt-1">{err}</p>}
+    </div>
+  );
+}
+
 export default function Dashboard() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -210,10 +241,7 @@ export default function Dashboard() {
   const [searchParams] = useSearchParams();
   const trialStarted = searchParams.get("trial") === "started";
 
-  // Mode
   const [inputMode, setInputMode] = useState("url");
-
-  // URL mode state
   const [url, setUrl] = useState("");
   const [videoInfo, setVideoInfo] = useState(null);
   const [infoLoading, setInfoLoading] = useState(false);
@@ -222,17 +250,15 @@ export default function Dashboard() {
   const [rangeEnd, setRangeEnd] = useState(0);
   const debounceRef = useRef(null);
 
-  // Upload mode state
   const [uploadPreview, setUploadPreview] = useState(null);
   const [uploadProgress, setUploadProgress] = useState(0);
-  const [uploadState, setUploadState] = useState("idle"); // 'idle' | 'uploading' | 'done' | 'error'
-  const [uploadedFile, setUploadedFile] = useState(null); // { upload_id, file_path, duration, title }
+  const [uploadState, setUploadState] = useState("idle");
+  const [uploadedFile, setUploadedFile] = useState(null);
   const [uploadDuration, setUploadDuration] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
   const fileInputRef = useRef(null);
   const uploadAbortRef = useRef(null);
 
-  // Shared state
   const [style, setStyle] = useState("blur");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
@@ -241,50 +267,20 @@ export default function Dashboard() {
   const allowedPlatforms =
     PLATFORM_TIERS[clientPlan] || PLATFORM_TIERS["trial"];
   const hoursUsed = parseFloat(client?.usage_hours_used || 0);
-  const hoursLimit = parseFloat(client?.usage_hours_limit || 0) + parseFloat(client?.credit_hours || 0);
+  const hoursLimit =
+    parseFloat(client?.usage_hours_limit || 0) +
+    parseFloat(client?.credit_hours || 0);
   const hoursRemaining = Math.max(hoursLimit - hoursUsed, 0);
   const selectedDuration = rangeEnd - rangeStart;
   const selectedHours = selectedDuration / 3600;
   const hasEnoughHours = selectedHours <= hoursRemaining;
-  const hasActivePlan = parseFloat(client?.usage_hours_limit || 0) + parseFloat(client?.credit_hours || 0) > 0;
-
-  function TrialButton() {
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState("");
-
-    const handleTrial = async () => {
-      setLoading(true);
-      setError("");
-      try {
-        const { data } = await startTrial();
-        window.location.href = data.checkout_url;
-      } catch (e) {
-        setError(e.response?.data?.error || "Something went wrong.");
-        setLoading(false);
-      }
-    };
-
-    return (
-      <div className="shrink-0">
-        <button
-          onClick={handleTrial}
-          disabled={loading}
-          className="btn-primary text-sm py-2 px-4 flex items-center gap-2 whitespace-nowrap"
-        >
-          {loading ? <Loader size={14} className="animate-spin" /> : null}
-          Start free trial
-        </button>
-        {error && <p className="text-xs text-error mt-1">{error}</p>}
-      </div>
-    );
-  }
+  const hasActivePlan = hoursLimit > 0;
 
   const getRangeStatus = () => {
     if (selectedDuration <= 120) return "too-short";
     if (selectedDuration <= 300) return "warning";
     return "ok";
   };
-
   const rangeStatus =
     videoInfo || uploadState === "done" ? getRangeStatus() : null;
 
@@ -301,7 +297,6 @@ export default function Dashboard() {
         !infoLoading &&
         !submitting;
 
-  // Auto-fetch video info on URL change
   useEffect(() => {
     if (debounceRef.current) clearTimeout(debounceRef.current);
     setVideoInfo(null);
@@ -315,23 +310,19 @@ export default function Dashboard() {
     }
     if (!allowedPlatforms.includes(platform)) {
       setInfoError(
-        `${platform.charAt(0).toUpperCase() + platform.slice(1)} is not available on your ${clientPlan} plan. Upgrade to unlock it.`,
+        `${platform.charAt(0).toUpperCase() + platform.slice(1)} is not available on your plan.`,
       );
       return;
     }
     debounceRef.current = setTimeout(async () => {
       setInfoLoading(true);
-      setInfoError("");
       try {
         const { data } = await getVideoInfo(url);
         setVideoInfo(data);
         setRangeStart(0);
         setRangeEnd(data.duration || 0);
       } catch (e) {
-        setInfoError(
-          e.response?.data?.error ||
-            "Could not fetch video info. Please check the URL.",
-        );
+        setInfoError(e.response?.data?.error || "Could not fetch video info.");
         setVideoInfo(null);
       } finally {
         setInfoLoading(false);
@@ -340,12 +331,6 @@ export default function Dashboard() {
     return () => clearTimeout(debounceRef.current);
   }, [url]);
 
-  const handleRangeChange = (start, end) => {
-    setRangeStart(start);
-    setRangeEnd(end);
-  };
-
-  // Upload handlers
   const handleFileSelect = async (file) => {
     if (!file) return;
     if (!ACCEPTED_FORMATS.includes(file.type)) {
@@ -358,28 +343,24 @@ export default function Dashboard() {
       setError("File too large. Maximum size is 500MB.");
       return;
     }
-
-    // Check duration client-side before uploading
     const clientDuration = await new Promise((resolve) => {
       const video = document.createElement("video");
       video.preload = "metadata";
-      const url = URL.createObjectURL(file);
+      const u = URL.createObjectURL(file);
       video.onloadedmetadata = () => {
-        URL.revokeObjectURL(url);
+        URL.revokeObjectURL(u);
         resolve(Math.floor(video.duration));
       };
       video.onerror = () => {
-        URL.revokeObjectURL(url);
+        URL.revokeObjectURL(u);
         resolve(0);
       };
-      video.src = url;
+      video.src = u;
     });
-
     if (clientDuration > 0 && clientDuration < 120) {
       setError("Please upload a video longer than 2 minutes.");
       return;
     }
-
     setError("");
     setUploadPreview({
       name: file.name,
@@ -389,15 +370,12 @@ export default function Dashboard() {
     setUploadState("uploading");
     setUploadedFile(null);
     setUploadDuration(0);
-
     try {
       const formData = new FormData();
       formData.append("video", file);
-
       const result = await new Promise((resolve, reject) => {
         const xhr = new XMLHttpRequest();
         uploadAbortRef.current = xhr;
-
         xhr.upload.onprogress = (e) => {
           if (e.lengthComputable)
             setUploadProgress(Math.round((e.loaded / e.total) * 100));
@@ -412,7 +390,6 @@ export default function Dashboard() {
         xhr.onerror = () =>
           reject(new Error("Upload failed. Check your connection."));
         xhr.onabort = () => reject(new Error("cancelled"));
-
         xhr.open(
           "POST",
           `${import.meta.env.VITE_API_BASE_URL}/api/upload/video`,
@@ -423,7 +400,6 @@ export default function Dashboard() {
         );
         xhr.send(formData);
       });
-
       setUploadedFile(result);
       setUploadDuration(result.duration || 0);
       setRangeStart(0);
@@ -441,24 +417,9 @@ export default function Dashboard() {
     }
   };
 
-  const handleDrop = (e) => {
-    e.preventDefault();
-    setIsDragging(false);
-    const file = e.dataTransfer.files[0];
-    if (file) handleFileSelect(file);
-  };
-  const handleDragOver = (e) => {
-    e.preventDefault();
-    setIsDragging(true);
-  };
-  const handleDragLeave = () => setIsDragging(false);
-
   const clearUpload = async () => {
-    // Cancel in-progress upload
-    if (uploadAbortRef.current && uploadState === "uploading") {
+    if (uploadAbortRef.current && uploadState === "uploading")
       uploadAbortRef.current.abort();
-    }
-    // Delete file from server if already uploaded
     if (uploadedFile?.upload_id) {
       try {
         await deleteUpload(uploadedFile.upload_id);
@@ -478,23 +439,19 @@ export default function Dashboard() {
   const switchMode = (mode) => {
     setInputMode(mode);
     setError("");
-    if (mode === "url") {
-      clearUpload();
-    } else {
+    if (mode === "url") clearUpload();
+    else {
       setUrl("");
       setVideoInfo(null);
       setInfoError("");
     }
   };
 
-  // Submit
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!canSubmit) return;
     setSubmitting(true);
     setError("");
-
-    // Upload mode
     if (inputMode === "upload" && uploadedFile) {
       try {
         const { data } = await api.post("/api/video/process", {
@@ -512,15 +469,10 @@ export default function Dashboard() {
         if (data?.video_id) {
           dispatch({
             type: "video/setUploadMeta",
-            payload: {
-              selectedDuration: rangeEnd - rangeStart,
-              style,
-            },
+            payload: { selectedDuration: rangeEnd - rangeStart, style },
           });
           navigate(`/processing/${data.video_id}`);
-        } else {
-          setError("Something went wrong. Please try again.");
-        }
+        } else setError("Something went wrong. Please try again.");
       } catch (e) {
         setError(e.response?.data?.error || "Failed to start processing.");
       } finally {
@@ -528,8 +480,6 @@ export default function Dashboard() {
       }
       return;
     }
-
-    // URL mode
     const result = await dispatch(
       startProcessing({
         videoUrl: url,
@@ -541,202 +491,138 @@ export default function Dashboard() {
       }),
     );
     setSubmitting(false);
-    if (result.payload?.video_id) {
+    if (result.payload?.video_id)
       navigate(`/processing/${result.payload.video_id}`);
-    } else {
-      setError(result.payload || "Something went wrong. Please try again.");
-    }
+    else setError(result.payload || "Something went wrong. Please try again.");
   };
 
-  // Usage estimate JSX – shared between URL and upload
   const UsageEstimate = () => (
     <div
-      className={`rounded-xl p-3 text-sm ${
-        !hasEnoughHours
-          ? "bg-red-50 border border-red-100"
-          : rangeStatus === "warning"
-            ? "bg-amber-50 border border-amber-100"
-            : "bg-green-50 border border-green-100"
-      }`}
+      className={`rounded-lg p-2.5 text-xs ${!hasEnoughHours ? "bg-red-50 border border-red-100" : rangeStatus === "warning" ? "bg-amber-50 border border-amber-100" : "bg-green-50 border border-green-100"}`}
     >
       {!hasEnoughHours ? (
-        <div>
-          <p className="font-semibold text-error text-xs">
-            Not enough hours remaining
-          </p>
-          <p className="text-error text-xs mt-0.5">
-            This selection uses {selectedHours.toFixed(2)} hrs but you only have{" "}
-            {hoursRemaining.toFixed(2)} hrs left. Adjust the range or{" "}
-            <Link to="/pricing" className="underline font-semibold">
-              upgrade your plan
-            </Link>
-            .
-          </p>
-        </div>
+        <p className="text-error">
+          Not enough hours. This uses {selectedHours.toFixed(2)}hrs, you have{" "}
+          {hoursRemaining.toFixed(2)}hrs left.{" "}
+          <Link to="/pricing" className="underline font-semibold">
+            Upgrade
+          </Link>
+        </p>
       ) : rangeStatus === "too-short" ? (
-        <div>
-          <p className="font-semibold text-error text-xs">
-            Selection too short
-          </p>
-          <p className="text-error text-xs mt-0.5">
-            Please select more than 2 minutes.
-          </p>
-        </div>
+        <p className="text-error font-semibold">Select more than 2 minutes.</p>
       ) : rangeStatus === "warning" ? (
-        <div>
-          <p className="font-semibold text-amber-700 text-xs">
-            Short selection
-          </p>
-          <p className="text-amber-700 text-xs mt-0.5">
-            {selectedHours.toFixed(2)} hrs will be used. For best results,
-            select at least 5 minutes.
-          </p>
-        </div>
+        <p className="text-amber-700">
+          {selectedHours.toFixed(2)}hrs will be used. For best results select at
+          least 5 minutes.
+        </p>
       ) : (
-        <p className="text-success text-xs font-medium">
-          ✓ {selectedHours.toFixed(2)} hrs will be used ·{" "}
-          {hoursRemaining.toFixed(2)} hrs remaining after this
+        <p className="text-success font-medium">
+          ✓ {selectedHours.toFixed(2)}hrs will be used ·{" "}
+          {hoursRemaining.toFixed(2)}hrs remaining
         </p>
       )}
     </div>
   );
 
   return (
-    <div className="max-w-xl mx-auto">
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold text-text-primary">Create Shorts</h1>
-        <p className="text-text-muted mt-1 text-sm">
-          Paste a link or upload a video – we'll find the best moments
-          automatically.
-        </p>
-      </div>
-
-      <UsageBar />
-
+    <div className="max-w-lg mx-auto">
+      {/* Trial started banner */}
       {trialStarted && (
-        <div className="mt-4 bg-green-50 border border-green-200 rounded-xl p-4 flex items-center gap-3">
-          <CheckCircle size={18} className="text-success shrink-0" />
-          <div>
-            <p className="text-sm font-bold text-text-primary">
-              Your free trial is active! 🎉
-            </p>
-            <p className="text-sm text-text-muted mt-0.5">
-              You have 10 hours to use, no charge until day 7. Start creating
-              your first Shorts.
-            </p>
-          </div>
+        <div className="mb-4 bg-green-50 border border-green-200 rounded-xl p-3 flex items-center gap-2">
+          <CheckCircle size={16} className="text-success shrink-0" />
+          <p className="text-sm text-text-primary">
+            <strong>Trial active!</strong> 10 hours free, no charge until day 7.
+          </p>
         </div>
       )}
 
+      {/* No plan banners */}
       {!hasActivePlan && (
-        <div className="mt-4 space-y-3">
-          {/* Free trial CTA */}
-          {!client?.has_used_trial && (
-            <div className="bg-primary/5 border border-primary/20 rounded-xl p-4 flex items-center justify-between gap-4">
+        <div className="mb-4">
+          {!client?.has_used_trial ? (
+            <div className="bg-primary/5 border border-primary/20 rounded-xl p-4 flex items-center justify-between gap-3">
               <div>
                 <p className="text-sm font-bold text-text-primary">
-                  Start your 7-day free trial
+                  7-day free trial
                 </p>
-                <p className="text-sm text-text-muted mt-0.5">
-                  Get 10 hours free. Add your card, no charge for 7 days.
-                  Cancel anytime before day 7.
+                <p className="text-xs text-text-muted mt-0.5">
+                  10 hours free · no charge for 7 days
                 </p>
               </div>
               <TrialButton />
             </div>
-          )}
-          {/* Already used trial */}
-          {client?.has_used_trial && (
-            <div className="bg-bg-secondary border border-blue-100 rounded-xl p-4 flex items-start gap-3">
-              <AlertCircle size={18} className="text-primary mt-0.5 shrink-0" />
-              <div>
-                <p className="text-sm font-semibold text-text-primary">
-                  Choose a plan to continue
-                </p>
-                <p className="text-sm text-text-muted mt-0.5">
-                  Your free trial has ended. Subscribe to keep creating Shorts.
-                </p>
-                <Link
-                  to="/pricing"
-                  className="text-sm font-semibold text-primary hover:underline mt-2 inline-block"
-                >
-                  View plans →
-                </Link>
-              </div>
+          ) : (
+            <div className="bg-bg-secondary border border-blue-100 rounded-xl p-3 flex items-center justify-between gap-3">
+              <p className="text-sm text-text-muted">
+                Trial ended. Choose a plan to continue.
+              </p>
+              <Link
+                to="/pricing"
+                className="btn-primary text-xs py-1.5 px-3 whitespace-nowrap"
+              >
+                View plans
+              </Link>
             </div>
           )}
         </div>
       )}
 
-      <form onSubmit={handleSubmit} className="mt-6 space-y-5">
+      {/* Usage bar */}
+      <div className="mb-4">
+        <UsageBar />
+      </div>
+
+      <form onSubmit={handleSubmit} className="space-y-4">
         {/* Mode toggle */}
         <div className="flex bg-bg-surface rounded-xl p-1 border border-border">
           <button
             type="button"
             onClick={() => switchMode("url")}
-            className={`flex-1 py-2 rounded-lg text-sm font-semibold transition-all ${
-              inputMode === "url"
-                ? "bg-white shadow-sm text-text-primary"
-                : "text-text-muted hover:text-text-primary"
-            }`}
+            className={`flex-1 py-2 rounded-lg text-sm font-semibold transition-all flex items-center justify-center gap-1.5 ${inputMode === "url" ? "bg-white shadow-sm text-text-primary" : "text-text-muted"}`}
           >
-            🔗 Paste URL
+            <Link2 size={14} /> Paste URL
           </button>
           <button
             type="button"
             onClick={() => switchMode("upload")}
-            className={`flex-1 py-2 rounded-lg text-sm font-semibold transition-all ${
-              inputMode === "upload"
-                ? "bg-white shadow-sm text-text-primary"
-                : "text-text-muted hover:text-text-primary"
-            }`}
+            className={`flex-1 py-2 rounded-lg text-sm font-semibold transition-all flex items-center justify-center gap-1.5 ${inputMode === "upload" ? "bg-white shadow-sm text-text-primary" : "text-text-muted"}`}
           >
-            📁 Upload File
+            <Upload size={14} /> Upload File
           </button>
         </div>
 
-        {/* ── URL MODE ── */}
+        {/* URL MODE */}
         {inputMode === "url" && (
-          <>
-            <div>
-              <label className="text-xs font-semibold text-text-muted uppercase tracking-wide mb-2 block">
-                Video URL
-              </label>
-              <input
-                type="url"
-                value={url}
-                onChange={(e) => setUrl(e.target.value)}
-                className="input-field text-base"
-                placeholder="https://youtu.be/..."
-              />
-              {infoError && !infoLoading && (
-                <p className="text-xs text-error mt-1.5 flex items-center gap-1">
-                  <AlertCircle size={12} /> {infoError}
-                </p>
-              )}
-            </div>
-
+          <div className="space-y-3">
+            <input
+              type="url"
+              value={url}
+              onChange={(e) => setUrl(e.target.value)}
+              className="input-field"
+              placeholder="Paste a YouTube, TikTok, Instagram link..."
+            />
+            {infoError && !infoLoading && (
+              <p className="text-xs text-error flex items-center gap-1">
+                <AlertCircle size={12} /> {infoError}
+              </p>
+            )}
             {infoLoading && (
-              <div className="card p-4 animate-pulse">
-                <div className="flex gap-3">
-                  <div className="w-24 h-16 bg-gray-200 rounded-lg shrink-0" />
-                  <div className="flex-1 space-y-2">
-                    <div className="h-4 bg-gray-200 rounded w-3/4" />
-                    <div className="h-3 bg-gray-100 rounded w-1/3" />
-                  </div>
+              <div className="card p-3 animate-pulse flex gap-3">
+                <div className="w-20 h-14 bg-gray-200 rounded-lg shrink-0" />
+                <div className="flex-1 space-y-2 pt-1">
+                  <div className="h-3 bg-gray-200 rounded w-3/4" />
+                  <div className="h-2 bg-gray-100 rounded w-1/3" />
                 </div>
-                <div className="mt-4 h-2 bg-gray-100 rounded-full" />
               </div>
             )}
-
             {videoInfo && !infoLoading && (
-              <div className="card p-4 space-y-4">
-                <div className="flex gap-3">
+              <div className="card p-3 space-y-3">
+                <div className="flex gap-3 items-center">
                   {videoInfo.thumbnail && (
                     <img
                       src={videoInfo.thumbnail}
                       alt={videoInfo.title}
-                      className="w-24 h-16 object-cover rounded-lg shrink-0 bg-gray-100"
+                      className="w-20 h-14 object-cover rounded-lg shrink-0 bg-gray-100"
                       onError={(e) => (e.target.style.display = "none")}
                     />
                   )}
@@ -745,86 +631,71 @@ export default function Dashboard() {
                       {videoInfo.title}
                     </p>
                     <p className="text-xs text-text-muted mt-1 flex items-center gap-1">
-                      <Clock size={11} /> {formatTime(videoInfo.duration)} total
+                      <Clock size={11} /> {formatTime(videoInfo.duration)}
                     </p>
                   </div>
                 </div>
                 <div>
                   <div className="flex justify-between items-center mb-1">
-                    <label className="text-xs font-semibold text-text-muted uppercase tracking-wide">
-                      Select range
-                    </label>
+                    <span className="text-xs font-semibold text-text-muted uppercase tracking-wide">
+                      Range
+                    </span>
                     <span className="text-xs font-mono text-primary font-semibold">
-                      {formatTime(selectedDuration)} selected
+                      {formatTime(selectedDuration)}
                     </span>
                   </div>
                   <RangeSlider
                     duration={videoInfo.duration}
                     start={rangeStart}
                     end={rangeEnd}
-                    onChange={handleRangeChange}
+                    onChange={(s, e) => {
+                      setRangeStart(s);
+                      setRangeEnd(e);
+                    }}
                   />
                 </div>
                 <UsageEstimate />
               </div>
             )}
-
-            <div className="mt-1">
-              <p className="text-xs text-text-dim mb-1.5">
-                {clientPlan === "trial" ? (
-                  <>
-                    Supported on{" "}
-                    <span className="font-semibold capitalize">
-                      {clientPlan}
-                    </span>{" "}
-                    plan:
-                  </>
-                ) : (
-                  "Supported platforms:"
-                )}
-              </p>
-              <div className="flex flex-wrap gap-1.5">
-                {allowedPlatforms
-                  .filter((p) => p !== "upload")
-                  .map((name) => (
-                    <span
-                      key={name}
-                      className="text-xs bg-bg-secondary border border-blue-100 text-primary px-2 py-0.5 rounded-full font-medium capitalize"
-                    >
-                      {name}
-                    </span>
-                  ))}
-              </div>
+            {/* Supported platforms — collapsed, subtle */}
+            <div className="flex flex-wrap gap-1">
+              {allowedPlatforms
+                .filter((p) => p !== "upload")
+                .map((name) => (
+                  <span
+                    key={name}
+                    className="text-xs bg-bg-secondary text-text-dim px-2 py-0.5 rounded-full capitalize"
+                  >
+                    {name}
+                  </span>
+                ))}
             </div>
-          </>
+          </div>
         )}
 
-        {/* ── UPLOAD MODE ── */}
+        {/* UPLOAD MODE */}
         {inputMode === "upload" && (
-          <div className="space-y-4">
-            <label className="text-xs font-semibold text-text-muted uppercase tracking-wide block">
-              Video File
-            </label>
-
-            {/* Drop zone */}
+          <div className="space-y-3">
             {uploadState === "idle" && (
               <div
-                onDrop={handleDrop}
-                onDragOver={handleDragOver}
-                onDragLeave={handleDragLeave}
+                onDrop={(e) => {
+                  e.preventDefault();
+                  setIsDragging(false);
+                  handleFileSelect(e.dataTransfer.files[0]);
+                }}
+                onDragOver={(e) => {
+                  e.preventDefault();
+                  setIsDragging(true);
+                }}
+                onDragLeave={() => setIsDragging(false)}
                 onClick={() => fileInputRef.current?.click()}
-                className={`border-2 border-dashed rounded-xl p-10 text-center cursor-pointer transition-all ${
-                  isDragging
-                    ? "border-primary bg-bg-secondary"
-                    : "border-border bg-bg-surface hover:border-primary hover:bg-bg-secondary"
-                }`}
+                className={`border-2 border-dashed rounded-xl p-8 text-center cursor-pointer transition-all ${isDragging ? "border-primary bg-bg-secondary" : "border-border bg-bg-surface hover:border-primary"}`}
               >
-                <div className="text-3xl mb-2">📁</div>
+                <div className="text-2xl mb-1">📁</div>
                 <p className="text-sm font-semibold text-text-primary">
-                  Drop your video here or{" "}
-                  <span className="text-primary">browse</span>
+                  Drop video or <span className="text-primary">browse</span>
                 </p>
-                <p className="text-xs text-text-muted mt-1">
+                <p className="text-xs text-text-muted mt-0.5">
                   MP4, MOV, MKV, AVI, WEBM · Max 500MB
                 </p>
                 <input
@@ -836,16 +707,12 @@ export default function Dashboard() {
                 />
               </div>
             )}
-
-            {/* Uploading / done */}
             {(uploadState === "uploading" || uploadState === "done") &&
               uploadPreview && (
-                <div className="border border-border rounded-xl p-4 bg-bg-surface space-y-3">
-                  <div className="flex items-center justify-between gap-3">
-                    <div className="flex items-center gap-3 min-w-0">
-                      <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center shrink-0 text-lg">
-                        🎬
-                      </div>
+                <div className="border border-border rounded-xl p-3 bg-bg-surface space-y-2">
+                  <div className="flex items-center justify-between gap-2">
+                    <div className="flex items-center gap-2 min-w-0">
+                      <span className="text-lg shrink-0">🎬</span>
                       <div className="min-w-0">
                         <p className="text-sm font-semibold text-text-primary truncate">
                           {uploadPreview.name}
@@ -858,17 +725,16 @@ export default function Dashboard() {
                     <button
                       type="button"
                       onClick={clearUpload}
-                      className="text-text-dim hover:text-error transition-colors shrink-0 p-1"
+                      className="text-text-dim hover:text-error p-1"
                     >
-                      <X size={16} />
+                      <X size={15} />
                     </button>
                   </div>
-
                   {uploadState === "uploading" && (
-                    <div className="space-y-1.5">
-                      <div className="flex justify-between items-center">
+                    <div className="space-y-1">
+                      <div className="flex justify-between">
                         <span className="text-xs text-text-muted">
-                          Uploading to server...
+                          Uploading...
                         </span>
                         <span className="text-xs font-semibold text-primary">
                           {uploadProgress}%
@@ -876,42 +742,32 @@ export default function Dashboard() {
                       </div>
                       <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden">
                         <div
-                          className="h-full bg-primary rounded-full transition-all duration-300"
+                          className="h-full bg-primary rounded-full transition-all"
                           style={{ width: `${uploadProgress}%` }}
                         />
                       </div>
-                      <p className="text-xs text-text-dim">
-                        Please keep this page open until upload completes.
-                      </p>
                     </div>
                   )}
-
                   {uploadState === "done" && (
-                    <div className="flex items-center gap-1.5 text-success text-xs font-medium">
-                      <CheckCircle size={13} />
-                      Uploaded · {formatTime(uploadDuration)} duration detected
-                    </div>
+                    <p className="text-xs text-success flex items-center gap-1">
+                      <CheckCircle size={12} /> Uploaded ·{" "}
+                      {formatTime(uploadDuration)}
+                    </p>
                   )}
                 </div>
               )}
-
-            {/* Error state */}
             {uploadState === "error" && (
               <div
-                onDrop={handleDrop}
-                onDragOver={handleDragOver}
-                onDragLeave={handleDragLeave}
                 onClick={() => {
                   setUploadState("idle");
                   setUploadPreview(null);
                   fileInputRef.current?.click();
                 }}
-                className="border-2 border-dashed border-red-200 bg-red-50 rounded-xl p-8 text-center cursor-pointer"
+                className="border-2 border-dashed border-red-200 bg-red-50 rounded-xl p-6 text-center cursor-pointer"
               >
-                <p className="text-sm font-semibold text-error mb-1">
-                  Upload failed
+                <p className="text-sm font-semibold text-error">
+                  Upload failed — click to retry
                 </p>
-                <p className="text-xs text-text-muted">Click to try again</p>
                 <input
                   ref={fileInputRef}
                   type="file"
@@ -921,26 +777,25 @@ export default function Dashboard() {
                 />
               </div>
             )}
-
-            {/* Range slider – only after upload complete */}
             {uploadState === "done" && uploadDuration > 0 && (
-              <div className="card p-4 space-y-4">
-                <div>
-                  <div className="flex justify-between items-center mb-1">
-                    <label className="text-xs font-semibold text-text-muted uppercase tracking-wide">
-                      Select range
-                    </label>
-                    <span className="text-xs font-mono text-primary font-semibold">
-                      {formatTime(selectedDuration)} selected
-                    </span>
-                  </div>
-                  <RangeSlider
-                    duration={uploadDuration}
-                    start={rangeStart}
-                    end={rangeEnd}
-                    onChange={handleRangeChange}
-                  />
+              <div className="card p-3 space-y-3">
+                <div className="flex justify-between items-center">
+                  <span className="text-xs font-semibold text-text-muted uppercase tracking-wide">
+                    Range
+                  </span>
+                  <span className="text-xs font-mono text-primary font-semibold">
+                    {formatTime(selectedDuration)}
+                  </span>
                 </div>
+                <RangeSlider
+                  duration={uploadDuration}
+                  start={rangeStart}
+                  end={rangeEnd}
+                  onChange={(s, e) => {
+                    setRangeStart(s);
+                    setRangeEnd(e);
+                  }}
+                />
                 <UsageEstimate />
               </div>
             )}
@@ -950,15 +805,15 @@ export default function Dashboard() {
         {/* Error */}
         {error && (
           <div className="bg-red-50 border border-red-100 text-error text-sm rounded-xl p-3 flex items-center gap-2">
-            <AlertCircle size={15} /> {error}
+            <AlertCircle size={14} /> {error}
           </div>
         )}
 
         {/* Style picker */}
         <div>
-          <label className="text-xs font-semibold text-text-muted uppercase tracking-wide mb-2 block">
-            Video style
-          </label>
+          <p className="text-xs font-semibold text-text-muted uppercase tracking-wide mb-2">
+            Style
+          </p>
           <StylePicker value={style} onChange={setStyle} />
         </div>
 
@@ -966,20 +821,21 @@ export default function Dashboard() {
         <button
           type="submit"
           disabled={!canSubmit || !hasActivePlan}
-          className="btn-primary w-full flex items-center justify-center gap-2 text-base py-3.5 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="btn-primary w-full flex items-center justify-center gap-2 py-3 text-base disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {submitting ? (
             <>
-              <Loader size={18} className="animate-spin" /> Starting...
+              <Loader size={17} className="animate-spin" /> Starting...
             </>
           ) : (
             <>
-              <Sparkles size={18} /> Create Shorts
+              <Sparkles size={17} /> Create Shorts
             </>
           )}
         </button>
-        <p className="text-xs text-text-dim text-center mt-2">
-          You'll receive 2–3 clips depending on your video content.
+
+        <p className="text-xs text-text-dim text-center">
+          You'll receive 2–3 clips from your video.
         </p>
       </form>
     </div>
