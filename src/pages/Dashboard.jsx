@@ -171,7 +171,7 @@ function RangeSlider({ duration, start, end, onChange }) {
     <div className="py-3">
       <div
         ref={trackRef}
-        className="relative h-2 bg-gray-200 rounded-full mx-3"
+        className="relative h-2 bg-gray-200 rounded-full mx-2"
       >
         <div
           className="absolute h-2 bg-primary rounded-full"
@@ -284,6 +284,11 @@ export default function Dashboard() {
   const rangeStatus =
     videoInfo || uploadState === "done" ? getRangeStatus() : null;
 
+  const hasVideoReady =
+    inputMode === "upload"
+      ? uploadState === "done" && uploadDuration > 0
+      : !!videoInfo;
+
   const canSubmit =
     inputMode === "upload"
       ? uploadState === "done" &&
@@ -305,7 +310,7 @@ export default function Dashboard() {
     if (!url || url.length < 10) return;
     const platform = detectPlatform(url);
     if (!platform) {
-      setInfoError("URL not recognised. Please use a supported platform link.");
+      setInfoError("URL not recognised. Use a supported platform link.");
       return;
     }
     if (!allowedPlatforms.includes(platform)) {
@@ -322,7 +327,10 @@ export default function Dashboard() {
         setRangeStart(0);
         setRangeEnd(data.duration || 0);
       } catch (e) {
-        setInfoError(e.response?.data?.error || "Could not fetch video info.");
+        setInfoError(
+          e.response?.data?.error ||
+            "Could not fetch video info. Check the URL.",
+        );
         setVideoInfo(null);
       } finally {
         setInfoLoading(false);
@@ -334,13 +342,11 @@ export default function Dashboard() {
   const handleFileSelect = async (file) => {
     if (!file) return;
     if (!ACCEPTED_FORMATS.includes(file.type)) {
-      setError(
-        "Unsupported format. Please upload MP4, MOV, MKV, AVI, or WEBM.",
-      );
+      setError("Unsupported format. Use MP4, MOV, MKV, AVI, or WEBM.");
       return;
     }
     if (file.size > MAX_FILE_SIZE) {
-      setError("File too large. Maximum size is 500MB.");
+      setError("File too large. Max 500MB.");
       return;
     }
     const clientDuration = await new Promise((resolve) => {
@@ -358,7 +364,7 @@ export default function Dashboard() {
       video.src = u;
     });
     if (clientDuration > 0 && clientDuration < 120) {
-      setError("Please upload a video longer than 2 minutes.");
+      setError("Video must be longer than 2 minutes.");
       return;
     }
     setError("");
@@ -498,7 +504,13 @@ export default function Dashboard() {
 
   const UsageEstimate = () => (
     <div
-      className={`rounded-lg p-2.5 text-xs ${!hasEnoughHours ? "bg-red-50 border border-red-100" : rangeStatus === "warning" ? "bg-amber-50 border border-amber-100" : "bg-green-50 border border-green-100"}`}
+      className={`rounded-lg p-2.5 text-xs ${
+        !hasEnoughHours
+          ? "bg-red-50 border border-red-100"
+          : rangeStatus === "warning"
+            ? "bg-amber-50 border border-amber-100"
+            : "bg-green-50 border border-green-100"
+      }`}
     >
       {!hasEnoughHours ? (
         <p className="text-error">
@@ -512,8 +524,8 @@ export default function Dashboard() {
         <p className="text-error font-semibold">Select more than 2 minutes.</p>
       ) : rangeStatus === "warning" ? (
         <p className="text-amber-700">
-          {selectedHours.toFixed(2)}hrs will be used. For best results select at
-          least 5 minutes.
+          {selectedHours.toFixed(2)}hrs will be used. Select at least 5 minutes
+          for best results.
         </p>
       ) : (
         <p className="text-success font-medium">
@@ -525,28 +537,28 @@ export default function Dashboard() {
   );
 
   return (
-    <div className="max-w-lg mx-auto">
-      {/* Trial started banner */}
+    <div className="max-w-5xl mx-auto">
+      {/* ── TOP BANNERS ── */}
       {trialStarted && (
         <div className="mb-4 bg-green-50 border border-green-200 rounded-xl p-3 flex items-center gap-2">
-          <CheckCircle size={16} className="text-success shrink-0" />
+          <CheckCircle size={15} className="text-success shrink-0" />
           <p className="text-sm text-text-primary">
-            <strong>Trial active!</strong> 10 hours free, no charge until day 7.
+            <strong>Trial active!</strong> 10 hours free — no charge until day
+            7.
           </p>
         </div>
       )}
 
-      {/* No plan banners */}
       {!hasActivePlan && (
         <div className="mb-4">
           {!client?.has_used_trial ? (
-            <div className="bg-primary/5 border border-primary/20 rounded-xl p-4 flex items-center justify-between gap-3">
+            <div className="bg-primary/5 border border-primary/20 rounded-xl p-3 flex items-center justify-between gap-3">
               <div>
                 <p className="text-sm font-bold text-text-primary">
                   7-day free trial
                 </p>
-                <p className="text-xs text-text-muted mt-0.5">
-                  10 hours free · no charge for 7 days
+                <p className="text-xs text-text-muted">
+                  10 hours free · no charge for 7 days · cancel anytime
                 </p>
               </div>
               <TrialButton />
@@ -567,228 +579,224 @@ export default function Dashboard() {
         </div>
       )}
 
-      {/* Usage bar */}
       <div className="mb-4">
         <UsageBar />
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-4">
-        {/* Mode toggle */}
-        <div className="flex bg-bg-surface rounded-xl p-1 border border-border">
-          <button
-            type="button"
-            onClick={() => switchMode("url")}
-            className={`flex-1 py-2 rounded-lg text-sm font-semibold transition-all flex items-center justify-center gap-1.5 ${inputMode === "url" ? "bg-white shadow-sm text-text-primary" : "text-text-muted"}`}
-          >
-            <Link2 size={14} /> Paste URL
-          </button>
-          <button
-            type="button"
-            onClick={() => switchMode("upload")}
-            className={`flex-1 py-2 rounded-lg text-sm font-semibold transition-all flex items-center justify-center gap-1.5 ${inputMode === "upload" ? "bg-white shadow-sm text-text-primary" : "text-text-muted"}`}
-          >
-            <Upload size={14} /> Upload File
-          </button>
-        </div>
-
-        {/* URL MODE */}
-        {inputMode === "url" && (
+      {/* ── TWO COLUMN LAYOUT ── */}
+      <form onSubmit={handleSubmit}>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 md:items-start">
+          {/* ── LEFT COLUMN — Input ── */}
           <div className="space-y-3">
-            <input
-              type="url"
-              value={url}
-              onChange={(e) => setUrl(e.target.value)}
-              className="input-field"
-              placeholder="Paste a YouTube, TikTok, Instagram link..."
-            />
-            {infoError && !infoLoading && (
-              <p className="text-xs text-error flex items-center gap-1">
-                <AlertCircle size={12} /> {infoError}
-              </p>
-            )}
-            {infoLoading && (
-              <div className="card p-3 animate-pulse flex gap-3">
-                <div className="w-20 h-14 bg-gray-200 rounded-lg shrink-0" />
-                <div className="flex-1 space-y-2 pt-1">
-                  <div className="h-3 bg-gray-200 rounded w-3/4" />
-                  <div className="h-2 bg-gray-100 rounded w-1/3" />
-                </div>
-              </div>
-            )}
-            {videoInfo && !infoLoading && (
-              <div className="card p-3 space-y-3">
-                <div className="flex gap-3 items-center">
-                  {videoInfo.thumbnail && (
-                    <img
-                      src={videoInfo.thumbnail}
-                      alt={videoInfo.title}
-                      className="w-20 h-14 object-cover rounded-lg shrink-0 bg-gray-100"
-                      onError={(e) => (e.target.style.display = "none")}
-                    />
-                  )}
-                  <div className="flex-1 min-w-0">
-                    <p className="font-semibold text-text-primary text-sm leading-tight line-clamp-2">
-                      {videoInfo.title}
-                    </p>
-                    <p className="text-xs text-text-muted mt-1 flex items-center gap-1">
-                      <Clock size={11} /> {formatTime(videoInfo.duration)}
-                    </p>
-                  </div>
-                </div>
-                <div>
-                  <div className="flex justify-between items-center mb-1">
-                    <span className="text-xs font-semibold text-text-muted uppercase tracking-wide">
-                      Range
-                    </span>
-                    <span className="text-xs font-mono text-primary font-semibold">
-                      {formatTime(selectedDuration)}
-                    </span>
-                  </div>
-                  <RangeSlider
-                    duration={videoInfo.duration}
-                    start={rangeStart}
-                    end={rangeEnd}
-                    onChange={(s, e) => {
-                      setRangeStart(s);
-                      setRangeEnd(e);
-                    }}
-                  />
-                </div>
-                <UsageEstimate />
-              </div>
-            )}
-            {/* Supported platforms — collapsed, subtle */}
-            <div className="flex flex-wrap gap-1">
-              {allowedPlatforms
-                .filter((p) => p !== "upload")
-                .map((name) => (
-                  <span
-                    key={name}
-                    className="text-xs bg-bg-secondary text-text-dim px-2 py-0.5 rounded-full capitalize"
-                  >
-                    {name}
-                  </span>
-                ))}
+            {/* Mode toggle */}
+            <div className="flex bg-bg-surface rounded-xl p-1 border border-border">
+              <button
+                type="button"
+                onClick={() => switchMode("url")}
+                className={`flex-1 py-2 rounded-lg text-sm font-semibold transition-all flex items-center justify-center gap-1.5 ${inputMode === "url" ? "bg-white shadow-sm text-text-primary" : "text-text-muted hover:text-text-primary"}`}
+              >
+                <Link2 size={14} /> Paste URL
+              </button>
+              <button
+                type="button"
+                onClick={() => switchMode("upload")}
+                className={`flex-1 py-2 rounded-lg text-sm font-semibold transition-all flex items-center justify-center gap-1.5 ${inputMode === "upload" ? "bg-white shadow-sm text-text-primary" : "text-text-muted hover:text-text-primary"}`}
+              >
+                <Upload size={14} /> Upload File
+              </button>
             </div>
-          </div>
-        )}
 
-        {/* UPLOAD MODE */}
-        {inputMode === "upload" && (
-          <div className="space-y-3">
-            {uploadState === "idle" && (
-              <div
-                onDrop={(e) => {
-                  e.preventDefault();
-                  setIsDragging(false);
-                  handleFileSelect(e.dataTransfer.files[0]);
-                }}
-                onDragOver={(e) => {
-                  e.preventDefault();
-                  setIsDragging(true);
-                }}
-                onDragLeave={() => setIsDragging(false)}
-                onClick={() => fileInputRef.current?.click()}
-                className={`border-2 border-dashed rounded-xl p-8 text-center cursor-pointer transition-all ${isDragging ? "border-primary bg-bg-secondary" : "border-border bg-bg-surface hover:border-primary"}`}
-              >
-                <div className="text-2xl mb-1">📁</div>
-                <p className="text-sm font-semibold text-text-primary">
-                  Drop video or <span className="text-primary">browse</span>
-                </p>
-                <p className="text-xs text-text-muted mt-0.5">
-                  MP4, MOV, MKV, AVI, WEBM · Max 500MB
-                </p>
+            {/* URL MODE */}
+            {inputMode === "url" && (
+              <div className="space-y-3">
                 <input
-                  ref={fileInputRef}
-                  type="file"
-                  accept="video/mp4,video/quicktime,video/x-matroska,video/x-msvideo,video/webm,video/x-m4v,.mp4,.mov,.mkv,.avi,.webm"
-                  className="hidden"
-                  onChange={(e) => handleFileSelect(e.target.files[0])}
+                  type="url"
+                  value={url}
+                  onChange={(e) => setUrl(e.target.value)}
+                  className="input-field"
+                  placeholder="Paste a YouTube, TikTok, Instagram link..."
                 />
-              </div>
-            )}
-            {(uploadState === "uploading" || uploadState === "done") &&
-              uploadPreview && (
-                <div className="border border-border rounded-xl p-3 bg-bg-surface space-y-2">
-                  <div className="flex items-center justify-between gap-2">
-                    <div className="flex items-center gap-2 min-w-0">
-                      <span className="text-lg shrink-0">🎬</span>
-                      <div className="min-w-0">
-                        <p className="text-sm font-semibold text-text-primary truncate">
-                          {uploadPreview.name}
-                        </p>
-                        <p className="text-xs text-text-muted">
-                          {uploadPreview.size}
-                        </p>
-                      </div>
+                {infoError && !infoLoading && (
+                  <p className="text-xs text-error flex items-center gap-1">
+                    <AlertCircle size={12} /> {infoError}
+                  </p>
+                )}
+                {/* Loading skeleton */}
+                {infoLoading && (
+                  <div className="card p-3 animate-pulse flex gap-3">
+                    <div className="w-20 h-14 bg-gray-200 rounded-lg shrink-0" />
+                    <div className="flex-1 space-y-2 pt-1">
+                      <div className="h-3 bg-gray-200 rounded w-3/4" />
+                      <div className="h-2 bg-gray-100 rounded w-1/3" />
                     </div>
-                    <button
-                      type="button"
-                      onClick={clearUpload}
-                      className="text-text-dim hover:text-error p-1"
-                    >
-                      <X size={15} />
-                    </button>
                   </div>
-                  {uploadState === "uploading" && (
-                    <div className="space-y-1">
-                      <div className="flex justify-between">
-                        <span className="text-xs text-text-muted">
-                          Uploading...
-                        </span>
-                        <span className="text-xs font-semibold text-primary">
-                          {uploadProgress}%
-                        </span>
-                      </div>
-                      <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden">
-                        <div
-                          className="h-full bg-primary rounded-full transition-all"
-                          style={{ width: `${uploadProgress}%` }}
-                        />
-                      </div>
+                )}
+                {/* Video info */}
+                {videoInfo && !infoLoading && (
+                  <div className="card p-3 flex gap-3 items-center">
+                    {videoInfo.thumbnail && (
+                      <img
+                        src={videoInfo.thumbnail}
+                        alt={videoInfo.title}
+                        className="w-20 h-14 object-cover rounded-lg shrink-0 bg-gray-100"
+                        onError={(e) => (e.target.style.display = "none")}
+                      />
+                    )}
+                    <div className="flex-1 min-w-0">
+                      <p className="font-semibold text-text-primary text-sm leading-tight line-clamp-2">
+                        {videoInfo.title}
+                      </p>
+                      <p className="text-xs text-text-muted mt-1 flex items-center gap-1">
+                        <Clock size={11} /> {formatTime(videoInfo.duration)}{" "}
+                        total
+                      </p>
                     </div>
-                  )}
-                  {uploadState === "done" && (
-                    <p className="text-xs text-success flex items-center gap-1">
-                      <CheckCircle size={12} /> Uploaded ·{" "}
-                      {formatTime(uploadDuration)}
-                    </p>
-                  )}
-                </div>
-              )}
-            {uploadState === "error" && (
-              <div
-                onClick={() => {
-                  setUploadState("idle");
-                  setUploadPreview(null);
-                  fileInputRef.current?.click();
-                }}
-                className="border-2 border-dashed border-red-200 bg-red-50 rounded-xl p-6 text-center cursor-pointer"
-              >
-                <p className="text-sm font-semibold text-error">
-                  Upload failed — click to retry
-                </p>
-                <input
-                  ref={fileInputRef}
-                  type="file"
-                  accept="video/mp4,video/quicktime,video/x-matroska,video/x-msvideo,video/webm,video/x-m4v,.mp4,.mov,.mkv,.avi,.webm"
-                  className="hidden"
-                  onChange={(e) => handleFileSelect(e.target.files[0])}
-                />
+                  </div>
+                )}
+                {/* Supported platforms */}
+                {!videoInfo && !infoLoading && (
+                  <div className="flex flex-wrap gap-1">
+                    {allowedPlatforms
+                      .filter((p) => p !== "upload")
+                      .map((name) => (
+                        <span
+                          key={name}
+                          className="text-xs bg-bg-secondary text-text-dim px-2 py-0.5 rounded-full capitalize"
+                        >
+                          {name}
+                        </span>
+                      ))}
+                  </div>
+                )}
               </div>
             )}
-            {uploadState === "done" && uploadDuration > 0 && (
-              <div className="card p-3 space-y-3">
+
+            {/* UPLOAD MODE */}
+            {inputMode === "upload" && (
+              <div className="space-y-3">
+                {uploadState === "idle" && (
+                  <div
+                    onDrop={(e) => {
+                      e.preventDefault();
+                      setIsDragging(false);
+                      handleFileSelect(e.dataTransfer.files[0]);
+                    }}
+                    onDragOver={(e) => {
+                      e.preventDefault();
+                      setIsDragging(true);
+                    }}
+                    onDragLeave={() => setIsDragging(false)}
+                    onClick={() => fileInputRef.current?.click()}
+                    className={`border-2 border-dashed rounded-xl p-8 text-center cursor-pointer transition-all ${isDragging ? "border-primary bg-bg-secondary" : "border-border bg-bg-surface hover:border-primary hover:bg-bg-secondary"}`}
+                  >
+                    <div className="text-2xl mb-1">📁</div>
+                    <p className="text-sm font-semibold text-text-primary">
+                      Drop video or <span className="text-primary">browse</span>
+                    </p>
+                    <p className="text-xs text-text-muted mt-0.5">
+                      MP4, MOV, MKV, AVI, WEBM · Max 500MB
+                    </p>
+                    <input
+                      ref={fileInputRef}
+                      type="file"
+                      accept="video/mp4,video/quicktime,video/x-matroska,video/x-msvideo,video/webm,video/x-m4v,.mp4,.mov,.mkv,.avi,.webm"
+                      className="hidden"
+                      onChange={(e) => handleFileSelect(e.target.files[0])}
+                    />
+                  </div>
+                )}
+                {(uploadState === "uploading" || uploadState === "done") &&
+                  uploadPreview && (
+                    <div className="border border-border rounded-xl p-3 bg-bg-surface space-y-2">
+                      <div className="flex items-center justify-between gap-2">
+                        <div className="flex items-center gap-2 min-w-0">
+                          <span className="text-lg shrink-0">🎬</span>
+                          <div className="min-w-0">
+                            <p className="text-sm font-semibold text-text-primary truncate">
+                              {uploadPreview.name}
+                            </p>
+                            <p className="text-xs text-text-muted">
+                              {uploadPreview.size}
+                            </p>
+                          </div>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={clearUpload}
+                          className="text-text-dim hover:text-error p-1 shrink-0"
+                        >
+                          <X size={15} />
+                        </button>
+                      </div>
+                      {uploadState === "uploading" && (
+                        <div className="space-y-1">
+                          <div className="flex justify-between">
+                            <span className="text-xs text-text-muted">
+                              Uploading...
+                            </span>
+                            <span className="text-xs font-semibold text-primary">
+                              {uploadProgress}%
+                            </span>
+                          </div>
+                          <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                            <div
+                              className="h-full bg-primary rounded-full transition-all duration-300"
+                              style={{ width: `${uploadProgress}%` }}
+                            />
+                          </div>
+                          <p className="text-xs text-text-dim">
+                            Keep this page open until upload completes.
+                          </p>
+                        </div>
+                      )}
+                      {uploadState === "done" && (
+                        <p className="text-xs text-success flex items-center gap-1">
+                          <CheckCircle size={12} /> Uploaded ·{" "}
+                          {formatTime(uploadDuration)}
+                        </p>
+                      )}
+                    </div>
+                  )}
+                {uploadState === "error" && (
+                  <div
+                    onClick={() => {
+                      setUploadState("idle");
+                      setUploadPreview(null);
+                      fileInputRef.current?.click();
+                    }}
+                    className="border-2 border-dashed border-red-200 bg-red-50 rounded-xl p-6 text-center cursor-pointer"
+                  >
+                    <p className="text-sm font-semibold text-error">
+                      Upload failed — click to retry
+                    </p>
+                    <input
+                      ref={fileInputRef}
+                      type="file"
+                      accept="video/mp4,video/quicktime,video/x-matroska,video/x-msvideo,video/webm,video/x-m4v,.mp4,.mov,.mkv,.avi,.webm"
+                      className="hidden"
+                      onChange={(e) => handleFileSelect(e.target.files[0])}
+                    />
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+
+          {/* ── RIGHT COLUMN — Details + Style + Submit ── */}
+          <div className="space-y-3">
+            {/* Range slider — URL mode */}
+            {inputMode === "url" && videoInfo && !infoLoading && (
+              <div className="card p-3 space-y-2">
                 <div className="flex justify-between items-center">
                   <span className="text-xs font-semibold text-text-muted uppercase tracking-wide">
-                    Range
+                    Select range
                   </span>
                   <span className="text-xs font-mono text-primary font-semibold">
-                    {formatTime(selectedDuration)}
+                    {formatTime(selectedDuration)} selected
                   </span>
                 </div>
                 <RangeSlider
-                  duration={uploadDuration}
+                  duration={videoInfo.duration}
                   start={rangeStart}
                   end={rangeEnd}
                   onChange={(s, e) => {
@@ -799,44 +807,84 @@ export default function Dashboard() {
                 <UsageEstimate />
               </div>
             )}
-          </div>
-        )}
 
-        {/* Error */}
-        {error && (
-          <div className="bg-red-50 border border-red-100 text-error text-sm rounded-xl p-3 flex items-center gap-2">
-            <AlertCircle size={14} /> {error}
-          </div>
-        )}
+            {/* Range slider — Upload mode */}
+            {inputMode === "upload" &&
+              uploadState === "done" &&
+              uploadDuration > 0 && (
+                <div className="card p-3 space-y-2">
+                  <div className="flex justify-between items-center">
+                    <span className="text-xs font-semibold text-text-muted uppercase tracking-wide">
+                      Select range
+                    </span>
+                    <span className="text-xs font-mono text-primary font-semibold">
+                      {formatTime(selectedDuration)} selected
+                    </span>
+                  </div>
+                  <RangeSlider
+                    duration={uploadDuration}
+                    start={rangeStart}
+                    end={rangeEnd}
+                    onChange={(s, e) => {
+                      setRangeStart(s);
+                      setRangeEnd(e);
+                    }}
+                  />
+                  <UsageEstimate />
+                </div>
+              )}
 
-        {/* Style picker */}
-        <div>
-          <p className="text-xs font-semibold text-text-muted uppercase tracking-wide mb-2">
-            Style
-          </p>
-          <StylePicker value={style} onChange={setStyle} />
+            {/* Placeholder when no video yet — desktop only */}
+            {!hasVideoReady && (
+              <div className="hidden md:flex card p-6 items-center justify-center text-center min-h-[120px] border-dashed">
+                <div>
+                  <p className="text-text-dim text-sm">
+                    Paste a link or upload a video
+                  </p>
+                  <p className="text-text-dim text-xs mt-1">
+                    Range and style options appear here
+                  </p>
+                </div>
+              </div>
+            )}
+
+            {/* Style picker */}
+            <div className="card p-3">
+              <p className="text-xs font-semibold text-text-muted uppercase tracking-wide mb-2">
+                Style
+              </p>
+              <StylePicker value={style} onChange={setStyle} />
+            </div>
+
+            {/* Error */}
+            {error && (
+              <div className="bg-red-50 border border-red-100 text-error text-sm rounded-xl p-3 flex items-center gap-2">
+                <AlertCircle size={14} className="shrink-0" /> {error}
+              </div>
+            )}
+
+            {/* Submit */}
+            <button
+              type="submit"
+              disabled={!canSubmit || !hasActivePlan}
+              className="btn-primary w-full flex items-center justify-center gap-2 py-3 text-base disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {submitting ? (
+                <>
+                  <Loader size={17} className="animate-spin" /> Starting...
+                </>
+              ) : (
+                <>
+                  <Sparkles size={17} /> Create Shorts
+                </>
+              )}
+            </button>
+
+            <p className="text-xs text-text-dim text-center">
+              You'll receive 2–3 clips from your video.
+            </p>
+          </div>
         </div>
-
-        {/* Submit */}
-        <button
-          type="submit"
-          disabled={!canSubmit || !hasActivePlan}
-          className="btn-primary w-full flex items-center justify-center gap-2 py-3 text-base disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          {submitting ? (
-            <>
-              <Loader size={17} className="animate-spin" /> Starting...
-            </>
-          ) : (
-            <>
-              <Sparkles size={17} /> Create Shorts
-            </>
-          )}
-        </button>
-
-        <p className="text-xs text-text-dim text-center">
-          You'll receive 2–3 clips from your video.
-        </p>
       </form>
     </div>
   );
