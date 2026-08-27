@@ -87,7 +87,15 @@ const WHY_SHORTTRIM = [
   {
     icon: "✂️",
     title: "2–3 clips, not just one",
-    desc: "Most tools give you one clip and call it done. ShortTrim finds 2–3 of the best moments from your video – so you get more content from every upload.",
+    desc: (
+      <>
+        Most tools give you one clip and call it done. ShortTrim finds{" "}
+        <span className="text-primary font-semibold">
+          2–3 of the best moments
+        </span>{" "}
+        from your video – so you get more content from every upload.
+      </>
+    ),
   },
   {
     icon: "✍️",
@@ -320,7 +328,8 @@ export default function Landing() {
         </h1>
         <p className="text-text-muted text-lg mb-8 max-w-xl mx-auto leading-relaxed">
           Most video tools are overcomplicated. ShortTrim isn't. Paste a link.
-          Pick a style. Done – clips ready in minutes, in any language.
+          Pick a style. Done – clips ready in minutes,{" "}
+          <span className="text-primary font-semibold">in any language</span>.
         </p>
         <div className="flex items-center justify-center gap-3 flex-wrap">
           {!initialized ? null : hasActivePlan ? (
@@ -397,7 +406,7 @@ export default function Landing() {
           {HOW_IT_WORKS.map((step) => (
             <div key={step.step} className="text-center">
               <div className="text-3xl mb-3">{step.icon}</div>
-              <p className="text-xs font-bold text-text-dim uppercase tracking-widest mb-1">
+              <p className="text-xs font-bold text-primary uppercase tracking-widest mb-1">
                 {step.step}
               </p>
               <h3 className="font-bold text-text-primary mb-2">{step.title}</h3>
@@ -429,7 +438,17 @@ export default function Landing() {
                     {title}
                   </h3>
                   <p className="text-sm text-text-muted leading-relaxed">
-                    {description}
+                    {title === "Works in any language" ? (
+                      <>
+                        <span className="text-primary font-semibold">
+                          English, Arabic, Tamil, French, Spanish, Urdu
+                        </span>{" "}
+                        – ShortTrim understands whatever is spoken. Most tools
+                        only work well in English.
+                      </>
+                    ) : (
+                      description
+                    )}
                   </p>
                 </div>
               </div>
@@ -456,7 +475,18 @@ export default function Landing() {
                   {item.title}
                 </h3>
                 <p className="text-sm text-text-muted leading-relaxed">
-                  {item.desc}
+                  {item.title === "Works in your language" ? (
+                    <>
+                      Arabic,{" "}
+                      <span className="text-primary font-semibold">
+                        Tamil, French, Spanish, Urdu
+                      </span>{" "}
+                      – most competitors only handle English well. ShortTrim
+                      works natively in any spoken language.
+                    </>
+                  ) : (
+                    item.desc
+                  )}
                 </p>
               </div>
             </div>
