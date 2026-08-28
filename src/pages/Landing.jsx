@@ -336,7 +336,7 @@ function VideoModal() {
           onClick={() => setOpen(false)}
         >
           <div
-            className="relative w-full max-w-3xl rounded-2xl overflow-hidden shadow-2xl"
+            className="relative w-full max-w-2xl rounded-2xl overflow-hidden shadow-2xl"
             onClick={(e) => e.stopPropagation()}
           >
             <button
@@ -350,7 +350,7 @@ function VideoModal() {
               controls
               autoPlay
               playsInline
-              className="w-full"
+              className="w-full max-h-[80vh]"
             />
           </div>
         </div>
