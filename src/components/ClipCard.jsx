@@ -123,7 +123,7 @@ export default function ClipCard({ clip, clipIndex }) {
               setApplyingBg(false);
               setBgApplied(true);
               setSuccessMsg(true);
-              setCurrentPreviewUrl(data.preview_url);
+              setCurrentPreviewUrl(data.preview_url + "?t=" + Date.now());
               setTimeout(() => setSuccessMsg(false), 5000);
             }
           }, 5000);
