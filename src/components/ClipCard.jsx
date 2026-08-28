@@ -2,8 +2,6 @@ import { useState, useRef, useEffect } from "react";
 import { useDispatch } from "react-redux";
 import {
   Download,
-  Play,
-  Pause,
   Upload,
   AlertTriangle,
   CheckCircle,
@@ -50,17 +48,6 @@ export default function ClipCard({ clip, clipIndex }) {
   const [promptBottomText, setPromptBottomText] = useState("");
   const [promptSituation, setPromptSituation] = useState("");
   const [promptCopied, setPromptCopied] = useState(false);
-
-  const togglePlay = () => {
-    if (!videoRef.current) return;
-    if (playing) {
-      videoRef.current.pause();
-      setPlaying(false);
-    } else {
-      videoRef.current.play();
-      setPlaying(true);
-    }
-  };
 
   const handleDownload = () => {
     const a = document.createElement("a");
@@ -228,28 +215,18 @@ Make it suitable for YouTube Shorts or Instagram Reels. The final composition sh
           ref={videoRef}
           src={currentPreviewUrl || clip.preview_url}
           className="w-full h-full object-contain"
+          onPlay={() => {
+            // Pause all other videos on the page
+            document.querySelectorAll("video").forEach((v) => {
+              if (v !== videoRef.current) v.pause();
+            });
+            setPlaying(true);
+          }}
+          onPause={() => setPlaying(false)}
           onEnded={() => setPlaying(false)}
           playsInline
+          controls
         />
-        <button
-          onClick={togglePlay}
-          className="absolute inset-0 flex items-center justify-center group"
-        >
-          <div
-            className={`w-14 h-14 rounded-full bg-white/90 flex items-center justify-center shadow-lg transition-all duration-200 ${playing ? "opacity-0 group-hover:opacity-100" : "opacity-100"}`}
-          >
-            {playing ? (
-              <Pause size={22} className="text-text-primary" />
-            ) : (
-              <Play size={22} className="text-text-primary ml-0.5" />
-            )}
-          </div>
-        </button>
-
-        {/* Duration badge */}
-        <div className="absolute bottom-3 right-3 bg-black/60 text-white text-xs font-mono px-2 py-0.5 rounded-md">
-          {formatDuration(clip.duration_seconds)}
-        </div>
 
         {/* Published badge */}
         {/* {isPublished && (
