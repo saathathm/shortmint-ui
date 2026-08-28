@@ -309,6 +309,56 @@ function LeadForm() {
   );
 }
 
+function VideoModal() {
+  const [open, setOpen] = useState(false);
+  return (
+    <>
+      <button
+        onClick={() => setOpen(true)}
+        className="inline-flex items-center gap-3 px-6 py-3 bg-white border-2 border-primary/20 hover:border-primary/40 rounded-2xl shadow-sm hover:shadow-md transition-all group"
+      >
+        <div className="w-10 h-10 bg-primary rounded-full flex items-center justify-center shadow-sm group-hover:scale-105 transition-transform">
+          <svg width="14" height="16" viewBox="0 0 14 16" fill="white">
+            <path d="M1 1l12 7-12 7V1z" />
+          </svg>
+        </div>
+        <div className="text-left">
+          <p className="text-sm font-bold text-text-primary">
+            Watch how it works
+          </p>
+          <p className="text-xs text-text-muted">2 min overview</p>
+        </div>
+      </button>
+
+      {open && (
+        <div
+          className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4"
+          onClick={() => setOpen(false)}
+        >
+          <div
+            className="relative w-full max-w-3xl rounded-2xl overflow-hidden shadow-2xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              onClick={() => setOpen(false)}
+              className="absolute top-3 right-3 z-10 w-8 h-8 bg-black/60 hover:bg-black/80 text-white rounded-full flex items-center justify-center transition"
+            >
+              ✕
+            </button>
+            <video
+              src="https://shorttrim.com/files/shorttrimInfo.mp4"
+              controls
+              autoPlay
+              playsInline
+              className="w-full"
+            />
+          </div>
+        </div>
+      )}
+    </>
+  );
+}
+
 export default function Landing() {
   const { isAuthenticated, client, initialized } = useAuth();
   const hasActivePlan =
@@ -362,6 +412,11 @@ export default function Landing() {
             </span>
           </div>
         )}
+      </section>
+
+      {/* Intro video */}
+      <section className="py-4 max-w-3xl mx-auto px-4 text-center">
+        <VideoModal />
       </section>
 
       {/* Demo clips */}
