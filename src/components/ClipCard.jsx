@@ -212,6 +212,7 @@ Make it suitable for YouTube Shorts or Instagram Reels. The final composition sh
         style={{ aspectRatio: "9/16", maxHeight: "480px" }}
       >
         <video
+          key={currentPreviewUrl || clip.preview_url}
           ref={videoRef}
           src={currentPreviewUrl || clip.preview_url}
           className="w-full h-full object-contain"
