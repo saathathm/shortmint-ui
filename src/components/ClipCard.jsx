@@ -293,7 +293,7 @@ Make it suitable for YouTube Shorts or Instagram Reels. The final composition sh
         </div>
 
         {/* Custom style banner */}
-        {isCustomStyle && !bgApplied && (
+        {isCustomStyle && (
           <div className="bg-amber-50 border border-amber-200 rounded-xl p-3">
             <div className="flex items-start gap-2">
               <AlertTriangle
