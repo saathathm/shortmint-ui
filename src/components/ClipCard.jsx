@@ -104,43 +104,58 @@ export default function ClipCard({ clip, clipIndex }) {
   const handleBgUpload = async (e) => {
     const file = e.target.files[0];
     if (!file || !client) return;
+
     setApplyingBg(true);
 
     try {
       const compressed = await compressImage(file);
 
       const reader = new FileReader();
+
       reader.onload = async (ev) => {
         const base64 = ev.target.result.split(",")[1];
+
         try {
           await applyCustomBg(clip.id, client.id, base64);
 
-          // Poll Supabase every 5 seconds for custom_bg_url to be set
+          // Poll Supabase every 10 seconds for custom_bg_url to be set
           pollRef.current = setInterval(async () => {
             const { data } = await getBgStatus(clip.id);
+
             if (data?.custom_bg_url) {
               clearInterval(pollRef.current);
+              pollRef.current = null;
+
               setBgApplied(true);
-              // Wait 5s for the server to finish writing before loading the video
+
+              // Wait 10s for the server to finish writing before loading the video
               setTimeout(() => {
                 setSuccessMsg(true);
                 setApplyingBg(false);
+
                 setCurrentPreviewUrl(data.preview_url + "?t=" + Date.now());
-                setTimeout(() => setSuccessMsg(false), 5000);
-              }, 5000);
+
+                setTimeout(() => {
+                  setSuccessMsg(false);
+                }, 5000);
+              }, 10000);
             }
-          }, 5000);
+          }, 10000);
 
           // Safety stop after 5 minutes
           setTimeout(() => {
-            clearInterval(pollRef.current);
-            setApplyingBg(false);
+            if (pollRef.current) {
+              clearInterval(pollRef.current);
+              pollRef.current = null;
+              setApplyingBg(false);
+            }
           }, 300000);
         } catch {
           alert("Could not apply background. Please try again.");
           setApplyingBg(false);
         }
       };
+
       reader.readAsDataURL(compressed);
     } catch {
       alert("Could not process image. Please try again.");
