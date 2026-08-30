@@ -121,9 +121,9 @@ export default function ClipCard({ clip, clipIndex }) {
             if (data?.custom_bg_url) {
               clearInterval(pollRef.current);
               setBgApplied(true);
-              setSuccessMsg(true);
               // Wait 5s for the server to finish writing before loading the video
               setTimeout(() => {
+                setSuccessMsg(true);
                 setApplyingBg(false);
                 setCurrentPreviewUrl(data.preview_url + "?t=" + Date.now());
                 setTimeout(() => setSuccessMsg(false), 5000);
