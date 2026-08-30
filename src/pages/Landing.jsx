@@ -136,6 +136,14 @@ const WHY_SHORTTRIM = [
 
 const FAQS = [
   {
+    q: "What is ShortTrim?",
+    a: "ShortTrim is an AI-powered tool that automatically finds the best 2–3 moments in any long video and turns them into short-form clips ready for YouTube Shorts, Instagram Reels, and TikTok. It works in any spoken language and requires no editing skills.",
+  },
+  {
+    q: "Is ShortTrim free?",
+    a: "Yes – ShortTrim offers a 7-day free trial with 10 hours of processing included. No charge until day 7. After that, plans start from $29/month. You can also buy hours once with no expiry.",
+  },
+  {
     q: "How does the free trial work?",
     a: "Sign up, add your card, and get 10 hours of processing free for 7 days. No charge until day 7. Cancel anytime before then and you won't be charged anything. After 7 days, $29/month is charged automatically.",
   },
@@ -452,7 +460,7 @@ export default function Landing() {
       {/* How it works */}
       <section className="py-16 max-w-4xl mx-auto px-4">
         <h2 className="text-center text-2xl font-bold text-text-primary mb-3">
-          Three steps. That's it.
+          How to turn long videos into Shorts – three steps
         </h2>
         <p className="text-center text-text-muted text-sm mb-10">
           No tutorials. No learning curve. Anyone can do this.
@@ -515,7 +523,7 @@ export default function Landing() {
       {/* Why ShortTrim */}
       <section className="py-16 max-w-4xl mx-auto px-4">
         <h2 className="text-center text-2xl font-bold text-text-primary mb-3">
-          Why creators choose ShortTrim
+          Why creators choose ShortTrim over other AI video clippers
         </h2>
         <p className="text-center text-text-muted text-sm mb-10">
           There are other tools out there. Here's what makes ShortTrim
@@ -681,7 +689,7 @@ export default function Landing() {
       </section>
 
       {/* FAQ */}
-      <section className="py-16 max-w-2xl mx-auto px-4">
+      <section id="faq" className="py-16 max-w-2xl mx-auto px-4">
         <h2 className="text-center text-2xl font-bold text-text-primary mb-8">
           Frequently asked questions
         </h2>
@@ -690,6 +698,25 @@ export default function Landing() {
             <FAQ key={faq.q} {...faq} />
           ))}
         </div>
+
+        {/* FAQ Schema for Google */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "FAQPage",
+              mainEntity: FAQS.map((faq) => ({
+                "@type": "Question",
+                name: faq.q,
+                acceptedAnswer: {
+                  "@type": "Answer",
+                  text: faq.a,
+                },
+              })),
+            }),
+          }}
+        />
       </section>
 
       {/* Final CTA */}
