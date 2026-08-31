@@ -62,7 +62,7 @@ export default function Layout({ children }) {
   }, [client]);
 
   return (
-    <div className="min-h-screen bg-bg-primary">
+    <div className="min-h-screen bg-bg-primary flex flex-col">
       {/* HEADER */}
       <header className="border-b border-border bg-white/80 backdrop-blur sticky top-0 z-50">
         <div className="max-w-5xl mx-auto px-4 h-16 flex items-center justify-between">
@@ -228,7 +228,7 @@ export default function Layout({ children }) {
       </header>
 
       {/* MAIN CONTENT */}
-      <main className="max-w-5xl mx-auto px-4 py-8">{children}</main>
+      <main className="max-w-5xl mx-auto px-4 py-8 flex-1 w-full">{children}</main>
 
       {/* FOOTER */}
       <footer className="border-t border-border py-8 px-4 mt-auto">
