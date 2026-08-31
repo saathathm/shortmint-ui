@@ -167,11 +167,11 @@ export default function ClipCard({ clip, clipIndex }) {
     const situation = promptSituation.trim() || clip.description || "";
 
     const topSection = promptTopText.trim()
-      ? `Top / top-center section: Display this text prominently and beautifully — "${promptTopText.trim()}".`
+      ? `Top / top-center section: Display this text prominently and beautifully – "${promptTopText.trim()}".`
       : `Top / top-center section: Leave empty or use a subtle visual element that naturally matches the subject. No text.`;
 
     const bottomSection = promptBottomText.trim()
-      ? `Bottom-center to bottom section: Display this text clearly — "${promptBottomText.trim()}". Make sure the text is not too close to the edge.`
+      ? `Bottom-center to bottom section: Display this text clearly – "${promptBottomText.trim()}". Make sure the text is not too close to the edge.`
       : `Bottom-center to bottom section: Leave empty or use subtle visual elements that naturally match the subject. No text.`;
 
     const situationLine = situation
@@ -189,7 +189,7 @@ LAYOUT (strictly follow this):
 
 ${topSection}
 
-Middle section (landscape-center): Leave this area completely empty and visually clean — no text, no objects, no important subjects, no patterns, and no design elements that would interfere with the 16:9 video overlay.
+Middle section (landscape-center): Leave this area completely empty and visually clean – no text, no objects, no important subjects, no patterns, and no design elements that would interfere with the 16:9 video overlay.
 
 ${bottomSection}
 
@@ -509,7 +509,7 @@ Make it suitable for YouTube Shorts or Instagram Reels. The final composition sh
                   Create Background
                 </h3>
                 <p className="text-xs text-text-muted mt-0.5">
-                  Generate a cinematic background based on your clip's content —
+                  Generate a cinematic background based on your clip's content –
                   paste the prompt into ChatGPT, Gemini, or Midjourney
                 </p>
               </div>
@@ -562,7 +562,7 @@ Make it suitable for YouTube Shorts or Instagram Reels. The final composition sh
                 <label className="text-xs font-semibold text-text-muted uppercase tracking-wide mb-1 block">
                   Context{" "}
                   <span className="text-text-dim font-normal normal-case">
-                    (what is this clip about? — auto-filled from description)
+                    (what is this clip about? – auto-filled from description)
                   </span>
                 </label>
                 <textarea

@@ -132,7 +132,7 @@ export default function Settings() {
       setCancelSuccess(true);
 
       if (isOnTrial) {
-        // Trial cancel — immediate, zero hours now
+        // Trial cancel – immediate, zero hours now
         dispatch(
           setClient({
             ...client,
@@ -144,7 +144,7 @@ export default function Settings() {
           }),
         );
       } else {
-        // Regular cancel — keep access until period end, just mark as cancelling
+        // Regular cancel – keep access until period end, just mark as cancelling
         dispatch(
           setClient({
             ...client,

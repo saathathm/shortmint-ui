@@ -43,27 +43,27 @@ const TOOLS_COMPARISON = [
 const FAQS = [
   {
     q: "What is AI video clipping?",
-    a: "AI video clipping is when an AI tool watches or listens to a long video and automatically finds the best moments to turn into short clips — without you having to do it manually. Instead of watching your video again and cutting it yourself, the AI does that work for you.",
+    a: "AI video clipping is when an AI tool watches or listens to a long video and automatically finds the best moments to turn into short clips – without you having to do it manually. Instead of watching your video again and cutting it yourself, the AI does that work for you.",
   },
   {
     q: "How does ShortTrim decide which moments to clip?",
-    a: "ShortTrim listens to what's being said in the video and looks for moments that would work well as standalone short clips — strong statements, interesting points, engaging stories. It picks 2–3 of the best ones per video.",
+    a: "ShortTrim listens to what's being said in the video and looks for moments that would work well as standalone short clips – strong statements, interesting points, engaging stories. It picks 2–3 of the best ones per video.",
   },
   {
     q: "Is AI video clipping accurate?",
-    a: "It's not perfect — no AI tool is. But ShortTrim consistently finds genuinely good moments, not random cuts. And if you don't like a set of clips, you can run the same video again and get a fresh set.",
+    a: "It's not perfect – no AI tool is. But ShortTrim consistently finds genuinely good moments, not random cuts. And if you don't like a set of clips, you can run the same video again and get a fresh set.",
   },
   {
     q: "Does it work for non-English videos?",
-    a: "Yes. ShortTrim works in any spoken language — Arabic, Tamil, French, Spanish, Urdu, German, and more. Most AI video clippers are built for English only. ShortTrim actually understands what's being said regardless of the language.",
+    a: "Yes. ShortTrim works in any spoken language – Arabic, Tamil, French, Spanish, Urdu, German, and more. Most AI video clippers are built for English only. ShortTrim actually understands what's being said regardless of the language.",
   },
   {
     q: "Do I need any video editing experience?",
-    a: "None at all. You paste a link, pick a section, pick a style, and wait. The clips come out already formatted for Shorts — no timeline, no editing, no exporting.",
+    a: "None at all. You paste a link, pick a section, pick a style, and wait. The clips come out already formatted for Shorts – no timeline, no editing, no exporting.",
   },
   {
     q: "How much does it cost?",
-    a: "There's a 7-day free trial with 10 hours of processing included. After that, plans start from $29/month. You can also buy hours once — they never expire.",
+    a: "There's a 7-day free trial with 10 hours of processing included. After that, plans start from $29/month. You can also buy hours once – they never expire.",
   },
 ];
 
@@ -81,7 +81,7 @@ export default function AiVideoClipping() {
         </div>
 
         <h1 className="text-4xl sm:text-5xl font-extrabold text-text-primary leading-tight tracking-tight mb-4">
-          AI video clipping —
+          AI video clipping –
           <br />
           <span className="text-primary">done in minutes, not hours</span>
         </h1>
@@ -135,7 +135,7 @@ export default function AiVideoClipping() {
           <div className="space-y-4 text-text-muted text-base leading-relaxed">
             <p>It sounds technical. It's not.</p>
             <p>
-              You have a long video — an hour-long lecture, a 45-minute podcast,
+              You have a long video – an hour-long lecture, a 45-minute podcast,
               a full interview. Somewhere inside it, there are 2 or 3 really
               good 60-second moments. The kind of moment that, if someone saw it
               on their feed, they'd stop scrolling.
@@ -169,7 +169,7 @@ export default function AiVideoClipping() {
             {
               step: "01",
               title: "Paste a link or upload a file",
-              body: "YouTube, Facebook, Instagram, TikTok, Vimeo, Rumble, Loom, Dropbox — or upload your own MP4 or MOV file directly. Whatever you have, it works.",
+              body: "YouTube, Facebook, Instagram, TikTok, Vimeo, Rumble, Loom, Dropbox – or upload your own MP4 or MOV file directly. Whatever you have, it works.",
             },
             {
               step: "02",
@@ -179,7 +179,7 @@ export default function AiVideoClipping() {
             {
               step: "03",
               title: "Choose a background style",
-              body: "Blur background, smart crop to fill the frame, or upload your own custom image. All three look professional — pick whichever fits your content.",
+              body: "Blur background, smart crop to fill the frame, or upload your own custom image. All three look professional – pick whichever fits your content.",
             },
             {
               step: "04",
@@ -264,13 +264,13 @@ export default function AiVideoClipping() {
           Most AI clippers only work in English
         </h2>
         <p className="text-text-muted text-sm leading-relaxed mb-4 max-w-xl mx-auto">
-          If your content is in Arabic, Tamil, French, Spanish, or Urdu — most
+          If your content is in Arabic, Tamil, French, Spanish, or Urdu – most
           tools either fail completely or do a poor job. They're built for
           English speakers.
         </p>
         <p className="text-text-muted text-sm leading-relaxed max-w-xl mx-auto">
           ShortTrim was built to work in any spoken language from day one. It
-          understands what's being said — not just what language it is — which
+          understands what's being said – not just what language it is – which
           means it finds genuinely good moments in any video, regardless of
           language.
         </p>
@@ -320,7 +320,7 @@ export default function AiVideoClipping() {
               {
                 icon: "🕌",
                 title: "Islamic content creators",
-                desc: "Khutbahs and lectures in Arabic, Urdu, or Tamil clip beautifully. ShortTrim actually understands the language — it doesn't just guess.",
+                desc: "Khutbahs and lectures in Arabic, Urdu, or Tamil clip beautifully. ShortTrim actually understands the language – it doesn't just guess.",
               },
               {
                 icon: "🎤",
@@ -335,7 +335,7 @@ export default function AiVideoClipping() {
               {
                 icon: "🏢",
                 title: "Businesses and coaches",
-                desc: "Webinars, training sessions, talks — any long-form content can become short clips that find new audiences on Shorts and Reels.",
+                desc: "Webinars, training sessions, talks – any long-form content can become short clips that find new audiences on Shorts and Reels.",
               },
             ].map((item) => (
               <div key={item.title} className="card p-5 flex items-start gap-4">
