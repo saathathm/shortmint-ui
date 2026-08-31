@@ -21,6 +21,9 @@ import Refunds from './pages/Refunds.jsx'
 import NotFound from './pages/NotFound.jsx'
 import ForgotPassword from './pages/ForgotPassword.jsx'
 import ResetPassword from './pages/ResetPassword.jsx'
+import YoutubeToShorts from './pages/YoutubeToShorts.jsx'
+import PodcastToShorts from './pages/PodcastToShorts.jsx'
+import AiVideoClipping from './pages/AiVideoClipping.jsx'
 
 export default function App() {
   const dispatch = useDispatch()
@@ -84,6 +87,9 @@ export default function App() {
         <Route path="/privacy" element={<Layout><Privacy /></Layout>} />
         <Route path="/terms" element={<Layout><Terms /></Layout>} />
         <Route path="/refunds" element={<Layout><Refunds /></Layout>} />
+        <Route path="/youtube-to-shorts" element={<Layout><YoutubeToShorts /></Layout>} />
+        <Route path="/podcast-to-shorts" element={<Layout><PodcastToShorts /></Layout>} />
+        <Route path="/ai-video-clipping" element={<Layout><AiVideoClipping /></Layout>} />
         <Route path="/reset-password" element={<Layout><ResetPassword /></Layout>} />
         <Route path="/forgot-password" element={<Layout><ForgotPassword /></Layout>} />
         <Route path="/dashboard" element={<ProtectedRoute><Layout><Dashboard /></Layout></ProtectedRoute>} />
