@@ -141,11 +141,11 @@ const FAQS = [
   },
   {
     q: "Is ShortTrim free?",
-    a: "Yes – ShortTrim offers a 7-day free trial with 10 hours of processing included. No charge until day 7. After that, plans start from $29/month. You can also buy hours once with no expiry.",
+    a: "Yes – ShortTrim offers a 7-day free trial with 10 hours of processing included. No charge until day 7. After that, plans start from $19/month. You can also buy hours once with no expiry.",
   },
   {
     q: "How does the free trial work?",
-    a: "Sign up, add your card, and get 10 hours of processing free for 7 days. No charge until day 7. Cancel anytime before then and you won't be charged anything. After 7 days, $29/month is charged automatically.",
+    a: "Sign up, add your card, and get 10 hours of processing free for 7 days. No charge until day 7. Cancel anytime before then and you won't be charged anything. After 7 days, $19/month is charged automatically.",
   },
   {
     q: "How long does it take?",
@@ -569,7 +569,7 @@ export default function Landing() {
           <p className="text-sm text-text-muted mb-4">
             Add your card and get <strong>10 hours of processing free</strong>{" "}
             for 7 days. Cancel before day 7 and you won't be charged a thing.
-            After 7 days, just $29/month.
+            After 7 days, just $19/month.
           </p>
           {!isAuthenticated && (
             <Link
@@ -598,21 +598,21 @@ export default function Landing() {
             {[
               {
                 label: "Starter",
-                monthlyPrice: "$29",
-                oneTimePrice: "$35",
+                monthlyPrice: "$19",
+                oneTimePrice: "$23",
                 hours: "10 hours",
               },
               {
                 label: "Growth",
-                monthlyPrice: "$59",
-                oneTimePrice: "$69",
+                monthlyPrice: "$39",
+                oneTimePrice: "$45",
                 hours: "25 hours",
                 popular: true,
               },
               {
                 label: "Pro",
-                monthlyPrice: "$99",
-                oneTimePrice: "$115",
+                monthlyPrice: "$66",
+                oneTimePrice: "$76",
                 hours: "60 hours",
               },
             ].map((p) => (

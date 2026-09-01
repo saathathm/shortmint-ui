@@ -63,7 +63,7 @@ const FAQS = [
   },
   {
     q: "How much does it cost?",
-    a: "There's a 7-day free trial with 10 hours of processing included. After that, plans start from $29/month. You can also buy hours once – they never expire.",
+    a: "There's a 7-day free trial with 10 hours of processing included. After that, plans start from $19/month. You can also buy hours once – they never expire.",
   },
 ];
 
