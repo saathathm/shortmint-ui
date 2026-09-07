@@ -30,50 +30,63 @@ export default function App() {
   const dispatch = useDispatch()
 
   useEffect(() => {
-    // Set up listener FIRST before loadSession
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(async (event, session) => {
-      if (!session) {
-        if (event === "SIGNED_OUT") {
-          localStorage.removeItem("sm_token");
-          localStorage.removeItem("sm_refresh_token");
-          dispatch(setSession(null));
-          dispatch(setClient(null));
+      if (event === "INITIAL_SESSION") {
+        // Supabase fires INITIAL_SESSION only after processing any URL tokens
+        // (PKCE code exchange included). Initializing here eliminates the race
+        // where loadSession() ran before the OAuth exchange completed and found
+        // no clients row for a brand-new Google user.
+        if (session) {
+          const isGoogleUser =
+            session.user.app_metadata?.provider === "google" ||
+            session.user.app_metadata?.providers?.includes("google");
+
+          if (isGoogleUser) {
+            localStorage.setItem("sm_token", session.access_token);
+            if (session.refresh_token) {
+              localStorage.setItem("sm_refresh_token", session.refresh_token);
+            }
+            try {
+              await fetch(
+                `${import.meta.env.VITE_API_BASE_URL}/api/auth/google-callback`,
+                {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({ access_token: session.access_token }),
+                },
+              );
+            } catch (e) {
+              console.error("Google callback error:", e);
+            }
+          }
         }
+        dispatch(loadSession());
         return;
       }
 
-      const isGoogleUser =
-        session.user.app_metadata?.provider === "google" ||
-        session.user.app_metadata?.providers?.includes("google");
-
-      if (!isGoogleUser) return;
-
-      localStorage.setItem("sm_token", session.access_token);
-      if (session.refresh_token) {
-        localStorage.setItem("sm_refresh_token", session.refresh_token);
+      if (event === "SIGNED_OUT") {
+        localStorage.removeItem("sm_token");
+        localStorage.removeItem("sm_refresh_token");
+        dispatch(setSession(null));
+        dispatch(setClient(null));
+        return;
       }
 
-      try {
-        await fetch(
-          `${import.meta.env.VITE_API_BASE_URL}/api/auth/google-callback`,
-          {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ access_token: session.access_token }),
-          },
-        );
-      } catch (e) {
-        console.error("Google callback error:", e);
+      // Keep localStorage tokens in sync when Supabase auto-refreshes them
+      if (session && (event === "TOKEN_REFRESHED" || event === "SIGNED_IN")) {
+        const isGoogleUser =
+          session.user.app_metadata?.provider === "google" ||
+          session.user.app_metadata?.providers?.includes("google");
+        if (isGoogleUser) {
+          localStorage.setItem("sm_token", session.access_token);
+          if (session.refresh_token) {
+            localStorage.setItem("sm_refresh_token", session.refresh_token);
+          }
+        }
       }
-
-      // Load session AFTER google-callback completes for Google users
-      dispatch(loadSession());
     });
-
-    // Load session for email users only (no Google session on page load)
-    dispatch(loadSession());
 
     return () => subscription.unsubscribe();
   }, [dispatch]);
