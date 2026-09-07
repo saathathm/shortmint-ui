@@ -2,7 +2,8 @@ import axios from "axios";
 import { supabase } from "./supabase";
 
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL || "https://shorttrim.com",
+  baseURL: import.meta.env.VITE_API_BASE_URL,
+  timeout: 30000,
 });
 
 // Attach JWT to every request
@@ -12,7 +13,7 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
-// Auto-logout on 401
+// Auto-refresh on 401, then logout if refresh also fails
 api.interceptors.response.use(
   (res) => res,
   async (err) => {
@@ -29,15 +30,14 @@ api.interceptors.response.use(
           });
           if (!error && data?.session) {
             localStorage.setItem("sm_token", data.session.access_token);
-            localStorage.setItem(
-              "sm_refresh_token",
-              data.session.refresh_token,
-            );
+            localStorage.setItem("sm_refresh_token", data.session.refresh_token);
             err.config.headers.Authorization = `Bearer ${data.session.access_token}`;
             return api.request(err.config);
           }
         }
-      } catch (e) {}
+      } catch (refreshErr) {
+        console.error("Token refresh failed:", refreshErr.message);
+      }
       localStorage.removeItem("sm_token");
       localStorage.removeItem("sm_refresh_token");
       window.location.href = "/login";
@@ -84,11 +84,9 @@ export const getHistory = () => api.get("/api/video/history");
 
 export const getResults = (videoId) => api.get(`/api/video/results/${videoId}`);
 
-// Upload
-export const uploadVideo = (formData) =>
-  api.post("/api/upload/video", formData, {
-    headers: { "Content-Type": "multipart/form-data" },
-  });
+// Upload — let Axios auto-set Content-Type with boundary; forwards signal/onUploadProgress from caller
+export const uploadVideo = (formData, config = {}) =>
+  api.post("/api/upload/video", formData, config);
 
 export const deleteUpload = (uploadId) => api.delete(`/api/upload/${uploadId}`);
 

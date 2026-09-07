@@ -5,6 +5,7 @@ import { loadSession, setSession, setClient } from './store/authSlice.js'
 import { supabase } from './lib/supabase.js'
 import ProtectedRoute from './components/ProtectedRoute.jsx'
 import Layout from './components/Layout.jsx'
+import ErrorBoundary from './components/ErrorBoundary.jsx'
 
 import Landing from './pages/Landing.jsx'
 import Login from './pages/Login.jsx'
@@ -78,6 +79,7 @@ export default function App() {
   }, [dispatch]);
 
   return (
+    <ErrorBoundary>
     <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
       <Routes>
         <Route path="/" element={<Layout><Landing /></Layout>} />
@@ -100,5 +102,6 @@ export default function App() {
         <Route path="*" element={<Layout><NotFound /></Layout>} />
       </Routes>
     </BrowserRouter>
+    </ErrorBoundary>
   )
 }

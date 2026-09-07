@@ -29,7 +29,9 @@ function FeedbackBanner({ videoId }) {
       try {
         const { data } = await checkFeedback(videoId);
         if (data.exists) setSubmitted(true);
-      } catch (e) {}
+      } catch (e) {
+        console.error("checkFeedback failed:", e.message);
+      }
       setChecking(false);
     };
     check();
@@ -40,7 +42,9 @@ function FeedbackBanner({ videoId }) {
     if (type === "good") {
       try {
         await submitFeedback(videoId, "good", null);
-      } catch (e) {}
+      } catch (e) {
+        console.error("submitFeedback failed:", e.message);
+      }
       setShowThanks(true);
       setTimeout(() => setShowThanks(false), 3000);
       setSubmitted(true);
@@ -53,7 +57,9 @@ function FeedbackBanner({ videoId }) {
     setLoading(true);
     try {
       await submitFeedback(videoId, "bad", comment);
-    } catch (e) {}
+    } catch (e) {
+      console.error("submitFeedback failed:", e.message);
+    }
     setLoading(false);
     setShowThanks(true);
     setTimeout(() => setShowThanks(false), 3000);

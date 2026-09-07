@@ -5,7 +5,7 @@ import { useAuth } from "../hooks/useAuth.js";
 import { startProcessing } from "../store/videoSlice.js";
 import StylePicker from "../components/StylePicker.jsx";
 import UsageBar from "../components/UsageBar.jsx";
-import { getVideoInfo, deleteUpload, startTrial } from "../lib/api.js";
+import { getVideoInfo, deleteUpload, startTrial, uploadVideo } from "../lib/api.js";
 import api from "../lib/api.js";
 import {
   AlertCircle,
@@ -399,34 +399,14 @@ export default function Dashboard() {
       const formData = new FormData();
       formData.append("video", file);
 
-      const result = await new Promise((resolve, reject) => {
-        const xhr = new XMLHttpRequest();
-        uploadAbortRef.current = xhr;
+      const abortController = new AbortController();
+      uploadAbortRef.current = abortController;
 
-        xhr.upload.onprogress = (e) => {
-          if (e.lengthComputable)
-            setUploadProgress(Math.round((e.loaded / e.total) * 100));
-        };
-        xhr.onload = () => {
-          if (xhr.status === 200) resolve(JSON.parse(xhr.responseText));
-          else
-            reject(
-              new Error(JSON.parse(xhr.responseText)?.error || "Upload failed"),
-            );
-        };
-        xhr.onerror = () =>
-          reject(new Error("Upload failed. Check your connection."));
-        xhr.onabort = () => reject(new Error("cancelled"));
-
-        xhr.open(
-          "POST",
-          `${import.meta.env.VITE_API_BASE_URL}/api/upload/video`,
-        );
-        xhr.setRequestHeader(
-          "Authorization",
-          `Bearer ${localStorage.getItem("sm_token")}`,
-        );
-        xhr.send(formData);
+      const { data: result } = await uploadVideo(formData, {
+        signal: abortController.signal,
+        onUploadProgress: (e) => {
+          if (e.total) setUploadProgress(Math.round((e.loaded / e.total) * 100));
+        },
       });
 
       setUploadedFile(result);
@@ -436,12 +416,12 @@ export default function Dashboard() {
       setUploadState("done");
       setUploadProgress(100);
     } catch (e) {
-      if (e.message === "cancelled") {
+      if (e.name === "CanceledError" || e.name === "AbortError") {
         setUploadState("idle");
         setUploadPreview(null);
       } else {
         setUploadState("error");
-        setError(e.message || "Upload failed. Please try again.");
+        setError(e.response?.data?.error || e.message || "Upload failed. Please try again.");
       }
     }
   };
@@ -459,7 +439,7 @@ export default function Dashboard() {
   const handleDragLeave = () => setIsDragging(false);
 
   const clearUpload = async () => {
-    // Cancel in-progress upload
+    // Cancel in-progress upload (AbortController.abort())
     if (uploadAbortRef.current && uploadState === "uploading") {
       uploadAbortRef.current.abort();
     }
@@ -467,7 +447,9 @@ export default function Dashboard() {
     if (uploadedFile?.upload_id) {
       try {
         await deleteUpload(uploadedFile.upload_id);
-      } catch {}
+      } catch (e) {
+        console.error("deleteUpload failed:", e.message);
+      }
     }
     setUploadPreview(null);
     setUploadProgress(0);

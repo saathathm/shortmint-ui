@@ -5,11 +5,14 @@ import { store } from './store/index.js'
 import App from './App.jsx'
 import './index.css'
 
-ReactDOM.createRoot(document.getElementById('root')).render(
+if (!import.meta.env.VITE_API_BASE_URL) {
+  throw new Error('VITE_API_BASE_URL is not set. Check your .env file.')
+}
 
-  <Provider store={store}>
-    <App />
-  </Provider>
-  //   <React.StrictMode>
-  // </React.StrictMode>
+ReactDOM.createRoot(document.getElementById('root')).render(
+  <React.StrictMode>
+    <Provider store={store}>
+      <App />
+    </Provider>
+  </React.StrictMode>
 )

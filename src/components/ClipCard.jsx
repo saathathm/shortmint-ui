@@ -43,6 +43,7 @@ export default function ClipCard({ clip, clipIndex }) {
   const [successMsg, setSuccessMsg] = useState(false);
   const fileInputRef = useRef(null);
   const pollRef = useRef(null);
+  const safetyTimerRef = useRef(null);
   const [showPromptModal, setShowPromptModal] = useState(false);
   const [promptTopText, setPromptTopText] = useState(clip.title || "");
   const [promptBottomText, setPromptBottomText] = useState("");
@@ -58,9 +59,8 @@ export default function ClipCard({ clip, clipIndex }) {
 
   useEffect(() => {
     return () => {
-      if (pollRef.current) {
-        clearInterval(pollRef.current);
-      }
+      if (pollRef.current) clearInterval(pollRef.current);
+      if (safetyTimerRef.current) clearTimeout(safetyTimerRef.current);
     };
   }, []);
 
@@ -142,8 +142,8 @@ export default function ClipCard({ clip, clipIndex }) {
             }
           }, 10000);
 
-          // Safety stop after 5 minutes
-          setTimeout(() => {
+          // Safety stop after 5 minutes — stored in ref so it's cleared on unmount
+          safetyTimerRef.current = setTimeout(() => {
             if (pollRef.current) {
               clearInterval(pollRef.current);
               pollRef.current = null;
