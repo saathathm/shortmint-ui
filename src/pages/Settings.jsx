@@ -131,29 +131,15 @@ export default function Settings() {
       setShowCancelModal(false);
       setCancelSuccess(true);
 
-      if (isOnTrial) {
-        // Trial cancel – immediate, zero hours now
-        dispatch(
-          setClient({
-            ...client,
-            usage_hours_limit: 0,
-            subscription_status: "inactive",
-            stripe_subscription_id: null,
-            trial_ends_at: null,
-            subscription_cancel_at_period_end: false,
-          }),
-        );
-      } else {
-        // Regular cancel – keep access until period end, just mark as cancelling
-        dispatch(
-          setClient({
-            ...client,
-            subscription_cancel_at_period_end: true,
-          }),
-        );
-        // Refresh from DB to get accurate state
-        await dispatch(refreshClient());
-      }
+      // Regular cancel – keep access until period end, just mark as cancelling
+      dispatch(
+        setClient({
+          ...client,
+          subscription_cancel_at_period_end: true,
+        }),
+      );
+      // Refresh from DB to get accurate state
+      await dispatch(refreshClient());
     } catch (e) {
       setCancelError(
         e.response?.data?.error || "Failed to cancel. Please try again.",
@@ -182,8 +168,9 @@ export default function Settings() {
     new Date(client.trial_ends_at) > new Date();
 
   const planLabels = {
-    trial: "No active plan",
-    starter: isOnTrial ? "Starter – Free Trial" : "Starter",
+    free: "Free",
+    trial: "Free",
+    starter: "Starter",
     growth: "Growth",
     pro: "Pro",
   };
@@ -401,7 +388,7 @@ export default function Settings() {
           <div>
             <div className="flex items-center gap-2">
               <p className="font-bold text-text-primary text-lg">
-                {planLabels[client?.plan] || "Free Trial"}
+                {planLabels[client?.plan] || "Free"}
               </p>
               {isSubscription && (
                 <span className="text-xs bg-blue-50 text-primary border border-blue-100 px-2 py-0.5 rounded-full font-medium">
@@ -441,11 +428,7 @@ export default function Settings() {
             )}
           </div>
           <Link to="/pricing" className="btn-primary text-sm py-2 px-4">
-            {hasActivePlan
-              ? "Buy more"
-              : client?.has_used_trial
-                ? "View plans"
-                : "Start trial"}
+            {isSubscription ? "Upgrade" : "View plans"}
           </Link>
         </div>
 
@@ -482,20 +465,6 @@ export default function Settings() {
           </div>
         )}
 
-        {isOnTrial && !isCancelling && (
-          <div className="bg-blue-50 border border-blue-200 text-primary text-xs rounded-xl p-3 mb-3">
-            🎁 Trial ends{" "}
-            <strong>
-              {new Date(client.trial_ends_at).toLocaleDateString("en-US", {
-                month: "long",
-                day: "numeric",
-                year: "numeric",
-              })}
-            </strong>
-            . Cancel before then and you won't be charged.
-          </div>
-        )}
-
         {/* Cancel subscription */}
         {isSubscription && !isCancelling && !cancelSuccess && (
           <button
@@ -508,24 +477,22 @@ export default function Settings() {
 
         {isCancelling && (
           <p className="text-xs text-amber-600 mt-1 flex items-center gap-1">
-            ⚠️{" "}
-            {isOnTrial
-              ? "Trial cancelled – you won't be charged."
-              : `Subscription cancels on ${new Date(
-                  client.current_period_end || client.plan_expires_at,
-                ).toLocaleDateString("en-US", {
-                  month: "long",
-                  day: "numeric",
-                  year: "numeric",
-                })}. You still have full access until then.`}
+            ⚠️ Subscription cancels on{" "}
+            {new Date(
+              client.current_period_end || client.plan_expires_at,
+            ).toLocaleDateString("en-US", {
+              month: "long",
+              day: "numeric",
+              year: "numeric",
+            })}
+            . You still have full access until then.
           </p>
         )}
 
         {cancelSuccess && (
           <div className="bg-amber-50 border border-amber-200 text-amber-700 text-xs rounded-xl p-3 mt-3">
-            {isOnTrial
-              ? "Your trial has been cancelled. You have not been charged."
-              : "Your subscription has been cancelled. You'll keep access until the end of your billing period."}
+            Your subscription has been cancelled. You'll keep access until the
+            end of your billing period.
           </div>
         )}
       </div>
@@ -536,17 +503,15 @@ export default function Settings() {
           <div className="bg-white rounded-2xl p-6 max-w-sm w-full shadow-xl">
             <AlertTriangle size={32} className="text-amber-500 mx-auto mb-3" />
             <h3 className="font-bold text-center text-text-primary mb-2">
-              {isOnTrial ? "Cancel free trial?" : "Cancel subscription?"}
+              Cancel subscription?
             </h3>
             <p className="text-sm text-text-muted text-center mb-2">
-              {isOnTrial
-                ? "You won't be charged anything. Your access will end immediately."
-                : "You'll keep access to your current plan until the end of your billing period."}
+              You'll keep access to your current plan until the end of your
+              billing period.
             </p>
             <p className="text-sm text-text-muted text-center mb-5">
-              {isOnTrial
-                ? "You have already used your free trial – to regain access you'll need to subscribe to a plan."
-                : "After that, your account will be moved to the free tier with no access."}
+              After that, your account will be moved to the free tier. Your 2
+              free hours will still be available.
             </p>
             {cancelError && (
               <p className="text-xs text-error text-center mb-3">

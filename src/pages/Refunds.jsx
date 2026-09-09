@@ -6,18 +6,19 @@ export default function Refunds() {
       <h1 className="text-3xl font-bold text-text-primary mb-2">
         Refund Policy
       </h1>
-      <p className="text-text-muted text-sm mb-8">Last updated: August 2026</p>
+      <p className="text-text-muted text-sm mb-8">
+        Last updated: September 2026
+      </p>
 
       <div className="space-y-8 text-text-muted leading-relaxed">
         <section>
           <h2 className="text-lg font-bold text-text-primary mb-2">
-            Free Trial
+            No Refunds
           </h2>
           <p>
-            ShortTrim offers a 7-day free trial. If you cancel before the 7-day
-            trial period ends, you will not be charged anything. Once the trial
-            converts to a paid subscription after 7 days, no refund is available
-            for that charge.
+            All payments made on ShortTrim – whether for monthly subscriptions
+            or one-time hour purchases – are non-refundable. By completing a
+            purchase, you agree to this policy.
           </p>
         </section>
 
@@ -26,10 +27,10 @@ export default function Refunds() {
             Subscriptions
           </h2>
           <p>
-            All subscription payments are non-refundable. You can cancel your
-            subscription at any time from your Settings page and you will retain
-            access until the end of your current billing period. No partial
-            refunds are issued for unused time or hours within a billing period.
+            You can cancel your subscription at any time from your Settings
+            page. You will retain full access until the end of your current
+            billing period. No partial refunds are issued for unused time or
+            hours within a billing period.
           </p>
         </section>
 

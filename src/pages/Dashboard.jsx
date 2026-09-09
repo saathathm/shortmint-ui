@@ -5,7 +5,7 @@ import { useAuth } from "../hooks/useAuth.js";
 import { startProcessing } from "../store/videoSlice.js";
 import StylePicker from "../components/StylePicker.jsx";
 import UsageBar from "../components/UsageBar.jsx";
-import { getVideoInfo, deleteUpload, startTrial, uploadVideo } from "../lib/api.js";
+import { getVideoInfo, deleteUpload, uploadVideo } from "../lib/api.js";
 import api from "../lib/api.js";
 import {
   AlertCircle,
@@ -17,7 +17,7 @@ import {
 } from "lucide-react";
 
 const PLATFORM_TIERS = {
-  trial: [
+  free: [
     "youtube",
     "facebook",
     "instagram",
@@ -208,7 +208,15 @@ export default function Dashboard() {
   const navigate = useNavigate();
   const { client } = useAuth();
   const [searchParams] = useSearchParams();
-  const trialStarted = searchParams.get("trial") === "started";
+  const upgraded = searchParams.get("upgraded") === "true";
+  useEffect(() => {
+    if (upgraded) {
+      const timer = setTimeout(() => {
+        navigate("/dashboard", { replace: true });
+      }, 4000);
+      return () => clearTimeout(timer);
+    }
+  }, [upgraded]);
 
   // Mode
   const [inputMode, setInputMode] = useState("url");
@@ -237,9 +245,8 @@ export default function Dashboard() {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
 
-  const clientPlan = client?.plan || "trial";
-  const allowedPlatforms =
-    PLATFORM_TIERS[clientPlan] || PLATFORM_TIERS["trial"];
+  const clientPlan = client?.plan || "free";
+  const allowedPlatforms = PLATFORM_TIERS[clientPlan] || PLATFORM_TIERS["free"];
   const hoursUsed = parseFloat(client?.usage_hours_used || 0);
   const hoursLimit =
     parseFloat(client?.usage_hours_limit || 0) +
@@ -252,37 +259,6 @@ export default function Dashboard() {
     parseFloat(client?.usage_hours_limit || 0) +
       parseFloat(client?.credit_hours || 0) >
     0;
-
-  function TrialButton() {
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState("");
-
-    const handleTrial = async () => {
-      setLoading(true);
-      setError("");
-      try {
-        const { data } = await startTrial();
-        window.location.href = data.checkout_url;
-      } catch (e) {
-        setError(e.response?.data?.error || "Something went wrong.");
-        setLoading(false);
-      }
-    };
-
-    return (
-      <div className="shrink-0">
-        <button
-          onClick={handleTrial}
-          disabled={loading}
-          className="btn-primary text-sm py-2 px-4 flex items-center gap-2 whitespace-nowrap"
-        >
-          {loading ? <Loader size={14} className="animate-spin" /> : null}
-          Start free trial
-        </button>
-        {error && <p className="text-xs text-error mt-1">{error}</p>}
-      </div>
-    );
-  }
 
   const getRangeStatus = () => {
     if (selectedDuration <= 120) return "too-short";
@@ -405,7 +381,8 @@ export default function Dashboard() {
       const { data: result } = await uploadVideo(formData, {
         signal: abortController.signal,
         onUploadProgress: (e) => {
-          if (e.total) setUploadProgress(Math.round((e.loaded / e.total) * 100));
+          if (e.total)
+            setUploadProgress(Math.round((e.loaded / e.total) * 100));
         },
       });
 
@@ -421,7 +398,11 @@ export default function Dashboard() {
         setUploadPreview(null);
       } else {
         setUploadState("error");
-        setError(e.response?.data?.error || e.message || "Upload failed. Please try again.");
+        setError(
+          e.response?.data?.error ||
+            e.message ||
+            "Upload failed. Please try again.",
+        );
       }
     }
   };
@@ -600,58 +581,37 @@ export default function Dashboard() {
 
       <UsageBar />
 
-      {trialStarted && (
+      {upgraded && (
         <div className="mt-4 bg-green-50 border border-green-200 rounded-xl p-4 flex items-center gap-3">
           <CheckCircle size={18} className="text-success shrink-0" />
           <div>
             <p className="text-sm font-bold text-text-primary">
-              Your free trial is active! 🎉
+              Plan activated! 🎉
             </p>
             <p className="text-sm text-text-muted mt-0.5">
-              You have 10 hours to use, no charge until day 7. Start creating
-              your first Shorts.
+              Your hours are ready. Start creating your Shorts.
             </p>
           </div>
         </div>
       )}
 
-      {!hasActivePlan && (
-        <div className="mt-4 space-y-3">
-          {/* Free trial CTA */}
-          {!client?.has_used_trial && (
-            <div className="bg-primary/5 border border-primary/20 rounded-xl p-4 flex items-center justify-between gap-4">
-              <div>
-                <p className="text-sm font-bold text-text-primary">
-                  Start your 7-day free trial
-                </p>
-                <p className="text-sm text-text-muted mt-0.5">
-                  Get 10 hours free. Add your card, no charge for 7 days. Cancel
-                  anytime before day 7.
-                </p>
-              </div>
-              <TrialButton />
-            </div>
-          )}
-          {/* Already used trial */}
-          {client?.has_used_trial && (
-            <div className="bg-bg-secondary border border-blue-100 rounded-xl p-4 flex items-start gap-3">
-              <AlertCircle size={18} className="text-primary mt-0.5 shrink-0" />
-              <div>
-                <p className="text-sm font-semibold text-text-primary">
-                  Choose a plan to continue
-                </p>
-                <p className="text-sm text-text-muted mt-0.5">
-                  Your free trial has ended. Subscribe to keep creating Shorts.
-                </p>
-                <Link
-                  to="/pricing"
-                  className="text-sm font-semibold text-primary hover:underline mt-2 inline-block"
-                >
-                  View plans →
-                </Link>
-              </div>
-            </div>
-          )}
+      {client?.plan === "free" && hoursRemaining <= 0 && (
+        <div className="mt-4 bg-bg-secondary border border-blue-100 rounded-xl p-4 flex items-start gap-3">
+          <AlertCircle size={18} className="text-primary mt-0.5 shrink-0" />
+          <div>
+            <p className="text-sm font-semibold text-text-primary">
+              You've used your free hours
+            </p>
+            <p className="text-sm text-text-muted mt-0.5">
+              Subscribe or buy hours to keep creating Shorts.
+            </p>
+            <Link
+              to="/pricing"
+              className="text-sm font-semibold text-primary hover:underline mt-2 inline-block"
+            >
+              View plans →
+            </Link>
+          </div>
         </div>
       )}
 
@@ -758,17 +718,7 @@ export default function Dashboard() {
 
             <div className="mt-1">
               <p className="text-xs text-text-dim mb-1.5">
-                {clientPlan === "trial" ? (
-                  <>
-                    Supported on{" "}
-                    <span className="font-semibold capitalize">
-                      {clientPlan}
-                    </span>{" "}
-                    plan:
-                  </>
-                ) : (
-                  "Supported platforms:"
-                )}
+                {"Supported platforms:"}
               </p>
               <div className="flex flex-wrap gap-1.5">
                 {allowedPlatforms
@@ -952,7 +902,7 @@ export default function Dashboard() {
         {/* Submit */}
         <button
           type="submit"
-          disabled={!canSubmit || !hasActivePlan}
+          disabled={!canSubmit}
           className="btn-primary w-full flex items-center justify-center gap-2 text-base py-3.5 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {submitting ? (

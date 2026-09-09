@@ -14,7 +14,8 @@ export default function Terms() {
             1. Acceptance of Terms
           </h2>
           <p>
-            By accessing or using ShortTrim ("the Service"), you agree to be bound by these Terms of Service.
+            By accessing or using ShortTrim ("the Service"), you agree to be
+            bound by these Terms of Service.
           </p>
         </section>
 
@@ -79,12 +80,12 @@ export default function Terms() {
 
         <section>
           <h2 className="text-lg font-bold text-text-primary mb-2">
-            6. Free Trial and Refunds
+            6. Refunds
           </h2>
           <p>
-            ShortTrim offers a 7-day free trial. You will not be charged if you
-            cancel before the trial period ends. All subscription and one-time
-            payments made after the trial are non-refundable. See our{" "}
+            All payments are non-refundable. You may cancel your subscription at
+            any time and retain access until the end of your billing period.
+            One-time purchases never expire. See our{" "}
             <Link to="/refunds" className="text-primary hover:underline">
               Refund Policy
             </Link>{" "}
@@ -98,9 +99,9 @@ export default function Terms() {
           </h2>
           <p>
             ShortTrim and its original content, features, and functionality are
-owned by ShortTrim. You retain full ownership of any content you
-process through the Service. We do not claim any rights over your
-videos or clips.
+            owned by ShortTrim. You retain full ownership of any content you
+            process through the Service. We do not claim any rights over your
+            videos or clips.
           </p>
         </section>
 
@@ -110,9 +111,9 @@ videos or clips.
           </h2>
           <p>
             ShortTrim shall not be liable for any indirect, incidental, or
-consequential damages arising from your use of the Service. Our
-total liability to you shall not exceed the amount you paid us in
-the 30 days prior to the claim.
+            consequential damages arising from your use of the Service. Our
+            total liability to you shall not exceed the amount you paid us in
+            the 30 days prior to the claim.
           </p>
         </section>
 

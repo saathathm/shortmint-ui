@@ -142,7 +142,7 @@ export default function ClipCard({ clip, clipIndex }) {
             }
           }, 10000);
 
-          // Safety stop after 5 minutes — stored in ref so it's cleared on unmount
+          // Safety stop after 5 minutes – stored in ref so it's cleared on unmount
           safetyTimerRef.current = setTimeout(() => {
             if (pollRef.current) {
               clearInterval(pollRef.current);

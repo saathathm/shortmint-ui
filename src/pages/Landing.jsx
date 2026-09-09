@@ -129,8 +129,8 @@ const WHY_SHORTTRIM = [
   },
   {
     icon: "🔒",
-    title: "7-day free trial – no risk",
-    desc: "Add your card and get 10 hours free for 7 days. Cancel before day 7 and you won't be charged a thing.",
+    title: "2 free hours – no card needed",
+    desc: "Sign up and get 2 hours of processing free, instantly. No card required. Start creating Shorts right away.",
   },
 ];
 
@@ -141,11 +141,11 @@ const FAQS = [
   },
   {
     q: "Is ShortTrim free?",
-    a: "Yes – ShortTrim offers a 7-day free trial with 10 hours of processing included. No charge until day 7. After that, plans start from $19/month. You can also buy hours once with no expiry.",
+    a: "Yes – every new account gets 2 free hours of processing with no card required. After that, plans start from $29/month or you can buy hours once with no expiry.",
   },
   {
-    q: "How does the free trial work?",
-    a: "Sign up, add your card, and get 10 hours of processing free for 7 days. No charge until day 7. Cancel anytime before then and you won't be charged anything. After 7 days, $19/month is charged automatically.",
+    q: "Do I need a credit card to sign up?",
+    a: "No. Sign up for free and get 2 hours instantly. No card needed until you decide to upgrade.",
   },
   {
     q: "How long does it take?",
@@ -370,7 +370,11 @@ function VideoModal() {
 export default function Landing() {
   const { isAuthenticated, client, initialized } = useAuth();
   const hasActivePlan =
-    isAuthenticated && client?.plan && client.plan !== "trial";
+    isAuthenticated &&
+    client &&
+    parseFloat(client?.usage_hours_limit || 0) +
+      parseFloat(client?.credit_hours || 0) >
+      0;
 
   return (
     <div className="-mt-8">
@@ -411,12 +415,12 @@ export default function Landing() {
         {initialized && !hasActivePlan && (
           <div className="mt-5 flex items-center justify-center gap-6 flex-wrap">
             <span className="text-xs text-text-muted flex items-center gap-1.5">
-              <CheckCircle size={13} className="text-success" /> 7-day free
-              trial
+              <CheckCircle size={13} className="text-success" /> 2 free hours on
+              signup
             </span>
             <span className="text-xs text-text-muted flex items-center gap-1.5">
-              <CheckCircle size={13} className="text-success" /> Cancel before
-              day 7 – no charge
+              <CheckCircle size={13} className="text-success" /> No card
+              required
             </span>
           </div>
         )}
@@ -557,26 +561,26 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* Free trial highlight */}
+      {/* Free hours highlight */}
       <section className="py-10 max-w-2xl mx-auto px-4 text-center">
         <div className="card p-6 border-2 border-dashed border-primary/30 bg-bg-secondary">
           <p className="text-xs font-bold text-primary uppercase tracking-widest mb-2">
-            7-day free trial
+            Free to start
           </p>
           <h3 className="text-xl font-bold text-text-primary mb-2">
-            Try ShortTrim free for 7 days
+            Get 2 free hours when you sign up
           </h3>
           <p className="text-sm text-text-muted mb-4">
-            Add your card and get <strong>10 hours of processing free</strong>{" "}
-            for 7 days. Cancel before day 7 and you won't be charged a thing.
-            After 7 days, just $19/month.
+            No card required. Sign up and start creating Shorts immediately with{" "}
+            <strong>2 free hours</strong>. When you're ready, upgrade to a plan
+            or buy more hours.
           </p>
           {!isAuthenticated && (
             <Link
               to="/signup"
               className="btn-primary text-sm py-2.5 px-6 inline-block"
             >
-              Start your free trial →
+              Sign up free →
             </Link>
           )}
         </div>
@@ -744,10 +748,10 @@ export default function Landing() {
               to="/signup"
               className="btn-primary text-base py-3.5 px-8 inline-flex items-center gap-2"
             >
-              <CheckCircle size={18} /> Start your free trial →
+              <CheckCircle size={18} /> Sign up free →
             </Link>
             <p className="text-xs text-text-dim">
-              7-day free trial – cancel before day 7, no charge
+              2 free hours included – no card required
             </p>
           </div>
         )}

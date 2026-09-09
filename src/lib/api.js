@@ -84,7 +84,7 @@ export const getHistory = () => api.get("/api/video/history");
 
 export const getResults = (videoId) => api.get(`/api/video/results/${videoId}`);
 
-// Upload — let Axios auto-set Content-Type with boundary; forwards signal/onUploadProgress from caller
+// Upload – let Axios auto-set Content-Type with boundary; forwards signal/onUploadProgress from caller
 export const uploadVideo = (formData, config = {}) =>
   api.post("/api/upload/video", formData, config);
 

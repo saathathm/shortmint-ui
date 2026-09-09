@@ -180,9 +180,9 @@ export default function Layout({ children }) {
                         className="flex items-center gap-2 px-3 py-2 text-sm text-amber-600 hover:bg-amber-50 transition font-medium"
                       >
                         <Zap size={14} />
-                        {hoursLimit > 0 ? "Upgrade plan" : "Start free trial"}
+                        {hoursLimit > 0 ? "Upgrade plan" : "View plans"}
                         <span className="ml-auto text-xs bg-amber-100 text-amber-600 px-1.5 py-0.5 rounded-md capitalize">
-                          {hoursLimit > 0 ? client?.plan : "free"}
+                          {client?.plan || "free"}
                         </span>
                       </Link>
                     )}
@@ -228,7 +228,9 @@ export default function Layout({ children }) {
       </header>
 
       {/* MAIN CONTENT */}
-      <main className="max-w-5xl mx-auto px-4 py-8 flex-1 w-full">{children}</main>
+      <main className="max-w-5xl mx-auto px-4 py-8 flex-1 w-full">
+        {children}
+      </main>
 
       {/* FOOTER */}
       <footer className="border-t border-border py-8 px-4 mt-auto">
