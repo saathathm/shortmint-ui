@@ -9,8 +9,8 @@ export const PLANS = [
     hours: 10,
     monthlyPrice: 19,
     oneTimePrice: 23,
-    monthlyPriceId: "price_1UCbAoIB3x0oivZ1InO6fdO9",
-    oneTimePriceId: "price_1UCbGGIB3x0oivZ1mzde9Rhg",
+    monthlyPriceId: "price_1UB81gHTjUJCdbgv4yLpJfaz",
+    oneTimePriceId: "price_1UB85mHTjUJCdbgvppRkiPg7",
     description: "Perfect for getting started",
     platforms: [
       "YouTube",
@@ -37,8 +37,8 @@ export const PLANS = [
     hours: 25,
     monthlyPrice: 39,
     oneTimePrice: 45,
-    monthlyPriceId: "price_1UCbBQIB3x0oivZ1OgoGflki",
-    oneTimePriceId: "price_1UCbHKIB3x0oivZ1fcSXtVdP",
+    monthlyPriceId: "price_1UB82YHTjUJCdbgvxLwU9d4d",
+    oneTimePriceId: "price_1UB8ERHTjUJCdbgvDrY61p01",
     description: "For consistent content creators",
     popular: true,
     platforms: [
@@ -67,8 +67,8 @@ export const PLANS = [
     hours: 60,
     monthlyPrice: 66,
     oneTimePrice: 76,
-    monthlyPriceId: "price_1UCbBxIB3x0oivZ1cTox2bnr",
-    oneTimePriceId: "price_1UCbHxIB3x0oivZ15VHNJkGm",
+    monthlyPriceId: "price_1UB82yHTjUJCdbgvpyjbPCi8",
+    oneTimePriceId: "price_1UB8FXHTjUJCdbgv3kSdpqgA",
     description: "For high-volume creators",
     platforms: [
       "YouTube",
