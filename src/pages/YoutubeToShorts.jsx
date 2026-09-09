@@ -51,7 +51,8 @@ const FAQS = [
 export default function YoutubeToShorts() {
   const { isAuthenticated, client, initialized } = useAuth();
   const hasActivePlan =
-    isAuthenticated && client?.plan && client.plan !== "trial";
+    isAuthenticated && client &&
+    parseFloat(client?.usage_hours_limit || 0) + parseFloat(client?.credit_hours || 0) > 0;
 
   return (
     <div className="-mt-8">
@@ -101,7 +102,7 @@ export default function YoutubeToShorts() {
 
         {initialized && !hasActivePlan && (
           <p className="text-xs text-text-dim mt-4">
-            7-day free trial · Cancel before day 7 and you won't be charged
+            Free to start · 2 hours included · No card required
           </p>
         )}
       </section>
@@ -339,10 +340,10 @@ export default function YoutubeToShorts() {
               to="/signup"
               className="btn-primary text-base py-3.5 px-8 inline-flex items-center gap-2"
             >
-              <CheckCircle size={18} /> Start your free trial →
+              <CheckCircle size={18} /> Get started free →
             </Link>
             <p className="text-xs text-text-dim">
-              7-day free trial · 10 hours included · Cancel anytime
+              Free to start · 2 hours included · No card required
             </p>
           </div>
         )}

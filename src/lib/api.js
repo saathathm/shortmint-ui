@@ -120,7 +120,6 @@ export const createCheckoutSession = (priceId, paymentType = "subscription") =>
 
 export const cancelSubscription = () => api.post("/api/stripe/cancel");
 
-export const startTrial = () => api.post('/api/stripe/trial')
 
 // Settings
 export const getYouTubeConnectUrl = () =>

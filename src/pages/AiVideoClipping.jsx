@@ -63,14 +63,18 @@ const FAQS = [
   },
   {
     q: "How much does it cost?",
-    a: "There's a 7-day free trial with 10 hours of processing included. After that, plans start from $19/month. You can also buy hours once – they never expire.",
+    a: "Every account starts with 2 free hours — no card required. After that, plans start from $29/month. You can also buy hours once – they never expire.",
   },
 ];
 
 export default function AiVideoClipping() {
   const { isAuthenticated, client, initialized } = useAuth();
   const hasActivePlan =
-    isAuthenticated && client?.plan && client.plan !== "trial";
+    isAuthenticated &&
+    client &&
+    parseFloat(client?.usage_hours_limit || 0) +
+      parseFloat(client?.credit_hours || 0) >
+      0;
 
   return (
     <div className="-mt-8">
@@ -120,8 +124,7 @@ export default function AiVideoClipping() {
 
         {initialized && !hasActivePlan && (
           <p className="text-xs text-text-dim mt-4">
-            7-day free trial · 10 hours included · Cancel before day 7, no
-            charge
+            Free to start · 2 hours included · No card required
           </p>
         )}
       </section>
@@ -460,10 +463,10 @@ export default function AiVideoClipping() {
               to="/signup"
               className="btn-primary text-base py-3.5 px-8 inline-flex items-center gap-2"
             >
-              <CheckCircle size={18} /> Start your free trial →
+              <CheckCircle size={18} /> Get started free →
             </Link>
             <p className="text-xs text-text-dim">
-              7-day free trial · 10 hours included · Cancel anytime
+              Free to start · 2 hours included · No card required
             </p>
           </div>
         )}

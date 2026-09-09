@@ -153,6 +153,7 @@ export default function Settings() {
     client?.plan_type === "subscription" &&
     !!client?.stripe_subscription_id &&
     client?.plan !== "trial" &&
+    client?.plan !== "free" &&
     client?.subscription_status !== "inactive";
 
   const isCancelling =
@@ -161,11 +162,6 @@ export default function Settings() {
     parseFloat(client?.usage_hours_limit || 0) +
       parseFloat(client?.credit_hours || 0) >
     0;
-
-  const isOnTrial =
-    isSubscription &&
-    !!client?.trial_ends_at &&
-    new Date(client.trial_ends_at) > new Date();
 
   const planLabels = {
     free: "Free",
@@ -395,11 +391,13 @@ export default function Settings() {
                   Monthly
                 </span>
               )}
-              {hasActivePlan && !isSubscription && (
-                <span className="text-xs bg-bg-surface text-text-muted border border-border px-2 py-0.5 rounded-full font-medium">
-                  One-time
-                </span>
-              )}
+              {hasActivePlan &&
+                !isSubscription &&
+                client?.plan_type === "one_time" && (
+                  <span className="text-xs bg-bg-surface text-text-muted border border-border px-2 py-0.5 rounded-full font-medium">
+                    One-time
+                  </span>
+                )}
             </div>
             <p className="text-sm text-text-muted mt-0.5">
               {parseFloat(client?.usage_hours_used || 0).toFixed(1)} of{" "}
