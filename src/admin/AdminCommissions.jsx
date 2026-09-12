@@ -47,7 +47,7 @@ export default function AdminCommissions() {
                     <div className="text-xs text-text-muted">{c.affiliates?.email}</div>
                   </td>
                   <td className="px-4 py-3 capitalize">{c.event_type}</td>
-                  <td className="px-4 py-3 text-text-muted">{c.month_number ?? '—'}</td>
+                  <td className="px-4 py-3 text-text-muted">{c.month_number ?? '–'}</td>
                   <td className="px-4 py-3 font-semibold">${parseFloat(c.commission_amount).toFixed(2)}</td>
                   <td className="px-4 py-3">
                     <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${statusColor(c.status)}`}>{c.status}</span>

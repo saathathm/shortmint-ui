@@ -44,7 +44,7 @@ function Overview({ affiliate, stats }) {
   const statCards = [
     { label: 'Total earned', value: `$${(stats?.total_earned || 0).toFixed(2)}` },
     { label: 'Pending balance', value: `$${(stats?.payout_balance || 0).toFixed(2)}` },
-    { label: 'Total referrals', value: stats?.referral_count ?? '—' },
+    { label: 'Total referrals', value: stats?.referral_count ?? '–' },
     { label: 'This month', value: `$${(stats?.month_earned || 0).toFixed(2)}` },
   ]
 
@@ -117,7 +117,7 @@ function MyLink({ affiliate }) {
         <div>
           <p className="text-sm font-semibold text-text-primary mb-2">Referral code</p>
           <p className="font-mono text-lg font-bold text-primary bg-primary/5 border border-primary/20 rounded-xl px-4 py-2 inline-block">
-            {affiliate?.referral_code || '—'}
+            {affiliate?.referral_code || '–'}
           </p>
         </div>
         <div>
@@ -189,7 +189,7 @@ function Earnings() {
                   <td className="px-4 py-3 text-text-muted">{new Date(c.created_at).toLocaleDateString()}</td>
                   <td className="px-4 py-3 font-mono text-xs text-text-muted">{c.client_id}</td>
                   <td className="px-4 py-3 capitalize">{c.commission_type}</td>
-                  <td className="px-4 py-3 text-text-muted">{c.month_number ?? '—'}</td>
+                  <td className="px-4 py-3 text-text-muted">{c.month_number ?? '–'}</td>
                   <td className="px-4 py-3 font-semibold text-text-primary">${parseFloat(c.commission_amount).toFixed(2)}</td>
                   <td className="px-4 py-3">
                     <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${statusColor(c.status)}`}>{c.status}</span>

@@ -23,7 +23,7 @@ export default function AffiliateLanding() {
           Refer creators.<br />Earn every month.
         </h1>
         <p className="text-lg text-text-muted max-w-2xl mx-auto mb-10">
-          Join the ShortTrim affiliate program. Earn 30% of every payment your referrals make — for up to 12 months on subscriptions and once on one-time purchases.
+          Join the ShortTrim affiliate program. Earn 30% of every payment your referrals make – for up to 12 months on subscriptions and once on one-time purchases.
         </p>
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
           <Link to="/affiliate/register" className="btn-primary px-8 py-3 text-base font-semibold">

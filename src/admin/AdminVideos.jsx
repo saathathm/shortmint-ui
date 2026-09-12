@@ -38,9 +38,9 @@ export default function AdminVideos() {
                 <tr><td colSpan={4} className="text-center py-10 text-text-muted">No videos found</td></tr>
               ) : videos.map((v) => (
                 <tr key={v.id} className="border-b border-border last:border-0 hover:bg-bg-surface/50">
-                  <td className="px-4 py-3 max-w-xs truncate font-medium">{v.title || v.original_url || '—'}</td>
+                  <td className="px-4 py-3 max-w-xs truncate font-medium">{v.title || v.original_url || '–'}</td>
                   <td className="px-4 py-3 capitalize text-text-muted">{v.status}</td>
-                  <td className="px-4 py-3 text-text-muted">{v.duration ? `${Math.round(v.duration / 60)}m` : '—'}</td>
+                  <td className="px-4 py-3 text-text-muted">{v.duration ? `${Math.round(v.duration / 60)}m` : '–'}</td>
                   <td className="px-4 py-3 text-text-muted">{new Date(v.created_at).toLocaleDateString()}</td>
                 </tr>
               ))}

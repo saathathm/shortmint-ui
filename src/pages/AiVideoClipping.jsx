@@ -63,7 +63,7 @@ const FAQS = [
   },
   {
     q: "How much does it cost?",
-    a: "Every account starts with 2 free hours — no card required. After that, plans start from $29/month. You can also buy hours once – they never expire.",
+    a: "Every account starts with 2 free hours – no card required. After that, plans start from $29/month. You can also buy hours once – they never expire.",
   },
 ];
 

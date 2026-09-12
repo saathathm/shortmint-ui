@@ -18,11 +18,11 @@ export default function AdminOverview() {
   if (loading) return <div className="flex justify-center py-20"><Loader size={24} className="animate-spin text-primary" /></div>
 
   const cards = [
-    { label: 'Total users', value: stats?.total_users ?? '—' },
-    { label: 'Total videos', value: stats?.total_videos ?? '—' },
+    { label: 'Total users', value: stats?.total_users ?? '–' },
+    { label: 'Total videos', value: stats?.total_videos ?? '–' },
     { label: 'Total revenue', value: `$${((stats?.total_revenue_cents || 0) / 100).toFixed(2)}` },
     { label: 'Total commissions', value: `$${(stats?.total_commissions || 0).toFixed(2)}` },
-    { label: 'Pending payouts', value: stats?.pending_payouts ?? '—' },
+    { label: 'Pending payouts', value: stats?.pending_payouts ?? '–' },
   ]
 
   return (

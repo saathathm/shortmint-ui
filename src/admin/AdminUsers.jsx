@@ -57,7 +57,7 @@ export default function AdminUsers() {
                   <td className="px-4 py-3 text-text-muted">{u.email}</td>
                   <td className="px-4 py-3 capitalize">{u.plan}</td>
                   <td className="px-4 py-3">{u.credit_hours}</td>
-                  <td className="px-4 py-3 font-mono text-xs text-text-muted">{u.referred_by || '—'}</td>
+                  <td className="px-4 py-3 font-mono text-xs text-text-muted">{u.referred_by || '–'}</td>
                   <td className="px-4 py-3 text-text-muted">{new Date(u.created_at).toLocaleDateString()}</td>
                 </tr>
               ))}
