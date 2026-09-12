@@ -1,18 +1,33 @@
 import { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { signUp, signInWithGoogle, clearError } from "../store/authSlice.js";
 import { useAuth } from "../hooks/useAuth.js";
 import { Eye, EyeOff, Loader } from "lucide-react";
 
+const getCookie = (name) =>
+  document.cookie
+    .split(";")
+    .map((c) => c.trim())
+    .find((c) => c.startsWith(name + "="))
+    ?.split("=")[1] || null;
+
 export default function Signup() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { isAuthenticated, loading, error } = useAuth();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [referralCode, setReferralCode] = useState(null);
+
+  useEffect(() => {
+    const refFromUrl = searchParams.get("ref");
+    const refFromCookie = getCookie("st_ref");
+    setReferralCode(refFromUrl || refFromCookie || null);
+  }, []);
 
   useEffect(() => {
     if (isAuthenticated) navigate("/dashboard");
@@ -21,7 +36,7 @@ export default function Signup() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const result = await dispatch(signUp({ name, email, password }));
+    await dispatch(signUp({ name, email, password, referral_code: referralCode }));
   };
 
   const handleGoogle = () => dispatch(signInWithGoogle());

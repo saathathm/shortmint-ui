@@ -90,14 +90,14 @@ export const loadSession = createAsyncThunk(
 
 export const signUp = createAsyncThunk(
   "auth/signUp",
-  async ({ name, email, password }, { rejectWithValue }) => {
+  async ({ name, email, password, referral_code }, { rejectWithValue }) => {
     try {
       const res = await fetch(
         `${import.meta.env.VITE_API_BASE_URL}/api/auth/signup`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ name, email, password }),
+          body: JSON.stringify({ name, email, password, referral_code }),
         },
       );
 

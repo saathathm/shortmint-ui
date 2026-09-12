@@ -26,10 +26,34 @@ import YoutubeToShorts from './pages/YoutubeToShorts.jsx'
 import PodcastToShorts from './pages/PodcastToShorts.jsx'
 import AiVideoClipping from './pages/AiVideoClipping.jsx'
 
+import AffiliateLanding from './affiliate/AffiliateLanding.jsx'
+import AffiliateLogin from './affiliate/AffiliateLogin.jsx'
+import AffiliateRegister from './affiliate/AffiliateRegister.jsx'
+import AffiliateLayout from './affiliate/AffiliateLayout.jsx'
+import AffiliateProtectedRoute from './affiliate/AffiliateProtectedRoute.jsx'
+
+import AdminLogin from './admin/AdminLogin.jsx'
+import AdminLayout from './admin/AdminLayout.jsx'
+import AdminProtectedRoute from './admin/AdminProtectedRoute.jsx'
+
+const getRefCookie = () =>
+  document.cookie
+    .split(';')
+    .map((c) => c.trim())
+    .find((c) => c.startsWith('st_ref='))
+    ?.split('=')[1] || null;
+
 export default function App() {
   const dispatch = useDispatch()
 
   useEffect(() => {
+    // Set st_ref cookie from ?ref= query param (30-day tracking)
+    const params = new URLSearchParams(window.location.search)
+    const ref = params.get('ref')
+    if (ref) {
+      document.cookie = `st_ref=${ref}; max-age=${30 * 24 * 60 * 60}; path=/; SameSite=Lax`
+    }
+
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(async (event, session) => {
@@ -49,12 +73,13 @@ export default function App() {
               localStorage.setItem("sm_refresh_token", session.refresh_token);
             }
             try {
+              const referral_code = getRefCookie();
               await fetch(
                 `${import.meta.env.VITE_API_BASE_URL}/api/auth/google-callback`,
                 {
                   method: "POST",
                   headers: { "Content-Type": "application/json" },
-                  body: JSON.stringify({ access_token: session.access_token }),
+                  body: JSON.stringify({ access_token: session.access_token, referral_code }),
                 },
               );
             } catch (e) {
@@ -95,6 +120,7 @@ export default function App() {
     <ErrorBoundary>
     <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
       <Routes>
+        {/* Main app routes */}
         <Route path="/" element={<Layout><Landing /></Layout>} />
         <Route path="/login" element={<Layout><Login /></Layout>} />
         <Route path="/signup" element={<Layout><Signup /></Layout>} />
@@ -112,6 +138,25 @@ export default function App() {
         <Route path="/results/:videoId" element={<ProtectedRoute><Layout><Results /></Layout></ProtectedRoute>} />
         <Route path="/history" element={<ProtectedRoute><Layout><History /></Layout></ProtectedRoute>} />
         <Route path="/settings" element={<ProtectedRoute><Layout><Settings /></Layout></ProtectedRoute>} />
+
+        {/* Affiliate routes */}
+        <Route path="/affiliate" element={<AffiliateLanding />} />
+        <Route path="/affiliate/login" element={<AffiliateLogin />} />
+        <Route path="/affiliate/register" element={<AffiliateRegister />} />
+        <Route path="/affiliate/dashboard/*" element={
+          <AffiliateProtectedRoute>
+            <AffiliateLayout />
+          </AffiliateProtectedRoute>
+        } />
+
+        {/* Admin routes */}
+        <Route path="/admin/login" element={<AdminLogin />} />
+        <Route path="/admin/*" element={
+          <AdminProtectedRoute>
+            <AdminLayout />
+          </AdminProtectedRoute>
+        } />
+
         <Route path="*" element={<Layout><NotFound /></Layout>} />
       </Routes>
     </BrowserRouter>
