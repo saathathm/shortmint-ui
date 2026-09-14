@@ -41,22 +41,28 @@ export default function AdminUsers() {
           <table className="w-full text-sm">
             <thead className="border-b border-border bg-bg-surface">
               <tr>
-                {['Name', 'Email', 'Plan', 'Credit hrs', 'Referred by', 'Joined'].map((h) => (
+                {['Name', 'Email', 'Plan', 'Credit hrs', 'Plan hrs', 'Usage', 'Referred by', 'Joined'].map((h) => (
                   <th key={h} className="text-left px-4 py-3 text-xs font-semibold text-text-muted uppercase tracking-wide">{h}</th>
                 ))}
               </tr>
             </thead>
             <tbody>
               {loading ? (
-                <tr><td colSpan={6} className="text-center py-10"><Loader size={20} className="animate-spin mx-auto text-primary" /></td></tr>
+                <tr><td colSpan={8} className="text-center py-10"><Loader size={20} className="animate-spin mx-auto text-primary" /></td></tr>
               ) : users.length === 0 ? (
-                <tr><td colSpan={6} className="text-center py-10 text-text-muted">No users found</td></tr>
+                <tr><td colSpan={8} className="text-center py-10 text-text-muted">No users found</td></tr>
               ) : users.map((u) => (
                 <tr key={u.id} className="border-b border-border last:border-0 hover:bg-bg-surface/50">
                   <td className="px-4 py-3 font-medium">{u.name}</td>
                   <td className="px-4 py-3 text-text-muted">{u.email}</td>
                   <td className="px-4 py-3 capitalize">{u.plan}</td>
-                  <td className="px-4 py-3">{u.credit_hours}</td>
+                  <td className="px-4 py-3">{u.credit_hours}h</td>
+                  <td className="px-4 py-3">
+                    {u.usage_hours_limit > 0 ? `${u.usage_hours_limit}h` : <span className="text-text-muted">–</span>}
+                  </td>
+                  <td className="px-4 py-3">
+                    {u.usage_hours_limit > 0 ? `${parseFloat(u.usage_hours_used || 0).toFixed(1)}h` : <span className="text-text-muted">–</span>}
+                  </td>
                   <td className="px-4 py-3 font-mono text-xs text-text-muted">{u.referred_by || '–'}</td>
                   <td className="px-4 py-3 text-text-muted">{new Date(u.created_at).toLocaleDateString()}</td>
                 </tr>
