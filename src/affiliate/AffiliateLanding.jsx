@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
 import { DollarSign, Users, TrendingUp, Zap } from 'lucide-react'
+import { MIN_PAYOUT } from './constants'
 
 export default function AffiliateLanding() {
   return (
@@ -41,7 +42,7 @@ export default function AffiliateLanding() {
           {[
             { icon: DollarSign, label: '30% commission', desc: 'On every payment from your referrals' },
             { icon: TrendingUp, label: 'Up to 12 months', desc: 'Recurring commission on subscriptions' },
-            { icon: Zap, label: '$50 minimum payout', desc: 'Paid via Stripe Connect to your bank' },
+            { icon: Zap, label: `$${MIN_PAYOUT} minimum payout`, desc: 'Paid via Stripe Connect to your bank' },
           ].map(({ icon: Icon, label, desc }) => (
             <div key={label} className="card p-6 text-center">
               <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center mx-auto mb-3">
@@ -61,7 +62,7 @@ export default function AffiliateLanding() {
           {[
             { step: '1', title: 'Sign up free', desc: 'Create your affiliate account and get your unique referral link instantly.' },
             { step: '2', title: 'Share your link', desc: 'Share your link with creators, YouTubers, and podcasters in your audience.' },
-            { step: '3', title: 'Get paid', desc: 'Earn 30% on every payment. Withdraw when you reach $50 via Stripe.' },
+            { step: '3', title: 'Get paid', desc: `Earn 30% on every payment. Withdraw when you reach $${MIN_PAYOUT} via Stripe.` },
           ].map(({ step, title, desc }) => (
             <div key={step} className="text-center">
               <div className="w-10 h-10 rounded-full bg-primary text-white flex items-center justify-center font-bold text-lg mx-auto mb-4">{step}</div>

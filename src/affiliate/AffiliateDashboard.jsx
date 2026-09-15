@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react'
 import { Copy, Check, ExternalLink, Loader } from 'lucide-react'
+import { MIN_PAYOUT } from './constants'
 
 const API = import.meta.env.VITE_API_BASE_URL
 
@@ -267,7 +268,7 @@ function Payouts({ stats, affiliate }) {
 
   const balance = stats?.payout_balance || 0
   const isActive = connectStatus?.status === 'active'
-  const canPayout = balance >= 50 && isActive
+  const canPayout = balance >= MIN_PAYOUT && isActive
 
   return (
     <div className="space-y-6">
@@ -317,7 +318,7 @@ function Payouts({ stats, affiliate }) {
           </button>
         </div>
         {!isActive && <p className="text-xs text-text-muted">Connect Stripe to request payouts.</p>}
-        {isActive && balance < 50 && <p className="text-xs text-text-muted">Minimum payout is $50. Keep referring to earn more!</p>}
+        {isActive && balance < MIN_PAYOUT && <p className="text-xs text-text-muted">Minimum payout is ${MIN_PAYOUT}. Keep referring to earn more!</p>}
         {msg?.success && <p className="text-sm text-green-600 mt-2">{msg.success}</p>}
         {msg?.error && <p className="text-sm text-red-600 mt-2">{msg.error}</p>}
       </div>
