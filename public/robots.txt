@@ -5,6 +5,9 @@ Disallow: /processing
 Disallow: /results
 Disallow: /history
 Disallow: /settings
+Disallow: /reset-password
+Disallow: /admin
+Disallow: /affiliate/dashboard
 Disallow: /api/
 
 Sitemap: https://shorttrim.com/sitemap.xml

@@ -1,10 +1,19 @@
 import { Link } from 'react-router-dom'
+import { Helmet } from 'react-helmet-async'
 import { DollarSign, Users, TrendingUp, Zap } from 'lucide-react'
 import { MIN_PAYOUT } from './constants'
 
 export default function AffiliateLanding() {
   return (
     <div className="min-h-screen bg-bg-base text-text-primary">
+      <Helmet>
+        <title>Affiliate Program – Earn 30% Commission | ShortTrim</title>
+        <meta name="description" content="Join ShortTrim's affiliate program and earn 30% commission on every referral. Free to join. Get paid via Stripe directly to your bank account." />
+        <link rel="canonical" href="https://shorttrim.com/affiliate" />
+        <meta property="og:title" content="Affiliate Program – Earn 30% Commission | ShortTrim" />
+        <meta property="og:description" content="Earn 30% commission on every referral. Free to join. Paid via Stripe." />
+        <meta property="og:url" content="https://shorttrim.com/affiliate" />
+      </Helmet>
       {/* Nav */}
       <nav className="border-b border-border px-6 py-4 flex items-center justify-between max-w-6xl mx-auto">
         <Link to="/" className="font-bold text-lg text-primary">ShortTrim</Link>

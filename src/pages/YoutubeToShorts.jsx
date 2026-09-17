@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { Helmet } from "react-helmet-async";
 import { CheckCircle, Zap, Clock, Globe } from "lucide-react";
 import { useAuth } from "../hooks/useAuth.js";
 
@@ -56,6 +57,14 @@ export default function YoutubeToShorts() {
 
   return (
     <div className="-mt-8">
+      <Helmet>
+        <title>YouTube to Shorts – AI Clip Maker | ShortTrim</title>
+        <meta name="description" content="Turn any YouTube video into viral Shorts in minutes. ShortTrim's AI picks the 2–3 best moments from lectures, podcasts, and interviews automatically." />
+        <link rel="canonical" href="https://shorttrim.com/youtube-to-shorts" />
+        <meta property="og:title" content="YouTube to Shorts – AI Clip Maker | ShortTrim" />
+        <meta property="og:description" content="Turn any YouTube video into viral Shorts in minutes. AI picks the best moments – no editing skills needed." />
+        <meta property="og:url" content="https://shorttrim.com/youtube-to-shorts" />
+      </Helmet>
       {/* Hero */}
       <section className="py-20 text-center max-w-3xl mx-auto px-4">
         <div className="inline-flex items-center gap-2 bg-bg-secondary border border-blue-100 text-primary text-xs font-semibold px-3 py-1.5 rounded-full mb-6">

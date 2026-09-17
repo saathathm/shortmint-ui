@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { Helmet } from "react-helmet-async";
 import { CheckCircle, Zap, Scissors, Clock } from "lucide-react";
 import { useAuth } from "../hooks/useAuth.js";
 
@@ -78,6 +79,14 @@ export default function AiVideoClipping() {
 
   return (
     <div className="-mt-8">
+      <Helmet>
+        <title>AI Video Clipping Tool – Auto Clip Generator | ShortTrim</title>
+        <meta name="description" content="ShortTrim's AI video clipping tool automatically finds and cuts the best moments from any long video. Works with YouTube, podcasts, interviews, and lectures." />
+        <link rel="canonical" href="https://shorttrim.com/ai-video-clipping" />
+        <meta property="og:title" content="AI Video Clipping Tool – Auto Clip Generator | ShortTrim" />
+        <meta property="og:description" content="Automatically find and cut the best moments from any long video. No manual editing required." />
+        <meta property="og:url" content="https://shorttrim.com/ai-video-clipping" />
+      </Helmet>
       {/* Hero */}
       <section className="py-20 text-center max-w-3xl mx-auto px-4">
         <div className="inline-flex items-center gap-2 bg-bg-secondary border border-blue-100 text-primary text-xs font-semibold px-3 py-1.5 rounded-full mb-6">

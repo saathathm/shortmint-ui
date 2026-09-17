@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { Helmet } from "react-helmet-async";
 import { useAuth } from "../hooks/useAuth.js";
 import { PLANS } from "../lib/stripe.js";
 import { createCheckoutSession } from "../lib/api.js";
@@ -33,6 +34,14 @@ export default function Pricing() {
 
   return (
     <div className="max-w-4xl mx-auto">
+      <Helmet>
+        <title>Pricing – ShortTrim AI Video Clipper Plans</title>
+        <meta name="description" content="Start free with 2 hours. Upgrade to Starter (10h), Growth (25h), or Pro (60h) for more clips. Cancel anytime. No hidden fees." />
+        <link rel="canonical" href="https://shorttrim.com/pricing" />
+        <meta property="og:title" content="Pricing – ShortTrim AI Video Clipper Plans" />
+        <meta property="og:description" content="Start free with 2 hours. Upgrade for more. Cancel anytime." />
+        <meta property="og:url" content="https://shorttrim.com/pricing" />
+      </Helmet>
       <div className="text-center mb-10">
         <h1 className="text-3xl font-bold text-text-primary">
           Simple, honest pricing
