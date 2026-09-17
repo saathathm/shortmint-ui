@@ -78,9 +78,9 @@ export default function Privacy() {
         </section>
 
         <section>
-          <h2 className="text-lg font-bold text-text-primary mb-2">8. Cookies</h2>
+          <h2 className="text-lg font-bold text-text-primary mb-2">8. Cookies &amp; Local Storage</h2>
           <p>
-            We use only essential cookies required for authentication – session tokens stored in your browser's local storage. We use Crisp for support chat which may set its own cookies. We do not use advertising or tracking cookies.
+            We do not use advertising or tracking cookies. Authentication tokens are stored in your browser's local storage. If you arrive via an affiliate referral link, we store the referral code in local storage (not a cookie) for up to 30 days solely to credit the referrer if you sign up. We use Crisp for support chat which may set its own cookies.
           </p>
         </section>
 

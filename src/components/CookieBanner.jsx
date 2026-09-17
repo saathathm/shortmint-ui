@@ -29,7 +29,7 @@ export default function CookieBanner() {
             We use cookies 🍪
           </p>
           <p className="text-xs text-text-muted leading-relaxed">
-            We use essential cookies to keep you logged in and improve your experience.
+            We use local storage to keep you logged in. Crisp (support chat) may set cookies.
             See our{' '}
             <Link to="/privacy" className="text-primary hover:underline">
               Privacy Policy

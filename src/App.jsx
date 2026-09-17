@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { useDispatch } from 'react-redux'
 import { loadSession, setSession, setClient } from './store/authSlice.js'
 import { supabase } from './lib/supabase.js'
+import { setRef, getRef } from './lib/referral.js'
 import ProtectedRoute from './components/ProtectedRoute.jsx'
 import Layout from './components/Layout.jsx'
 import ErrorBoundary from './components/ErrorBoundary.jsx'
@@ -36,12 +37,6 @@ import AdminLogin from './admin/AdminLogin.jsx'
 import AdminLayout from './admin/AdminLayout.jsx'
 import AdminProtectedRoute from './admin/AdminProtectedRoute.jsx'
 
-const getRefCookie = () =>
-  document.cookie
-    .split(';')
-    .map((c) => c.trim())
-    .find((c) => c.startsWith('st_ref='))
-    ?.split('=')[1] || null;
 
 export default function App() {
   const dispatch = useDispatch()
@@ -50,9 +45,7 @@ export default function App() {
     // Set st_ref cookie from ?ref= query param (30-day tracking)
     const params = new URLSearchParams(window.location.search)
     const ref = params.get('ref')
-    if (ref) {
-      document.cookie = `st_ref=${ref}; max-age=${30 * 24 * 60 * 60}; path=/; SameSite=Lax`
-    }
+    if (ref) setRef(ref)
 
     const {
       data: { subscription },
@@ -73,7 +66,7 @@ export default function App() {
               localStorage.setItem("sm_refresh_token", session.refresh_token);
             }
             try {
-              const referral_code = getRefCookie();
+              const referral_code = getRef();
               await fetch(
                 `${import.meta.env.VITE_API_BASE_URL}/api/auth/google-callback`,
                 {
