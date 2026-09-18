@@ -42,9 +42,15 @@ function Overview({ affiliate, stats }) {
     setTimeout(() => setCopied(false), 2000)
   }
 
+  const clearingBalance = stats?.clearing_balance || 0
+
   const statCards = [
     { label: 'Total earned', value: `$${(stats?.total_earned || 0).toFixed(2)}` },
-    { label: 'Pending balance', value: `$${(stats?.payout_balance || 0).toFixed(2)}` },
+    {
+      label: 'Available',
+      value: `$${(stats?.available_balance || 0).toFixed(2)}`,
+      sub: clearingBalance > 0 ? `$${clearingBalance.toFixed(2)} clearing` : null,
+    },
     { label: 'Total referrals', value: stats?.referral_count ?? '–' },
     { label: 'This month', value: `$${(stats?.month_earned || 0).toFixed(2)}` },
   ]
@@ -54,10 +60,11 @@ function Overview({ affiliate, stats }) {
       <h1 className="text-2xl font-bold text-text-primary">Overview</h1>
 
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-        {statCards.map(({ label, value }) => (
+        {statCards.map(({ label, value, sub }) => (
           <div key={label} className="card p-4">
             <p className="text-xs text-text-muted mb-1">{label}</p>
             <p className="text-2xl font-bold text-text-primary">{value}</p>
+            {sub && <p className="text-xs text-text-muted mt-1">{sub}</p>}
           </div>
         ))}
       </div>
@@ -266,9 +273,10 @@ function Payouts({ stats, affiliate }) {
     }
   }
 
-  const balance = stats?.payout_balance || 0
+  const available = stats?.available_balance || 0
+  const clearing = stats?.clearing_balance || 0
   const isActive = connectStatus?.status === 'active'
-  const canPayout = balance >= MIN_PAYOUT && isActive
+  const canPayout = available >= MIN_PAYOUT && isActive
 
   return (
     <div className="space-y-6">
@@ -302,11 +310,16 @@ function Payouts({ stats, affiliate }) {
       </div>
 
       {/* Request payout */}
-      <div className="card p-5">
-        <div className="flex items-center justify-between mb-3">
+      <div className="card p-5 space-y-3">
+        <div className="flex items-start justify-between">
           <div>
             <p className="text-sm font-semibold text-text-primary">Available balance</p>
-            <p className="text-2xl font-bold text-text-primary mt-1">${balance.toFixed(2)}</p>
+            <p className="text-2xl font-bold text-text-primary mt-1">${available.toFixed(2)}</p>
+            {clearing > 0 && (
+              <p className="text-xs text-text-muted mt-1">
+                + ${clearing.toFixed(2)} clearing (available after 9 days)
+              </p>
+            )}
           </div>
           <button
             onClick={requestPayout}
@@ -317,10 +330,18 @@ function Payouts({ stats, affiliate }) {
             Request payout
           </button>
         </div>
+        <p className="text-xs text-text-muted border-t border-border pt-3">
+          Commissions are held for 9 days after a subscription to allow for payment processing.
+        </p>
         {!isActive && <p className="text-xs text-text-muted">Connect Stripe to request payouts.</p>}
-        {isActive && balance < MIN_PAYOUT && <p className="text-xs text-text-muted">Minimum payout is ${MIN_PAYOUT}. Keep referring to earn more!</p>}
-        {msg?.success && <p className="text-sm text-green-600 mt-2">{msg.success}</p>}
-        {msg?.error && <p className="text-sm text-red-600 mt-2">{msg.error}</p>}
+        {isActive && available < MIN_PAYOUT && available === 0 && clearing > 0 && (
+          <p className="text-xs text-text-muted">Your ${clearing.toFixed(2)} is still clearing. Commissions are available 9 days after the subscription date.</p>
+        )}
+        {isActive && available < MIN_PAYOUT && clearing === 0 && (
+          <p className="text-xs text-text-muted">Minimum payout is ${MIN_PAYOUT}. Keep referring to earn more!</p>
+        )}
+        {msg?.success && <p className="text-sm text-green-600">{msg.success}</p>}
+        {msg?.error && <p className="text-sm text-red-600">{msg.error}</p>}
       </div>
 
       {/* Payout history */}
