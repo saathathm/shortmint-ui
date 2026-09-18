@@ -1,5 +1,5 @@
-import { useState, useEffect, useCallback } from 'react'
-import { Copy, Check, ExternalLink, Loader } from 'lucide-react'
+import { useState, useEffect } from 'react'
+import { Copy, Check, ExternalLink, Loader, DollarSign, Wallet, Users, TrendingUp } from 'lucide-react'
 import { MIN_PAYOUT } from './constants'
 
 const API = import.meta.env.VITE_API_BASE_URL
@@ -29,6 +29,33 @@ function useAffiliate() {
   return { affiliate, stats, loading }
 }
 
+// --- Empty state ---
+function EmptyReferrals({ referralCode }) {
+  const [copied, setCopied] = useState(false)
+  const link = `${window.location.origin}/?ref=${referralCode}`
+  const copy = () => {
+    navigator.clipboard.writeText(link)
+    setCopied(true)
+    setTimeout(() => setCopied(false), 2000)
+  }
+  return (
+    <div className="card p-6 border-2 border-dashed border-border text-center">
+      <div className="w-12 h-12 rounded-full bg-bg-surface flex items-center justify-center mx-auto mb-3">
+        <Users size={22} className="text-text-dim" />
+      </div>
+      <p className="font-semibold text-text-primary mb-1">No referrals yet</p>
+      <p className="text-sm text-text-muted mb-5">Share your link to start earning 30% recurring commissions.</p>
+      <div className="flex items-center gap-2 max-w-sm mx-auto">
+        <input readOnly value={link} className="input-field flex-1 text-sm font-mono" />
+        <button onClick={copy} className="btn-primary flex items-center gap-1.5 px-4 py-2 whitespace-nowrap shrink-0">
+          {copied ? <Check size={14} /> : <Copy size={14} />}
+          {copied ? 'Copied!' : 'Copy'}
+        </button>
+      </div>
+    </div>
+  )
+}
+
 // --- Overview ---
 function Overview({ affiliate, stats }) {
   const [copied, setCopied] = useState(false)
@@ -45,14 +72,15 @@ function Overview({ affiliate, stats }) {
   const clearingBalance = stats?.clearing_balance || 0
 
   const statCards = [
-    { label: 'Total earned', value: `$${(stats?.total_earned || 0).toFixed(2)}` },
+    { label: 'Total earned', value: `$${(stats?.total_earned || 0).toFixed(2)}`, icon: DollarSign, iconBg: 'bg-green-50', iconColor: 'text-green-600' },
     {
       label: 'Available',
       value: `$${(stats?.available_balance || 0).toFixed(2)}`,
-      sub: clearingBalance > 0 ? `$${clearingBalance.toFixed(2)} clearing` : null,
+      sub: clearingBalance > 0 ? `+ $${clearingBalance.toFixed(2)} clearing` : null,
+      icon: Wallet, iconBg: 'bg-blue-50', iconColor: 'text-blue-600',
     },
-    { label: 'Total referrals', value: stats?.referral_count ?? '–' },
-    { label: 'This month', value: `$${(stats?.month_earned || 0).toFixed(2)}` },
+    { label: 'Total referrals', value: stats?.referral_count ?? '–', icon: Users, iconBg: 'bg-purple-50', iconColor: 'text-purple-600' },
+    { label: 'This month', value: `$${(stats?.month_earned || 0).toFixed(2)}`, icon: TrendingUp, iconBg: 'bg-orange-50', iconColor: 'text-orange-600' },
   ]
 
   return (
@@ -60,14 +88,21 @@ function Overview({ affiliate, stats }) {
       <h1 className="text-2xl font-bold text-text-primary">Overview</h1>
 
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-        {statCards.map(({ label, value, sub }) => (
+        {statCards.map(({ label, value, sub, icon: Icon, iconBg, iconColor }) => (
           <div key={label} className="card p-4">
+            <div className={`w-8 h-8 rounded-lg ${iconBg} flex items-center justify-center mb-3`}>
+              <Icon size={16} className={iconColor} />
+            </div>
             <p className="text-xs text-text-muted mb-1">{label}</p>
             <p className="text-2xl font-bold text-text-primary">{value}</p>
             {sub && <p className="text-xs text-text-muted mt-1">{sub}</p>}
           </div>
         ))}
       </div>
+
+      {stats?.referral_count === 0 && affiliate && (
+        <EmptyReferrals referralCode={affiliate.referral_code} />
+      )}
 
       <div className="card p-5">
         <p className="text-sm font-semibold text-text-primary mb-3">Your referral link</p>
@@ -330,6 +365,20 @@ function Payouts({ stats, affiliate }) {
             Request payout
           </button>
         </div>
+        {isActive && (
+          <div className="space-y-1.5 border-t border-border pt-3">
+            <div className="flex justify-between text-xs text-text-muted">
+              <span>Progress to payout</span>
+              <span>${Math.min(available, MIN_PAYOUT).toFixed(2)} / ${MIN_PAYOUT}</span>
+            </div>
+            <div className="h-1.5 bg-bg-surface rounded-full overflow-hidden">
+              <div
+                className="h-full bg-primary rounded-full transition-all duration-500"
+                style={{ width: `${Math.min(100, (available / MIN_PAYOUT) * 100)}%` }}
+              />
+            </div>
+          </div>
+        )}
         <p className="text-xs text-text-muted border-t border-border pt-3">
           Commissions are held for 9 days after a subscription to allow for payment processing.
         </p>

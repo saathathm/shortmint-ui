@@ -1,55 +1,91 @@
 import { useState } from 'react'
 import { NavLink, Routes, Route, useNavigate } from 'react-router-dom'
-import { LayoutDashboard, Link2, BarChart2, Wallet, Settings, Menu, X, LogOut } from 'lucide-react'
+import { LayoutDashboard, Link2, TrendingUp, Wallet, Settings2, Menu, X, LogOut, HelpCircle } from 'lucide-react'
 import AffiliateDashboard from './AffiliateDashboard.jsx'
 
 const navItems = [
   { to: '/affiliate/dashboard', end: true, icon: LayoutDashboard, label: 'Overview' },
   { to: '/affiliate/dashboard/link', icon: Link2, label: 'My Link' },
-  { to: '/affiliate/dashboard/earnings', icon: BarChart2, label: 'Earnings' },
+  { to: '/affiliate/dashboard/earnings', icon: TrendingUp, label: 'Earnings' },
   { to: '/affiliate/dashboard/payouts', icon: Wallet, label: 'Payouts' },
-  { to: '/affiliate/dashboard/settings', icon: Settings, label: 'Settings' },
+  { to: '/affiliate/dashboard/settings', icon: Settings2, label: 'Settings' },
 ]
 
 const linkClass = ({ isActive }) =>
   `flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors ${
     isActive
-      ? 'bg-primary/10 text-primary'
+      ? 'bg-primary/10 text-primary font-semibold'
       : 'text-text-muted hover:text-text-primary hover:bg-bg-surface'
   }`
 
 function Sidebar({ onClose }) {
   const navigate = useNavigate()
+  const affiliateName = localStorage.getItem('st_affiliate_name') || ''
+  const affiliateEmail = localStorage.getItem('st_affiliate_email') || ''
 
   const handleLogout = () => {
     localStorage.removeItem('st_affiliate_token')
+    localStorage.removeItem('st_affiliate_name')
+    localStorage.removeItem('st_affiliate_email')
     navigate('/affiliate/login')
   }
 
   return (
     <div className="flex flex-col h-full">
+      {/* Logo */}
       <div className="p-5 border-b border-border flex items-center justify-between">
-        <span className="font-bold text-text-primary">Affiliate Hub</span>
+        <div className="flex items-center gap-2">
+          <span className="font-bold text-text-primary">ShortTrim</span>
+          <span className="text-xs font-medium bg-primary/10 text-primary px-2 py-0.5 rounded-full">Affiliates</span>
+        </div>
         {onClose && (
           <button onClick={onClose} className="text-text-muted hover:text-text-primary lg:hidden">
             <X size={20} />
           </button>
         )}
       </div>
-      <nav className="flex-1 p-3 space-y-1">
+
+      {/* Profile chip */}
+      {(affiliateName || affiliateEmail) && (
+        <div className="px-4 py-3 border-b border-border">
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+              <span className="text-xs font-bold text-primary">
+                {(affiliateName || affiliateEmail).charAt(0).toUpperCase()}
+              </span>
+            </div>
+            <div className="min-w-0">
+              {affiliateName && <p className="text-sm font-semibold text-text-primary truncate">{affiliateName}</p>}
+              {affiliateEmail && <p className="text-xs text-text-muted truncate">{affiliateEmail}</p>}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Nav */}
+      <nav className="flex-1 p-3 space-y-0.5">
         {navItems.map(({ to, end, icon: Icon, label }) => (
           <NavLink key={to} to={to} end={end} className={linkClass} onClick={onClose}>
-            <Icon size={18} />
+            <Icon size={17} />
             {label}
           </NavLink>
         ))}
       </nav>
-      <div className="p-3 border-t border-border">
+
+      {/* Bottom */}
+      <div className="p-3 border-t border-border space-y-0.5">
+        <a
+          href="mailto:support@shorttrim.com"
+          className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-text-muted hover:text-text-primary hover:bg-bg-surface transition-colors"
+        >
+          <HelpCircle size={17} />
+          Help & support
+        </a>
         <button
           onClick={handleLogout}
           className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-text-muted hover:text-text-primary hover:bg-bg-surface w-full transition-colors"
         >
-          <LogOut size={18} />
+          <LogOut size={17} />
           Sign out
         </button>
       </div>
@@ -91,7 +127,10 @@ export default function AffiliateLayout() {
           <button onClick={() => setDrawerOpen(true)} className="text-text-muted hover:text-text-primary">
             <Menu size={22} />
           </button>
-          <span className="font-semibold text-text-primary">Affiliate Hub</span>
+          <div className="flex items-center gap-1.5">
+            <span className="font-bold text-text-primary text-sm">ShortTrim</span>
+            <span className="text-xs font-medium bg-primary/10 text-primary px-1.5 py-0.5 rounded-full">Affiliates</span>
+          </div>
           <div className="w-6" />
         </header>
 
