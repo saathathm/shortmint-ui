@@ -212,15 +212,21 @@ export default function Layout({ children }) {
               </div>
             </div>
           ) : (
-            <div className="flex items-center gap-3">
-              <Link to="/login" className="btn-ghost text-sm">
+            <div className="flex items-center gap-2 sm:gap-3">
+              <Link
+                to="/affiliate"
+                className="hidden sm:block text-sm text-text-muted hover:text-text-primary transition-colors"
+              >
+                Affiliates
+              </Link>
+              <Link to="/login" className="hidden sm:block btn-ghost text-sm">
                 Sign in
               </Link>
               <Link
                 to="/signup"
                 className="btn-primary text-sm py-2 px-4 shadow-sm"
               >
-                Get started free
+                <span className="hidden sm:inline">Get started </span>free
               </Link>
             </div>
           )}
@@ -247,6 +253,12 @@ export default function Layout({ children }) {
               className="hover:text-text-primary transition-colors"
             >
               Pricing
+            </Link>
+            <Link
+              to="/affiliate"
+              className="hover:text-text-primary transition-colors"
+            >
+              Affiliates
             </Link>
             <Link
               to="/terms"

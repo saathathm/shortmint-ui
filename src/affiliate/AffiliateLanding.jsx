@@ -12,7 +12,7 @@ const earningsRows = [
 
 export default function AffiliateLanding() {
   return (
-    <div className="min-h-screen bg-bg-base text-text-primary">
+    <div className="min-h-screen bg-bg-primary text-text-primary">
       <Helmet>
         <title>Affiliate Program – Earn 30% Commission | ShortTrim</title>
         <meta name="description" content="Join ShortTrim's affiliate program and earn 30% recurring commission on every referral for up to 12 months. Free to join. Paid via Stripe." />
@@ -23,7 +23,7 @@ export default function AffiliateLanding() {
       </Helmet>
 
       {/* Nav */}
-      <nav className="border-b border-border bg-bg-base/90 backdrop-blur sticky top-0 z-10">
+      <nav className="border-b border-border bg-white/90 backdrop-blur sticky top-0 z-10">
         <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
           <Link to="/" className="flex items-center gap-2">
             <span className="font-bold text-lg text-text-primary">ShortTrim</span>
@@ -66,7 +66,7 @@ export default function AffiliateLanding() {
       </section>
 
       {/* Stats bar */}
-      <section className="border-y border-border bg-bg-card">
+      <section className="border-y border-border bg-bg-surface">
         <div className="max-w-4xl mx-auto px-6 py-10">
           <div className="grid grid-cols-3 divide-x divide-border text-center gap-0">
             <div className="px-6">
@@ -107,7 +107,7 @@ export default function AffiliateLanding() {
       </section>
 
       {/* Why ShortTrim */}
-      <section className="bg-bg-card border-y border-border py-20 px-6">
+      <section className="bg-bg-surface border-y border-border py-20 px-6">
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-14">
             <h2 className="text-2xl font-bold mb-3">Why ShortTrim Affiliates?</h2>

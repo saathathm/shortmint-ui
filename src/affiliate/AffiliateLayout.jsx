@@ -97,9 +97,9 @@ export default function AffiliateLayout() {
   const [drawerOpen, setDrawerOpen] = useState(false)
 
   return (
-    <div className="min-h-screen bg-bg-base flex">
+    <div className="min-h-screen bg-white flex">
       {/* Desktop sidebar */}
-      <aside className="hidden lg:flex flex-col w-64 bg-bg-card border-r border-border fixed top-0 left-0 h-full z-30">
+      <aside className="hidden lg:flex flex-col w-64 bg-white border-r border-border fixed top-0 left-0 h-full z-30">
         <Sidebar />
       </aside>
 
@@ -113,7 +113,7 @@ export default function AffiliateLayout() {
 
       {/* Mobile drawer */}
       <aside
-        className={`fixed top-0 left-0 h-full w-64 bg-bg-card border-r border-border z-50 transform transition-transform duration-200 lg:hidden ${
+        className={`fixed top-0 left-0 h-full w-64 bg-white border-r border-border z-50 transform transition-transform duration-200 lg:hidden ${
           drawerOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
@@ -123,7 +123,7 @@ export default function AffiliateLayout() {
       {/* Main content */}
       <div className="flex-1 lg:ml-64">
         {/* Mobile header */}
-        <header className="lg:hidden flex items-center justify-between px-4 py-3 border-b border-border bg-bg-card sticky top-0 z-20">
+        <header className="lg:hidden flex items-center justify-between px-4 py-3 border-b border-border bg-white sticky top-0 z-20">
           <button onClick={() => setDrawerOpen(true)} className="text-text-muted hover:text-text-primary">
             <Menu size={22} />
           </button>
