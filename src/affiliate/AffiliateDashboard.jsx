@@ -70,13 +70,16 @@ function Overview({ affiliate, stats }) {
   }
 
   const clearingBalance = stats?.clearing_balance || 0
+  const clearingDays = stats?.next_available_at
+    ? Math.max(0, Math.ceil((new Date(stats.next_available_at) - Date.now()) / (1000 * 60 * 60 * 24)))
+    : null
 
   const statCards = [
     { label: 'Total earned', value: `$${(stats?.total_earned || 0).toFixed(2)}`, icon: DollarSign, iconBg: 'bg-green-50', iconColor: 'text-green-600' },
     {
       label: 'Available',
       value: `$${(stats?.available_balance || 0).toFixed(2)}`,
-      sub: clearingBalance > 0 ? `+ $${clearingBalance.toFixed(2)} clearing` : null,
+      sub: clearingBalance > 0 ? `+ $${clearingBalance.toFixed(2)} clearing · next in ${clearingDays}d` : null,
       icon: Wallet, iconBg: 'bg-blue-50', iconColor: 'text-blue-600',
     },
     { label: 'Total referrals', value: stats?.referral_count ?? '–', icon: Users, iconBg: 'bg-purple-50', iconColor: 'text-purple-600' },
@@ -206,8 +209,15 @@ function Earnings() {
       .finally(() => setLoading(false))
   }, [page])
 
-  const statusColor = (s) =>
-    s === 'pending' ? 'text-yellow-600 bg-yellow-50' : s === 'paid' ? 'text-green-600 bg-green-50' : 'text-red-600 bg-red-50'
+  const daysLeft = (createdAt) =>
+    Math.max(0, Math.ceil((new Date(createdAt).getTime() + 9 * 24 * 60 * 60 * 1000 - Date.now()) / (1000 * 60 * 60 * 24)))
+
+  const statusBadge = (c) => {
+    if (c.status === 'paid') return <span className="text-xs font-medium px-2 py-0.5 rounded-full text-green-600 bg-green-50">Paid</span>
+    const days = daysLeft(c.created_at)
+    if (days === 0) return <span className="text-xs font-medium px-2 py-0.5 rounded-full text-green-600 bg-green-50">Available</span>
+    return <span className="text-xs font-medium px-2 py-0.5 rounded-full text-yellow-600 bg-yellow-50">{days}d left</span>
+  }
 
   return (
     <div className="space-y-6">
@@ -234,9 +244,7 @@ function Earnings() {
                   <td className="px-4 py-3 capitalize">{c.commission_type}</td>
                   <td className="px-4 py-3 text-text-muted">{c.month_number ?? '–'}</td>
                   <td className="px-4 py-3 font-semibold text-text-primary">${parseFloat(c.commission_amount).toFixed(2)}</td>
-                  <td className="px-4 py-3">
-                    <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${statusColor(c.status)}`}>{c.status}</span>
-                  </td>
+                  <td className="px-4 py-3">{statusBadge(c)}</td>
                 </tr>
               ))}
             </tbody>
@@ -312,6 +320,9 @@ function Payouts({ stats, affiliate }) {
   const clearing = stats?.clearing_balance || 0
   const isActive = connectStatus?.status === 'active'
   const canPayout = available >= MIN_PAYOUT && isActive
+  const clearingDays = stats?.next_available_at
+    ? Math.max(0, Math.ceil((new Date(stats.next_available_at) - Date.now()) / (1000 * 60 * 60 * 24)))
+    : null
 
   return (
     <div className="space-y-6">
@@ -352,7 +363,7 @@ function Payouts({ stats, affiliate }) {
             <p className="text-2xl font-bold text-text-primary mt-1">${available.toFixed(2)}</p>
             {clearing > 0 && (
               <p className="text-xs text-text-muted mt-1">
-                + ${clearing.toFixed(2)} clearing (available after 9 days)
+                + ${clearing.toFixed(2)} clearing{clearingDays !== null ? ` · next in ${clearingDays} day${clearingDays !== 1 ? 's' : ''}` : ''}
               </p>
             )}
           </div>
@@ -384,7 +395,9 @@ function Payouts({ stats, affiliate }) {
         </p>
         {!isActive && <p className="text-xs text-text-muted">Connect Stripe to request payouts.</p>}
         {isActive && available < MIN_PAYOUT && available === 0 && clearing > 0 && (
-          <p className="text-xs text-text-muted">Your ${clearing.toFixed(2)} is still clearing. Commissions are available 9 days after the subscription date.</p>
+          <p className="text-xs text-text-muted">
+            Your ${clearing.toFixed(2)} is still clearing.{clearingDays !== null ? ` Next available in ${clearingDays} day${clearingDays !== 1 ? 's' : ''}.` : ''}
+          </p>
         )}
         {isActive && available < MIN_PAYOUT && clearing === 0 && (
           <p className="text-xs text-text-muted">Minimum payout is ${MIN_PAYOUT}. Keep referring to earn more!</p>

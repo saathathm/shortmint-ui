@@ -93,7 +93,7 @@ export default function AffiliateLogin() {
 
           <p className="text-center text-sm text-text-muted mt-4">
             Not an affiliate yet?{' '}
-            <Link to="/affiliate/register" className="text-primary font-semibold hover:underline">Join now — it's free</Link>
+            <Link to="/affiliate/register" className="text-primary font-semibold hover:underline">Join now – it's free</Link>
           </p>
         </div>
       </div>

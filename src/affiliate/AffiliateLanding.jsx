@@ -47,12 +47,12 @@ export default function AffiliateLanding() {
           <span className="text-primary">Forever.</span>
         </h1>
         <p className="text-lg text-text-muted max-w-2xl mx-auto mb-4 leading-relaxed">
-          Refer creators to ShortTrim and earn 30% recurring commission on every payment — for up to 12 months per referral.
+          Refer creators to ShortTrim and earn 30% recurring commission on every payment – for up to 12 months per referral.
         </p>
         <p className="text-sm text-text-muted mb-10">
           10 referrals × $19/mo ={' '}
           <span className="font-semibold text-text-primary">$57/mo recurring</span>
-          {' '}—{' '}
+          {' '}–{' '}
           <span className="font-semibold text-text-primary">$684/year</span>
         </p>
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
